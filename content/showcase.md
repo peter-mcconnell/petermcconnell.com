@@ -1,7 +1,7 @@
 ---
 title: "Showcase"
 date: 2022-11-29T20:51:24Z
-draft: true
+draft: false
 ---
 
 I've been around for a while and done some things. Even some good things.

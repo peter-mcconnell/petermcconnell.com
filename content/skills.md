@@ -1,7 +1,7 @@
 ---
 title: "Skills"
 date: 2022-11-29T20:54:22Z
-draft: true
+draft: false
 ---
 
 https://www.youtube.com/watch?v=dL6kQ0v1PQ8

@@ -2,10 +2,33 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://www.petermcconnell.com/categories/</loc>
+    <loc>https://www.petermcconnell.com/skills/</loc>
+    <lastmod>2022-11-29T20:54:22+00:00</lastmod>
+  </url><url>
+    <loc>https://www.petermcconnell.com/showcase/</loc>
+    <lastmod>2022-11-29T20:51:24+00:00</lastmod>
+  </url><url>
+    <loc>https://www.petermcconnell.com/about/</loc>
+    <lastmod>2022-11-29T20:36:26+00:00</lastmod>
+  </url><url>
+    <loc>https://www.petermcconnell.com/tags/books/</loc>
+    <lastmod>2022-11-29T20:30:52+00:00</lastmod>
+  </url><url>
+    <loc>https://www.petermcconnell.com/posts/current-reading/</loc>
+    <lastmod>2022-11-29T20:30:52+00:00</lastmod>
+  </url><url>
+    <loc>https://www.petermcconnell.com/tags/linux/</loc>
+    <lastmod>2022-11-29T20:30:52+00:00</lastmod>
   </url><url>
     <loc>https://www.petermcconnell.com/</loc>
+    <lastmod>2022-11-29T20:30:52+00:00</lastmod>
+  </url><url>
+    <loc>https://www.petermcconnell.com/posts/</loc>
+    <lastmod>2022-11-29T20:30:52+00:00</lastmod>
   </url><url>
     <loc>https://www.petermcconnell.com/tags/</loc>
+    <lastmod>2022-11-29T20:30:52+00:00</lastmod>
+  </url><url>
+    <loc>https://www.petermcconnell.com/categories/</loc>
   </url>
 </urlset>

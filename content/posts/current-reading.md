@@ -1,7 +1,7 @@
 +++
 title = "Current Reading"
 date = "2022-11-29T20:30:52Z"
-draft = true
+draft = false
 author = "Peter McConnell"
 authorTwitter = "peter-mcconnell" #do not include @
 cover = ""

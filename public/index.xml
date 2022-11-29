@@ -5,6 +5,149 @@
     <link>https://www.petermcconnell.com/</link>
     <description>Recent content on Peter McConnell</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language><atom:link href="https://www.petermcconnell.com/index.xml" rel="self" type="application/rss+xml" />
+    <language>en-us</language>
+    <lastBuildDate>Tue, 29 Nov 2022 20:30:52 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Skills</title>
+      <link>https://www.petermcconnell.com/skills/</link>
+      <pubDate>Tue, 29 Nov 2022 20:54:22 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/skills/</guid>
+      <description>https://www.youtube.com/watch?v=dL6kQ0v1PQ8
+I&amp;rsquo;m a solid debugger, reasonable systems designer &amp;amp; natural leader. I&amp;rsquo;ve worked with enough talent to know I&amp;rsquo;m nothing special; but I have a great track record for being good to work with and getting shit done be it as an IC, a manager, or a group lead.
+Usually never far from:
+Python Golang Bash Linux Docker Kubernetes AWS Over 20 years I&amp;rsquo;ve touched a lot of different tech and generally speaking can shake the rust off or learn something new in a week or two.</description>
+      <content>&lt;p&gt;&lt;a href=&#34;https://www.youtube.com/watch?v=dL6kQ0v1PQ8&#34;&gt;https://www.youtube.com/watch?v=dL6kQ0v1PQ8&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;I&amp;rsquo;m a solid debugger, reasonable systems designer &amp;amp; natural leader. I&amp;rsquo;ve worked
+with enough talent to know I&amp;rsquo;m nothing special; but I have a great track record
+for being good to work with and getting shit done be it as an IC, a manager,
+or a group lead.&lt;/p&gt;
+&lt;p&gt;Usually never far from:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Python&lt;/li&gt;
+&lt;li&gt;Golang&lt;/li&gt;
+&lt;li&gt;Bash&lt;/li&gt;
+&lt;li&gt;Linux&lt;/li&gt;
+&lt;li&gt;Docker&lt;/li&gt;
+&lt;li&gt;Kubernetes&lt;/li&gt;
+&lt;li&gt;AWS&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Over 20 years I&amp;rsquo;ve touched a lot of different tech and generally speaking can
+shake the rust off or learn something new in a week or two.&lt;/p&gt;
+</content>
+    </item>
+    
+    <item>
+      <title>Showcase</title>
+      <link>https://www.petermcconnell.com/showcase/</link>
+      <pubDate>Tue, 29 Nov 2022 20:51:24 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/showcase/</guid>
+      <description>I&amp;rsquo;ve been around for a while and done some things. Even some good things.
+helped take two companies to acquisition developed a custom query language (TQL - an opencypher variant) which went to market [ Java. Golang. ANTLR ] added support into the Terraform AWS provider for shipping your own keys to ACM [ Golang ] developed an orchestration framework for researchers in AI to schedule workloads [ Python. Terraform. AWS.</description>
+      <content>&lt;p&gt;I&amp;rsquo;ve been around for a while and done some things. Even some good things.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;helped take two companies to acquisition&lt;/li&gt;
+&lt;li&gt;developed a custom query language (TQL - an opencypher variant) which went to market
+[ Java. Golang. ANTLR ]&lt;/li&gt;
+&lt;li&gt;added support into the Terraform AWS provider for shipping your own keys to ACM
+[ Golang ]&lt;/li&gt;
+&lt;li&gt;developed an orchestration framework for researchers in AI to schedule workloads
+[ Python. Terraform. AWS. On-prem (Nvidia DGX&amp;rsquo;s). Qemu. Libvirt ]&lt;/li&gt;
+&lt;li&gt;customised redhat&amp;rsquo;s clair product so that it could use internal sources for its vulnerability databases
+[ Golang ]&lt;/li&gt;
+&lt;li&gt;developed a compliance tool which detects packages for Python, Ruby, R, APT, Yum, APK and assesses their licenses
+[ Shell ]&lt;/li&gt;
+&lt;li&gt;developed a chatbot which used a large car forum database, bayes theorum and more regular expressions than you can shake a stick at to allow users to talk to cars. in 3 weeks!
+[ PHP, Postgres ]&lt;/li&gt;
+&lt;li&gt;built a security tool &amp;ldquo;amald&amp;rdquo; which alerts on the event that an endpoint is without authentication. decreased companies time-to-detection for auth misconfigurations
+[ Golang ]&lt;/li&gt;
+&lt;li&gt;developed an image delivery service for a very large org (30k+ engineers)
+[ AWS, Python, Bash/Shell, OpenStack ]&lt;/li&gt;
+&lt;li&gt;have worked on web products for Google, Virgin, Red Bull, Disney &amp;amp; YouTube
+[ Python. PHP. During my time as a lead at https://www.rehabagency.ai/work ]&lt;/li&gt;
+&lt;li&gt;design and build out of various deployment infrastructure
+[ Kubernetes. Mesos. Marathon. Docker-compose. ]&lt;/li&gt;
+&lt;li&gt;developed a Jira plugin which extended JQL (jira query language) to allow grouping by &amp;ldquo;roles&amp;rdquo;
+[ Java ]&lt;/li&gt;
+&lt;li&gt;competed in various hackathons and code jams
+[ Hacktoberfest, Ludum Dare, Google CTF ]&lt;/li&gt;
+&lt;li&gt;mentored many amazing engineers over the years from Junior to Staff&lt;/li&gt;
+&lt;li&gt;spoken at various conferences in the UK, Ireland, Australia and the U.S on docker, prometheus, bash, terraform, aws etc&lt;/li&gt;
+&lt;li&gt;co-founded an award winning web design company (31interactive)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;20 years working in tech and the above is all the &amp;ldquo;good things&amp;rdquo; I can think of
+listing. Imagine how long the &amp;ldquo;bad things&amp;rdquo; list must be ..&lt;/p&gt;
+</content>
+    </item>
+    
+    <item>
+      <title>About</title>
+      <link>https://www.petermcconnell.com/about/</link>
+      <pubDate>Tue, 29 Nov 2022 20:36:26 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/about/</guid>
+      <description>I&amp;rsquo;m a simple high-school drop-out that has been in love with computers since landing my very own Commodore Amiga. My family never had much growing up, but somehow I still got a computer. Little did my mum know at the time just how big an impact that would have on my life. Thanks mum.
+Currently posted at firebolt.io where I help several teams who are focused around automation and running infrastructure.</description>
+      <content>&lt;p&gt;I&amp;rsquo;m a simple high-school drop-out that has been in love with computers since
+landing my very own Commodore Amiga. My family never had much growing up, but
+somehow I still got a computer. Little did my mum know at the time just how big
+an impact that would have on my life. Thanks mum.&lt;/p&gt;
+&lt;p&gt;Currently posted at firebolt.io where I help several teams who are focused
+around automation and running infrastructure. We have many complex problems to
+solve but the progress we&amp;rsquo;re making is truly amazing. Oblig. &amp;ldquo;My views are my
+own / not representative of my employer&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;Outside of work I try to contribute to the community when I can, though spare
+time is expensive when you have kids to spend it on. I recently got to speak at
+NIDC though which was nice - you can catch it here:
+&lt;a href=&#34;https://www.youtube.com/watch?v=hvtZnbDXpzM&amp;amp;t=20063s&#34;&gt;https://www.youtube.com/watch?v=hvtZnbDXpzM&amp;amp;t=20063s&lt;/a&gt;. And indeed, that is a
+Final Fantasy VII t-shirt.&lt;/p&gt;
+&lt;p&gt;Personal focus has shifted towards performance and systems engineering lately.
+In particular, pulling more information out of the kernel to help developers
+debug interesting issues is a fascinating topic I&amp;rsquo;m spending more time on. The
+problem is, with such tools to hand life seemingly becomes an endless longing
+for a process to spin out of control with not a reasonable error in sight.&lt;/p&gt;
+&lt;p&gt;You can find me on Twitter (&lt;a href=&#34;https://twitter.com/&#34;&gt;https://twitter.com/&lt;/a&gt;) or Github
+(&lt;a href=&#34;https://github.com/peter-mcconnell)&#34;&gt;https://github.com/peter-mcconnell)&lt;/a&gt;.&lt;/p&gt;
+</content>
+    </item>
+    
+    <item>
+      <title>Current Reading</title>
+      <link>https://www.petermcconnell.com/posts/current-reading/</link>
+      <pubDate>Tue, 29 Nov 2022 20:30:52 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/posts/current-reading/</guid>
+      <description>The Linux Programming Interface I should have read this years ago. It&amp;rsquo;s a big boi, but if you work around linux or are interested in it - this book is a critical primer on many of the core topics you&amp;rsquo;ll need to really understand what&amp;rsquo;s going on. I binged this book on the first pass over multiple weeks - deliberately skipping implementing the code examples, opting to just read them / ensure I understood them.</description>
+      <content>&lt;h2 id=&#34;the-linux-programming-interface&#34;&gt;The Linux Programming Interface&lt;/h2&gt;
+&lt;p&gt;I should have read this years ago. It&amp;rsquo;s a big boi, but if you work around linux
+or are interested in it - this book is a critical primer on many of the core
+topics you&amp;rsquo;ll need to really understand what&amp;rsquo;s going on. I binged this book on
+the first pass over multiple weeks - deliberately skipping implementing the
+code examples, opting to just read them / ensure I understood them. I choose to
+do this so that I could get over as much content as possible, with the view of
+circling back over the examples once I&amp;rsquo;m finished The C Programming Language
+book so that I can make better decisions about the code I&amp;rsquo;m writing.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://s.cdnshm.com/catalog/pt/t/33820519/linux-programming-interface.jpg&#34; alt=&#34;alt text&#34; title=&#34;Buy it&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.amazon.co.uk/Linux-Programming-Interface-System-Handbook/dp/1593272200&#34;&gt;https://www.amazon.co.uk/Linux-Programming-Interface-System-Handbook/dp/1593272200&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;the-c-programming-language&#34;&gt;The C Programming Language&lt;/h2&gt;
+&lt;p&gt;I generally try to avoid taking on multiple books but I figured as the above is
+so large and much of the books example code is given in C, then this book which
+I&amp;rsquo;m long overdue on would be a nice complement.&lt;/p&gt;
+&lt;p&gt;It&amp;rsquo;s fine. Concise and clear wording. Unlike the print quality, unfortunately.
+This book looks like it was hand-painted by a very nervous individual trying
+to hit a deadline, in the dark. I&amp;rsquo;d say this is an important book, but not much
+of a page-turned.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://m.media-amazon.com/images/I/C1bOAdsnZnS._CR504,0,3024,3024_UX256.jpg&#34; alt=&#34;alt text&#34; title=&#34;Buy it&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.amazon.co.uk/C-Programming-Language-2nd/dp/0131103628&#34;&gt;https://www.amazon.co.uk/C-Programming-Language-2nd/dp/0131103628&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;up-next&#34;&gt;Up next&lt;/h2&gt;
+&lt;p&gt;I have two &amp;ldquo;crackers&amp;rdquo; on my desk. Really looking forward to these:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Linux Kernel Development (&lt;a href=&#34;https://www.amazon.co.uk/Linux-Kernel-Development-Developers-Library/dp/0672329468&#34;&gt;https://www.amazon.co.uk/Linux-Kernel-Development-Developers-Library/dp/0672329468&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;Systems Performance (&lt;a href=&#34;https://www.amazon.co.uk/Systems-Performance-Brendan-Gregg/dp/0136820158&#34;&gt;https://www.amazon.co.uk/Systems-Performance-Brendan-Gregg/dp/0136820158&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+    </item>
+    
   </channel>
 </rss>

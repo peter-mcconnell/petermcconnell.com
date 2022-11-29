@@ -1,7 +1,7 @@
 ---
 title: "About"
 date: 2022-11-29T20:36:26Z
-draft: true
+draft: false
 ---
 
 I'm a simple high-school drop-out that has been in love with computers since
