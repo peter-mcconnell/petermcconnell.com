@@ -6,17 +6,18 @@ draft: false
 
 https://www.youtube.com/watch?v=dL6kQ0v1PQ8
 
-I'm a solid debugger, reasonable systems designer & natural leader. I've worked
-with enough talent to know I'm nothing special; but I have a great track record
-for being good to work with and getting shit done be it as an IC, a manager,
-or a group lead.
+I'm a solid debugger, reasonable systems designer, ok coder & natural leader
+who leans heavy into automation / giving people the power to do their jobs.
+I've worked with enough talent to know I'm nothing special; but I have a great
+track record for being easy to work with and getting shit done be it as an IC,
+a manager, or a group lead.
 
 Usually never far from:
 
+- Linux
 - Python
 - Golang
 - Bash
-- Linux
 - Docker
 - Kubernetes
 - AWS
