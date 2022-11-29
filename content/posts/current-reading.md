@@ -38,10 +38,12 @@ I generally try to avoid taking on multiple books but I figured as the above is
 so large and much of the books example code is given in C, then this book which
 I'm long overdue on would be a nice complement.
 
-It's fine. Concise and clear wording. Unlike the print quality, unfortunately.
-This book looks like it was hand-painted by a very nervous individual trying
-to hit a deadline, in the dark. I'd say this is an important book, but not much
-of a page-turned.
+It's fine. Concise and clear wording; unlike the print quality, unfortunately.
+This books print looks like it was hand-painted by a very nervous individual trying
+to hit a deadline in the dark. Print-quality aside, I'd say this is an
+important book to read, but not much of a page-turner. For me the biggest
+advantage of the book was seeing syscall libraries in action and also
+appreciating more about what cpp gives us.
 
 ![alt text](https://m.media-amazon.com/images/I/C1bOAdsnZnS._CR504,0,3024,3024_UX256.jpg "Buy it")
 
