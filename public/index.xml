@@ -6,7 +6,61 @@
     <description>Recent content on Peter McConnell</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 29 Nov 2022 20:30:52 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 29 Nov 2022 23:16:21 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Hugo</title>
+      <link>https://www.petermcconnell.com/posts/hugo/</link>
+      <pubDate>Tue, 29 Nov 2022 23:16:21 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/posts/hugo/</guid>
+      <description>How I set this website up, for free tldr; Hugo + Github + AWS Amplify. Easy peasy. total time: 1 hour (mostly spent writing content)
+Some parameters:
+free templates. I&amp;rsquo;m no designer static web asset output is fine. I&amp;rsquo;m not building a backend this project should be as low effort as possible so; no html / css / js where possible as cheap to host as possible. free, ideally static web files I&amp;rsquo;ve heard about Hugo for years but never gave it a try and knew from the criteria above that it should solve getting me the static assets quickly.</description>
+      <content>&lt;h2 id=&#34;how-i-set-this-website-up-for-free&#34;&gt;How I set this website up, for free&lt;/h2&gt;
+&lt;p&gt;tldr; Hugo + Github + AWS Amplify. Easy peasy.
+total time: 1 hour (mostly spent writing content)&lt;/p&gt;
+&lt;p&gt;Some parameters:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;free templates. I&amp;rsquo;m no designer&lt;/li&gt;
+&lt;li&gt;static web asset output is fine. I&amp;rsquo;m not building a backend&lt;/li&gt;
+&lt;li&gt;this project should be as low effort as possible&lt;/li&gt;
+&lt;li&gt;so; no html / css / js where possible&lt;/li&gt;
+&lt;li&gt;as cheap to host as possible. free, ideally&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;static-web-files&#34;&gt;static web files&lt;/h3&gt;
+&lt;p&gt;I&amp;rsquo;ve heard about Hugo for years but never gave it a try and knew from the
+criteria above that it should solve getting me the static assets quickly. Even
+if it didn&amp;rsquo;t turn out to be the &lt;em&gt;right&lt;/em&gt; tool, I knew experimentation would be
+cheap.&lt;/p&gt;
+&lt;p&gt;Install was super easy: &lt;a href=&#34;https://gohugo.io/installation/linux/&#34;&gt;https://gohugo.io/installation/linux/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;I then jumped over to &lt;a href=&#34;https://gohugo.io/getting-started/quick-start/&#34;&gt;https://gohugo.io/getting-started/quick-start/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;This quick start guide felt like all I&amp;rsquo;d need so I went searching for a theme.
+The power of search engines brought me to &lt;a href=&#34;https://hugothemesfree.com/&#34;&gt;https://hugothemesfree.com/&lt;/a&gt;. The tags
+on the right of this page helped me find the terminal theme quickly
+(&lt;a href=&#34;https://hugothemesfree.com/a-simple-retro-theme-for-hugo/&#34;&gt;https://hugothemesfree.com/a-simple-retro-theme-for-hugo/&lt;/a&gt;) which reminded me
+of my old i3 + polybar configuration, so I used it for the rest of the guide.&lt;/p&gt;
+&lt;p&gt;A few &lt;code&gt;hugo new posts/thing.md&lt;/code&gt; and &lt;code&gt;hugo new otherthing.md&lt;/code&gt;&amp;rsquo;s later and I had
+my static website files. Created a new repository
+(&lt;a href=&#34;https://github.com/peter-mcconnell/petermcconnell.com&#34;&gt;https://github.com/peter-mcconnell/petermcconnell.com&lt;/a&gt;) and threw my files
+there for safe keeping. Now I just needed somewhere to host it.&lt;/p&gt;
+&lt;h3 id=&#34;a-search-for-cheap-hosting-solutions&#34;&gt;a search for cheap hosting solutions&lt;/h3&gt;
+&lt;p&gt;A quick look around lead me to AWS Amplify - a service I admittedly hadn&amp;rsquo;t
+heard of before. A quick look over the marketing material
+(&lt;a href=&#34;https://aws.amazon.com/getting-started/hands-on/build-serverless-web-app-lambda-apigateway-s3-dynamodb-cognito/module-1/&#34;&gt;https://aws.amazon.com/getting-started/hands-on/build-serverless-web-app-lambda-apigateway-s3-dynamodb-cognito/module-1/&lt;/a&gt;)
+looked like it was interesting; Lambda, API Gateway, Dynamo DB - all things
+that pluck on my cheap-skate heart strings. I didn&amp;rsquo;t however have any plans
+for a backend so although cool this didn&amp;rsquo;t feel like a fit until I seen the
+pricing page:&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://aws.amazon.com/amplify/pricing/&#34;&gt;https://aws.amazon.com/amplify/pricing/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;I&amp;rsquo;m no Madonna - I think my personal website is probably a safe bet to do
+&amp;ldquo;free tier&amp;rdquo; numbers (&amp;lt;500k req.|15Gb egress|100Gb req. duration per month).&lt;/p&gt;
+&lt;p&gt;I logged into my personal AWS account, went through the little Amplify setup
+wizard, pointed it to my github repo, updated my DNS records to whatever the
+wizard was telling me to and voila - &lt;a href=&#34;https://www.petermcconnell.com/&#34;&gt;https://www.petermcconnell.com/&lt;/a&gt; is up and
+running.&lt;/p&gt;
+</content>
+    </item>
+    
     <item>
       <title>Skills</title>
       <link>https://www.petermcconnell.com/skills/</link>

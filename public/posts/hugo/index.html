@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+    <title>Hugo :: Peter McConnell</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="How I set the initial version of this website up; for free" />
+<meta name="keywords" content="hugo, aws, amplify" />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="https://www.petermcconnell.com/posts/hugo/" />
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="/style.css">
+
+
+
+
+
+
+
+  <link rel="shortcut icon" href="https://www.petermcconnell.com/img/theme-colors/pink.png">
+  <link rel="apple-touch-icon" href="https://www.petermcconnell.com/img/theme-colors/pink.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+  
+    <meta name="twitter:site" content="" />
+  
+    <meta name="twitter:creator" content="" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Hugo">
+<meta property="og:description" content="How I set the initial version of this website up; for free" />
+<meta property="og:url" content="https://www.petermcconnell.com/posts/hugo/" />
+<meta property="og:site_name" content="Peter McConnell" />
+
+  
+  
+  <meta property="og:image" content="https://www.petermcconnell.com/">
+
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="627">
+
+
+  <meta property="article:published_time" content="2022-11-29 23:16:21 &#43;0000 UTC" />
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+<body class="pink">
+
+
+<div class="container headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/">
+  <div class="logo">
+    Peter McConnell
+  </div>
+</a>
+
+    </div>
+    
+      <ul class="menu menu--mobile">
+  <li class="menu__trigger">Menu&nbsp;▾</li>
+  <li>
+    <ul class="menu__dropdown">
+      
+        
+          <li><a href="/about">About</a></li>
+        
+      
+        
+          <li><a href="/showcase">Showcase</a></li>
+        
+      
+        
+          <li><a href="/skills">Skills</a></li>
+        
+      
+      
+    </ul>
+  </li>
+</ul>
+
+    
+    
+  </div>
+  
+    <nav class="navigation-menu">
+  <ul class="navigation-menu__inner menu--desktop">
+    
+      
+        
+          <li><a href="/about">About</a></li>
+        
+      
+        
+          <li><a href="/showcase">Showcase</a></li>
+        
+      
+        
+          <li><a href="/skills">Skills</a></li>
+        
+      
+      
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<article class="post">
+  <h1 class="post-title">
+    <a href="https://www.petermcconnell.com/posts/hugo/">Hugo</a>
+  </h1>
+  <div class="post-meta">
+    
+      <time class="post-date">
+        2022-11-29 ::
+        
+      </time>
+    
+    
+    
+  </div>
+
+  
+    <span class="post-tags">
+      
+      #<a href="https://www.petermcconnell.com/tags/hugo/">hugo</a>&nbsp;
+      
+      #<a href="https://www.petermcconnell.com/tags/aws/">aws</a>&nbsp;
+      
+      #<a href="https://www.petermcconnell.com/tags/amplify/">amplify</a>&nbsp;
+      
+    </span>
+  
+  
+
+
+  
+
+  <div class="post-content"><div>
+        <h2 id="how-i-set-this-website-up-for-free">How I set this website up, for free<a href="#how-i-set-this-website-up-for-free" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>tldr; Hugo + Github + AWS Amplify. Easy peasy.
+total time: 1 hour (mostly spent writing content)</p>
+<p>Some parameters:</p>
+<ul>
+<li>free templates. I&rsquo;m no designer</li>
+<li>static web asset output is fine. I&rsquo;m not building a backend</li>
+<li>this project should be as low effort as possible</li>
+<li>so; no html / css / js where possible</li>
+<li>as cheap to host as possible. free, ideally</li>
+</ul>
+<h3 id="static-web-files">static web files<a href="#static-web-files" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>I&rsquo;ve heard about Hugo for years but never gave it a try and knew from the
+criteria above that it should solve getting me the static assets quickly. Even
+if it didn&rsquo;t turn out to be the <em>right</em> tool, I knew experimentation would be
+cheap.</p>
+<p>Install was super easy: <a href="https://gohugo.io/installation/linux/">https://gohugo.io/installation/linux/</a></p>
+<p>I then jumped over to <a href="https://gohugo.io/getting-started/quick-start/">https://gohugo.io/getting-started/quick-start/</a></p>
+<p>This quick start guide felt like all I&rsquo;d need so I went searching for a theme.
+The power of search engines brought me to <a href="https://hugothemesfree.com/">https://hugothemesfree.com/</a>. The tags
+on the right of this page helped me find the terminal theme quickly
+(<a href="https://hugothemesfree.com/a-simple-retro-theme-for-hugo/">https://hugothemesfree.com/a-simple-retro-theme-for-hugo/</a>) which reminded me
+of my old i3 + polybar configuration, so I used it for the rest of the guide.</p>
+<p>A few <code>hugo new posts/thing.md</code> and <code>hugo new otherthing.md</code>&rsquo;s later and I had
+my static website files. Created a new repository
+(<a href="https://github.com/peter-mcconnell/petermcconnell.com">https://github.com/peter-mcconnell/petermcconnell.com</a>) and threw my files
+there for safe keeping. Now I just needed somewhere to host it.</p>
+<h3 id="a-search-for-cheap-hosting-solutions">a search for cheap hosting solutions<a href="#a-search-for-cheap-hosting-solutions" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>A quick look around lead me to AWS Amplify - a service I admittedly hadn&rsquo;t
+heard of before. A quick look over the marketing material
+(<a href="https://aws.amazon.com/getting-started/hands-on/build-serverless-web-app-lambda-apigateway-s3-dynamodb-cognito/module-1/">https://aws.amazon.com/getting-started/hands-on/build-serverless-web-app-lambda-apigateway-s3-dynamodb-cognito/module-1/</a>)
+looked like it was interesting; Lambda, API Gateway, Dynamo DB - all things
+that pluck on my cheap-skate heart strings. I didn&rsquo;t however have any plans
+for a backend so although cool this didn&rsquo;t feel like a fit until I seen the
+pricing page:</p>
+<p><a href="https://aws.amazon.com/amplify/pricing/">https://aws.amazon.com/amplify/pricing/</a></p>
+<p>I&rsquo;m no Madonna - I think my personal website is probably a safe bet to do
+&ldquo;free tier&rdquo; numbers (&lt;500k req.|15Gb egress|100Gb req. duration per month).</p>
+<p>I logged into my personal AWS account, went through the little Amplify setup
+wizard, pointed it to my github repo, updated my DNS records to whatever the
+wizard was telling me to and voila - <a href="https://www.petermcconnell.com/">https://www.petermcconnell.com/</a> is up and
+running.</p>
+
+      </div></div>
+
+  
+    
+<div class="pagination">
+    <div class="pagination__title">
+        <span class="pagination__title-h">Read other posts</span>
+        <hr />
+    </div>
+    <div class="pagination__buttons">
+        
+        
+        <span class="button next">
+            <a href="https://www.petermcconnell.com/posts/current-reading/">
+                <span class="button__text">Current Reading</span>
+                <span class="button__icon">→</span>
+            </a>
+        </span>
+        
+    </div>
+</div>
+
+  
+
+  
+    
+
+  
+</article>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright">
+        <span>© 2022 Peter McConnell</span>
+    
+      </div>
+  </div>
+</footer>
+
+
+
+
+
+
+<script type="text/javascript" src="/bundle.min.js"></script>
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>

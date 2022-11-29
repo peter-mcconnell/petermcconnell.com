@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Posts on Peter McConnell</title>
-    <link>https://www.petermcconnell.com/posts/</link>
-    <description>Recent content in Posts on Peter McConnell</description>
+    <title>hugo on Peter McConnell</title>
+    <link>https://www.petermcconnell.com/tags/hugo/</link>
+    <description>Recent content in hugo on Peter McConnell</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 29 Nov 2022 23:16:21 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 29 Nov 2022 23:16:21 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/hugo/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Hugo</title>
       <link>https://www.petermcconnell.com/posts/hugo/</link>
@@ -58,43 +58,6 @@ pricing page:&lt;/p&gt;
 wizard, pointed it to my github repo, updated my DNS records to whatever the
 wizard was telling me to and voila - &lt;a href=&#34;https://www.petermcconnell.com/&#34;&gt;https://www.petermcconnell.com/&lt;/a&gt; is up and
 running.&lt;/p&gt;
-</content>
-    </item>
-    
-    <item>
-      <title>Current Reading</title>
-      <link>https://www.petermcconnell.com/posts/current-reading/</link>
-      <pubDate>Tue, 29 Nov 2022 20:30:52 +0000</pubDate>
-      
-      <guid>https://www.petermcconnell.com/posts/current-reading/</guid>
-      <description>The Linux Programming Interface I should have read this years ago. It&amp;rsquo;s a big boi, but if you work around linux or are interested in it - this book is a critical primer on many of the core topics you&amp;rsquo;ll need to really understand what&amp;rsquo;s going on. I binged this book on the first pass over multiple weeks - deliberately skipping implementing the code examples, opting to just read them / ensure I understood them.</description>
-      <content>&lt;h2 id=&#34;the-linux-programming-interface&#34;&gt;The Linux Programming Interface&lt;/h2&gt;
-&lt;p&gt;I should have read this years ago. It&amp;rsquo;s a big boi, but if you work around linux
-or are interested in it - this book is a critical primer on many of the core
-topics you&amp;rsquo;ll need to really understand what&amp;rsquo;s going on. I binged this book on
-the first pass over multiple weeks - deliberately skipping implementing the
-code examples, opting to just read them / ensure I understood them. I choose to
-do this so that I could get over as much content as possible, with the view of
-circling back over the examples once I&amp;rsquo;m finished The C Programming Language
-book so that I can make better decisions about the code I&amp;rsquo;m writing.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://s.cdnshm.com/catalog/pt/t/33820519/linux-programming-interface.jpg&#34; alt=&#34;alt text&#34; title=&#34;Buy it&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://www.amazon.co.uk/Linux-Programming-Interface-System-Handbook/dp/1593272200&#34;&gt;https://www.amazon.co.uk/Linux-Programming-Interface-System-Handbook/dp/1593272200&lt;/a&gt;&lt;/p&gt;
-&lt;h2 id=&#34;the-c-programming-language&#34;&gt;The C Programming Language&lt;/h2&gt;
-&lt;p&gt;I generally try to avoid taking on multiple books but I figured as the above is
-so large and much of the books example code is given in C, then this book which
-I&amp;rsquo;m long overdue on would be a nice complement.&lt;/p&gt;
-&lt;p&gt;It&amp;rsquo;s fine. Concise and clear wording. Unlike the print quality, unfortunately.
-This book looks like it was hand-painted by a very nervous individual trying
-to hit a deadline, in the dark. I&amp;rsquo;d say this is an important book, but not much
-of a page-turned.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://m.media-amazon.com/images/I/C1bOAdsnZnS._CR504,0,3024,3024_UX256.jpg&#34; alt=&#34;alt text&#34; title=&#34;Buy it&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://www.amazon.co.uk/C-Programming-Language-2nd/dp/0131103628&#34;&gt;https://www.amazon.co.uk/C-Programming-Language-2nd/dp/0131103628&lt;/a&gt;&lt;/p&gt;
-&lt;h2 id=&#34;up-next&#34;&gt;Up next&lt;/h2&gt;
-&lt;p&gt;I have two &amp;ldquo;crackers&amp;rdquo; on my desk. Really looking forward to these:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Linux Kernel Development (&lt;a href=&#34;https://www.amazon.co.uk/Linux-Kernel-Development-Developers-Library/dp/0672329468&#34;&gt;https://www.amazon.co.uk/Linux-Kernel-Development-Developers-Library/dp/0672329468&lt;/a&gt;)&lt;/li&gt;
-&lt;li&gt;Systems Performance (&lt;a href=&#34;https://www.amazon.co.uk/Systems-Performance-Brendan-Gregg/dp/0136820158&#34;&gt;https://www.amazon.co.uk/Systems-Performance-Brendan-Gregg/dp/0136820158&lt;/a&gt;)&lt;/li&gt;
-&lt;/ul&gt;
 </content>
     </item>
     
