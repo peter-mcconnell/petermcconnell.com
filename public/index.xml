@@ -87,16 +87,21 @@ listing. Imagine how long the &amp;ldquo;bad things&amp;rdquo; list must be ..&l
       <pubDate>Tue, 29 Nov 2022 20:36:26 +0000</pubDate>
       
       <guid>https://www.petermcconnell.com/about/</guid>
-      <description>I&amp;rsquo;m a simple high-school drop-out that has been in love with computers since landing my very own Commodore Amiga. My family never had much growing up, but somehow I still got a computer. Little did my mum know at the time just how big an impact that would have on my life. Thanks mum.
-Currently posted at firebolt.io where I help several teams who are focused around automation and running infrastructure.</description>
-      <content>&lt;p&gt;I&amp;rsquo;m a simple high-school drop-out that has been in love with computers since
-landing my very own Commodore Amiga. My family never had much growing up, but
-somehow I still got a computer. Little did my mum know at the time just how big
-an impact that would have on my life. Thanks mum.&lt;/p&gt;
-&lt;p&gt;Currently posted at firebolt.io where I help several teams who are focused
-around automation and running infrastructure. We have many complex problems to
-solve but the progress we&amp;rsquo;re making is truly amazing. Oblig. &amp;ldquo;My views are my
-own / not representative of my employer&amp;rdquo;&lt;/p&gt;
+      <description>$PATH When I was around 9 through some miracle mum brought home a Commodore Amiga. My family never had much growing up but somehow we still got a computer. Little did she know at the time just how big an impact that would have on my life - thanks Mum. I gorged on all the Warez I could get my hands slowly increasing my exposure to programming and hacking. The culture has always felt like home.</description>
+      <content>&lt;h2 id=&#34;path&#34;&gt;$PATH&lt;/h2&gt;
+&lt;p&gt;When I was around 9 through some miracle mum brought home a Commodore Amiga.
+My family never had much growing up but somehow we still got a computer. Little
+did she know at the time just how big an impact that would have on my life -
+thanks Mum. I gorged on all the Warez I could get my hands slowly increasing
+my exposure to programming and hacking. The culture has always felt like home.&lt;/p&gt;
+&lt;p&gt;Eventually I had to earn money and knew working with computers was something I
+had to do - any other job would feel like work and I didn&amp;rsquo;t much like work. So
+with some luck and a sprinkle of white-lies I landed my first web developer
+role around 2004 and was hooked.&lt;/p&gt;
+&lt;p&gt;Fast forward some years, I&amp;rsquo;m currently posted at firebolt.io where I help
+several teams who are focused around automation and running infrastructure. We
+have many complex problems to solve but the progress we&amp;rsquo;re making is truly
+amazing. Oblig. &amp;ldquo;My views are my own / not representative of my employer&amp;rdquo;&lt;/p&gt;
 &lt;p&gt;Outside of work I try to contribute to the community when I can, though spare
 time is expensive when you have kids to spend it on. I recently got to speak at
 NIDC though which was nice - you can catch it here:
@@ -107,8 +112,17 @@ In particular, pulling more information out of the kernel to help developers
 debug interesting issues is a fascinating topic I&amp;rsquo;m spending more time on. The
 problem is, with such tools to hand life seemingly becomes an endless longing
 for a process to spin out of control with not a reasonable error in sight.&lt;/p&gt;
-&lt;p&gt;You can find me on Twitter (&lt;a href=&#34;https://twitter.com/&#34;&gt;https://twitter.com/&lt;/a&gt;) or Github
-(&lt;a href=&#34;https://github.com/peter-mcconnell)&#34;&gt;https://github.com/peter-mcconnell)&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;If you are looking for me you can find me on Twitter (&lt;a href=&#34;https://twitter.com/&#34;&gt;https://twitter.com/&lt;/a&gt;) or
+Github (&lt;a href=&#34;https://github.com/peter-mcconnell)&#34;&gt;https://github.com/peter-mcconnell)&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Fun trinkets from along the way:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/Amiga_500&#34;&gt;https://en.wikipedia.org/wiki/Amiga_500&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/The_Chaos_Engine&#34;&gt;https://en.wikipedia.org/wiki/The_Chaos_Engine&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/Burn_Cycle&#34;&gt;https://en.wikipedia.org/wiki/Burn_Cycle&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/Macromedia_Flash&#34;&gt;https://en.wikipedia.org/wiki/Macromedia_Flash&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/Hackers_(film)&#34;&gt;https://en.wikipedia.org/wiki/Hackers_(film)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.youtube.com/watch?v=OAI8S2houW4&#34;&gt;https://www.youtube.com/watch?v=OAI8S2houW4&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
 </content>
     </item>
     
