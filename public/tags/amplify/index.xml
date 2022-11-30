@@ -15,7 +15,7 @@
       <guid>https://www.petermcconnell.com/posts/hugo/</guid>
       <description>How I set this website up, for free tldr; Hugo + Github + AWS Amplify. Easy peasy. total time: 1 hour (mostly spent writing content)
 Some parameters:
-free templates. I&amp;rsquo;m no designer static web asset output is fine. I&amp;rsquo;m not building a backend this project should be as low effort as possible so; no html / css / js where possible as cheap to host as possible. free, ideally static web files I&amp;rsquo;ve heard about Hugo for years but never gave it a try and knew from the criteria above that it should solve getting me the static assets quickly.</description>
+free templates. I&amp;rsquo;m no designer static web asset output is fine. I&amp;rsquo;m not building a backend this project should be as low effort as possible so; no html / css / js where possible also; automated deploys on push to $branch ideally I don&amp;rsquo;t need to maintain ci to do this.</description>
       <content>&lt;h2 id=&#34;how-i-set-this-website-up-for-free&#34;&gt;How I set this website up, for free&lt;/h2&gt;
 &lt;p&gt;tldr; Hugo + Github + AWS Amplify. Easy peasy.
 total time: 1 hour (mostly spent writing content)&lt;/p&gt;
@@ -23,10 +23,21 @@ total time: 1 hour (mostly spent writing content)&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;free templates. I&amp;rsquo;m no designer&lt;/li&gt;
 &lt;li&gt;static web asset output is fine. I&amp;rsquo;m not building a backend&lt;/li&gt;
-&lt;li&gt;this project should be as low effort as possible&lt;/li&gt;
+&lt;li&gt;this project should be as low effort as possible
+&lt;ul&gt;
 &lt;li&gt;so; no html / css / js where possible&lt;/li&gt;
+&lt;li&gt;also; automated deploys on push to $branch
+&lt;ul&gt;
+&lt;li&gt;ideally I don&amp;rsquo;t need to maintain ci to do this. lowest poss. effort&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
 &lt;li&gt;as cheap to host as possible. free, ideally&lt;/li&gt;
 &lt;/ul&gt;
+&lt;p&gt;In summary I want to only write page content. No code. No pipelines. No buttons
+to click. But I still want uri&amp;rsquo;s, the abililty to render rich media and a pretty
+template that I need to do nothing with. And I&amp;rsquo;d like to not pay for any of it.&lt;/p&gt;
 &lt;h3 id=&#34;static-web-files&#34;&gt;static web files&lt;/h3&gt;
 &lt;p&gt;I&amp;rsquo;ve heard about Hugo for years but never gave it a try and knew from the
 criteria above that it should solve getting me the static assets quickly. Even
@@ -38,9 +49,10 @@ cheap.&lt;/p&gt;
 The power of search engines brought me to &lt;a href=&#34;https://hugothemesfree.com/&#34;&gt;https://hugothemesfree.com/&lt;/a&gt;. The tags
 on the right of this page helped me find the terminal theme quickly
 (&lt;a href=&#34;https://hugothemesfree.com/a-simple-retro-theme-for-hugo/&#34;&gt;https://hugothemesfree.com/a-simple-retro-theme-for-hugo/&lt;/a&gt;) which reminded me
-of my old i3 + polybar configuration, so I used it for the rest of the guide.&lt;/p&gt;
+of my old i3 + polybar configuration. MIT licensed too. Bingo.&lt;/p&gt;
 &lt;p&gt;A few &lt;code&gt;hugo new posts/thing.md&lt;/code&gt; and &lt;code&gt;hugo new otherthing.md&lt;/code&gt;&amp;rsquo;s later and I had
-my static website files. Created a new repository
+my static website files. I opted to bake the theme into the repo so that I
+could mutate the files. Created a new repository
 (&lt;a href=&#34;https://github.com/peter-mcconnell/petermcconnell.com&#34;&gt;https://github.com/peter-mcconnell/petermcconnell.com&lt;/a&gt;) and threw my files
 there for safe keeping. Now I just needed somewhere to host it.&lt;/p&gt;
 &lt;h3 id=&#34;a-search-for-cheap-hosting-solutions&#34;&gt;a search for cheap hosting solutions&lt;/h3&gt;

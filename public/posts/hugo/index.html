@@ -180,10 +180,21 @@ total time: 1 hour (mostly spent writing content)</p>
 <ul>
 <li>free templates. I&rsquo;m no designer</li>
 <li>static web asset output is fine. I&rsquo;m not building a backend</li>
-<li>this project should be as low effort as possible</li>
+<li>this project should be as low effort as possible
+<ul>
 <li>so; no html / css / js where possible</li>
+<li>also; automated deploys on push to $branch
+<ul>
+<li>ideally I don&rsquo;t need to maintain ci to do this. lowest poss. effort</li>
+</ul>
+</li>
+</ul>
+</li>
 <li>as cheap to host as possible. free, ideally</li>
 </ul>
+<p>In summary I want to only write page content. No code. No pipelines. No buttons
+to click. But I still want uri&rsquo;s, the abililty to render rich media and a pretty
+template that I need to do nothing with. And I&rsquo;d like to not pay for any of it.</p>
 <h3 id="static-web-files">static web files<a href="#static-web-files" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
 <p>I&rsquo;ve heard about Hugo for years but never gave it a try and knew from the
 criteria above that it should solve getting me the static assets quickly. Even
@@ -195,9 +206,10 @@ cheap.</p>
 The power of search engines brought me to <a href="https://hugothemesfree.com/">https://hugothemesfree.com/</a>. The tags
 on the right of this page helped me find the terminal theme quickly
 (<a href="https://hugothemesfree.com/a-simple-retro-theme-for-hugo/">https://hugothemesfree.com/a-simple-retro-theme-for-hugo/</a>) which reminded me
-of my old i3 + polybar configuration, so I used it for the rest of the guide.</p>
+of my old i3 + polybar configuration. MIT licensed too. Bingo.</p>
 <p>A few <code>hugo new posts/thing.md</code> and <code>hugo new otherthing.md</code>&rsquo;s later and I had
-my static website files. Created a new repository
+my static website files. I opted to bake the theme into the repo so that I
+could mutate the files. Created a new repository
 (<a href="https://github.com/peter-mcconnell/petermcconnell.com">https://github.com/peter-mcconnell/petermcconnell.com</a>) and threw my files
 there for safe keeping. Now I just needed somewhere to host it.</p>
 <h3 id="a-search-for-cheap-hosting-solutions">a search for cheap hosting solutions<a href="#a-search-for-cheap-hosting-solutions" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>

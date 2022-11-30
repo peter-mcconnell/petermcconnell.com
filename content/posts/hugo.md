@@ -24,8 +24,14 @@ Some parameters:
  - free templates. I'm no designer
  - static web asset output is fine. I'm not building a backend
  - this project should be as low effort as possible
- - so; no html / css / js where possible
+     - so; no html / css / js where possible
+     - also; automated deploys on push to $branch
+        - ideally I don't need to maintain ci to do this. lowest poss. effort
  - as cheap to host as possible. free, ideally
+
+In summary I want to only write page content. No code. No pipelines. No buttons
+to click. But I still want uri's, the abililty to render rich media and a pretty
+template that I need to do nothing with. And I'd like to not pay for any of it.
 
 ### static web files
 
@@ -42,10 +48,11 @@ This quick start guide felt like all I'd need so I went searching for a theme.
 The power of search engines brought me to https://hugothemesfree.com/. The tags
 on the right of this page helped me find the terminal theme quickly
 (https://hugothemesfree.com/a-simple-retro-theme-for-hugo/) which reminded me
-of my old i3 + polybar configuration, so I used it for the rest of the guide.
+of my old i3 + polybar configuration. MIT licensed too. Bingo.
 
 A few `hugo new posts/thing.md` and `hugo new otherthing.md`'s later and I had
-my static website files. Created a new repository
+my static website files. I opted to bake the theme into the repo so that I
+could mutate the files. Created a new repository
 (https://github.com/peter-mcconnell/petermcconnell.com) and threw my files
 there for safe keeping. Now I just needed somewhere to host it.
 
