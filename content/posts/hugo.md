@@ -22,7 +22,8 @@ total time: 1 hour (mostly spent writing content)
 Some parameters:
 
  - free templates. I'm no designer
- - static web asset output is fine. I'm not building a backend
+ - static web asset output is fine. I'm not building a backend (yet)
+    - but having the option to do so is a bonus
  - this project should be as low effort as possible
      - so; no html / css / js where possible
      - also; automated deploys on push to $branch
@@ -35,10 +36,10 @@ template that I need to do nothing with. And I'd like to not pay for any of it.
 
 ### static web files
 
-I've heard about Hugo for years but never gave it a try and knew from the
-criteria above that it should solve getting me the static assets quickly. Even
-if it didn't turn out to be the _right_ tool, I knew experimentation would be
-cheap.
+I've heard about Hugo for years but never had the opportunity to try it out and
+knew from the criteria I had that it should solve getting me the static assets
+quickly. Even if it didn't turn out to be the _right_ tool, I knew
+experimentation would be cheap.
 
 Install was super easy: https://gohugo.io/installation/linux/
 
@@ -58,13 +59,14 @@ there for safe keeping. Now I just needed somewhere to host it.
 
 ### a search for cheap hosting solutions
 
+The most obvious route was github pages but I wanted to look at other options
+which offered some extra features should I need them in the future.
+
 A quick look around lead me to AWS Amplify - a service I admittedly hadn't
 heard of before. A quick look over the marketing material
 (https://aws.amazon.com/getting-started/hands-on/build-serverless-web-app-lambda-apigateway-s3-dynamodb-cognito/module-1/)
 looked like it was interesting; Lambda, API Gateway, Dynamo DB - all things
-that pluck on my cheap-skate heart strings. I didn't however have any plans
-for a backend so although cool this didn't feel like a fit until I seen the
-pricing page:
+that pluck on my cheap-skate heart strings. Pricing:
 
 https://aws.amazon.com/amplify/pricing/
 

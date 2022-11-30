@@ -179,7 +179,11 @@ total time: 1 hour (mostly spent writing content)</p>
 <p>Some parameters:</p>
 <ul>
 <li>free templates. I&rsquo;m no designer</li>
-<li>static web asset output is fine. I&rsquo;m not building a backend</li>
+<li>static web asset output is fine. I&rsquo;m not building a backend (yet)
+<ul>
+<li>but having the option to do so is a bonus</li>
+</ul>
+</li>
 <li>this project should be as low effort as possible
 <ul>
 <li>so; no html / css / js where possible</li>
@@ -196,10 +200,10 @@ total time: 1 hour (mostly spent writing content)</p>
 to click. But I still want uri&rsquo;s, the abililty to render rich media and a pretty
 template that I need to do nothing with. And I&rsquo;d like to not pay for any of it.</p>
 <h3 id="static-web-files">static web files<a href="#static-web-files" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
-<p>I&rsquo;ve heard about Hugo for years but never gave it a try and knew from the
-criteria above that it should solve getting me the static assets quickly. Even
-if it didn&rsquo;t turn out to be the <em>right</em> tool, I knew experimentation would be
-cheap.</p>
+<p>I&rsquo;ve heard about Hugo for years but never had the opportunity to try it out and
+knew from the criteria I had that it should solve getting me the static assets
+quickly. Even if it didn&rsquo;t turn out to be the <em>right</em> tool, I knew
+experimentation would be cheap.</p>
 <p>Install was super easy: <a href="https://gohugo.io/installation/linux/">https://gohugo.io/installation/linux/</a></p>
 <p>I then jumped over to <a href="https://gohugo.io/getting-started/quick-start/">https://gohugo.io/getting-started/quick-start/</a></p>
 <p>This quick start guide felt like all I&rsquo;d need so I went searching for a theme.
@@ -213,13 +217,13 @@ could mutate the files. Created a new repository
 (<a href="https://github.com/peter-mcconnell/petermcconnell.com">https://github.com/peter-mcconnell/petermcconnell.com</a>) and threw my files
 there for safe keeping. Now I just needed somewhere to host it.</p>
 <h3 id="a-search-for-cheap-hosting-solutions">a search for cheap hosting solutions<a href="#a-search-for-cheap-hosting-solutions" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>The most obvious route was github pages but I wanted to look at other options
+which offered some extra features should I need them in the future.</p>
 <p>A quick look around lead me to AWS Amplify - a service I admittedly hadn&rsquo;t
 heard of before. A quick look over the marketing material
 (<a href="https://aws.amazon.com/getting-started/hands-on/build-serverless-web-app-lambda-apigateway-s3-dynamodb-cognito/module-1/">https://aws.amazon.com/getting-started/hands-on/build-serverless-web-app-lambda-apigateway-s3-dynamodb-cognito/module-1/</a>)
 looked like it was interesting; Lambda, API Gateway, Dynamo DB - all things
-that pluck on my cheap-skate heart strings. I didn&rsquo;t however have any plans
-for a backend so although cool this didn&rsquo;t feel like a fit until I seen the
-pricing page:</p>
+that pluck on my cheap-skate heart strings. Pricing:</p>
 <p><a href="https://aws.amazon.com/amplify/pricing/">https://aws.amazon.com/amplify/pricing/</a></p>
 <p>I&rsquo;m no Madonna - I think my personal website is probably a safe bet to do
 &ldquo;free tier&rdquo; numbers (&lt;500k req.|15Gb egress|100Gb req. duration per month).</p>
