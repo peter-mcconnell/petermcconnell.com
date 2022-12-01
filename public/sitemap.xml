@@ -2,6 +2,24 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://www.petermcconnell.com/tags/neovim/</loc>
+    <lastmod>2022-12-01T11:36:49+00:00</lastmod>
+  </url><url>
+    <loc>https://www.petermcconnell.com/</loc>
+    <lastmod>2022-12-01T11:36:49+00:00</lastmod>
+  </url><url>
+    <loc>https://www.petermcconnell.com/posts/</loc>
+    <lastmod>2022-12-01T11:36:49+00:00</lastmod>
+  </url><url>
+    <loc>https://www.petermcconnell.com/tags/</loc>
+    <lastmod>2022-12-01T11:36:49+00:00</lastmod>
+  </url><url>
+    <loc>https://www.petermcconnell.com/tags/vim/</loc>
+    <lastmod>2022-12-01T11:36:49+00:00</lastmod>
+  </url><url>
+    <loc>https://www.petermcconnell.com/posts/vimtips/</loc>
+    <lastmod>2022-12-01T11:36:49+00:00</lastmod>
+  </url><url>
     <loc>https://www.petermcconnell.com/tags/amplify/</loc>
     <lastmod>2022-11-29T23:16:21+00:00</lastmod>
   </url><url>
@@ -12,15 +30,6 @@
     <lastmod>2022-11-29T23:16:21+00:00</lastmod>
   </url><url>
     <loc>https://www.petermcconnell.com/posts/hugo/</loc>
-    <lastmod>2022-11-29T23:16:21+00:00</lastmod>
-  </url><url>
-    <loc>https://www.petermcconnell.com/</loc>
-    <lastmod>2022-11-29T23:16:21+00:00</lastmod>
-  </url><url>
-    <loc>https://www.petermcconnell.com/posts/</loc>
-    <lastmod>2022-11-29T23:16:21+00:00</lastmod>
-  </url><url>
-    <loc>https://www.petermcconnell.com/tags/</loc>
     <lastmod>2022-11-29T23:16:21+00:00</lastmod>
   </url><url>
     <loc>https://www.petermcconnell.com/skills/</loc>

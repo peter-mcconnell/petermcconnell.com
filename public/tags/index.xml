@@ -6,7 +6,27 @@
     <description>Recent content in Tags on Peter McConnell</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 29 Nov 2022 23:16:21 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 01 Dec 2022 11:36:49 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>neovim</title>
+      <link>https://www.petermcconnell.com/tags/neovim/</link>
+      <pubDate>Thu, 01 Dec 2022 11:36:49 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/tags/neovim/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>vim</title>
+      <link>https://www.petermcconnell.com/tags/vim/</link>
+      <pubDate>Thu, 01 Dec 2022 11:36:49 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/tags/vim/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
     <item>
       <title>amplify</title>
       <link>https://www.petermcconnell.com/tags/amplify/</link>
