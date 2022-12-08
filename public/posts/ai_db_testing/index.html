@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+    <title>chatGPT - building an automated database testing tool :: Peter McConnell</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Creating an automated database testing tool with ChatGPT Last night I thought I&amp;rsquo;d try to get ChatGPT to make an automated database testing tool and the results were quite promising.
+In conclusion, with guidance, it was able to build a project from scratch that ran a python script and postgres database. It generated some random schema and values for the randomly generated tables. It provided a Python script which would introspect the database and execute queries against it." />
+<meta name="keywords" content="chatGPT, sql" />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="https://www.petermcconnell.com/posts/ai_db_testing/" />
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="/style.css">
+
+
+
+
+
+
+
+  <link rel="shortcut icon" href="https://www.petermcconnell.com/img/theme-colors/pink.png">
+  <link rel="apple-touch-icon" href="https://www.petermcconnell.com/img/theme-colors/pink.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+  
+    <meta name="twitter:site" content="" />
+  
+    <meta name="twitter:creator" content="peter-mcconnell" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="chatGPT - building an automated database testing tool">
+<meta property="og:description" content="Creating an automated database testing tool with ChatGPT Last night I thought I&amp;rsquo;d try to get ChatGPT to make an automated database testing tool and the results were quite promising.
+In conclusion, with guidance, it was able to build a project from scratch that ran a python script and postgres database. It generated some random schema and values for the randomly generated tables. It provided a Python script which would introspect the database and execute queries against it." />
+<meta property="og:url" content="https://www.petermcconnell.com/posts/ai_db_testing/" />
+<meta property="og:site_name" content="Peter McConnell" />
+
+  
+  
+  <meta property="og:image" content="https://www.petermcconnell.com/">
+
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="627">
+
+
+  <meta property="article:published_time" content="2022-12-08 11:41:50 &#43;0000 UTC" />
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+<body class="pink">
+
+
+<div class="container headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/">
+  <div class="logo">
+    Peter McConnell
+  </div>
+</a>
+
+    </div>
+    
+      <ul class="menu menu--mobile">
+  <li class="menu__trigger">Menu&nbsp;▾</li>
+  <li>
+    <ul class="menu__dropdown">
+      
+        
+          <li><a href="/about">About</a></li>
+        
+      
+        
+          <li><a href="/showcase">Showcase</a></li>
+        
+      
+        
+          <li><a href="/skills">Skills</a></li>
+        
+      
+      
+    </ul>
+  </li>
+</ul>
+
+    
+    
+  </div>
+  
+    <nav class="navigation-menu">
+  <ul class="navigation-menu__inner menu--desktop">
+    
+      
+        
+          <li><a href="/about">About</a></li>
+        
+      
+        
+          <li><a href="/showcase">Showcase</a></li>
+        
+      
+        
+          <li><a href="/skills">Skills</a></li>
+        
+      
+      
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<article class="post">
+  <h1 class="post-title">
+    <a href="https://www.petermcconnell.com/posts/ai_db_testing/">chatGPT - building an automated database testing tool</a>
+  </h1>
+  <div class="post-meta">
+    
+      <time class="post-date">
+        2022-12-08 ::
+        
+      </time>
+    
+    
+    
+  </div>
+
+  
+    <span class="post-tags">
+      
+      #<a href="https://www.petermcconnell.com/tags/chatgpt/">chatGPT</a>&nbsp;
+      
+      #<a href="https://www.petermcconnell.com/tags/sql/">SQL</a>&nbsp;
+      
+      #<a href="https://www.petermcconnell.com/tags/python/">Python</a>&nbsp;
+      
+    </span>
+  
+  
+
+
+  
+
+  <div class="post-content"><div>
+        <h2 id="creating-an-automated-database-testing-tool-with-chatgpt">Creating an automated database testing tool with ChatGPT<a href="#creating-an-automated-database-testing-tool-with-chatgpt" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>Last night I thought I&rsquo;d try to get ChatGPT to make an automated database
+testing tool and the results were quite promising.</p>
+<p>In conclusion, with guidance, it was able to build a project from scratch that
+ran a python script and postgres database. It generated some random schema and
+values for the randomly generated tables. It provided a Python script which
+would introspect the database and execute queries against it.</p>
+<p>Did it all work out of the box? No. There are some bugs to fix in the python
+script it generated. However the effort to go in and fix those is not high and
+certainly the whole end-to-end process is cheaper, time-wise, compared to
+starting from scratch.</p>
+<p>I found that the bugs it encountered were largely due to my lack of clarity or
+ordering of questions posed to it. It was quite capable of fixing its own
+mistakes / updating the existing code to match the new requirements when
+requested to do so.</p>
+<p>The only <em>real</em> issue I encountered were general API errors that one would
+expect of something so popular in an early preview state.</p>
+<p>I came away from this experiment viewing ChatGPT and whatever follows it as a
+really useful development aide for those who already know how to program. It
+helped me build a tool faster than I could have had I sat down to do it from
+scratch. I don&rsquo;t view it as a replacement for software engineers yet for two
+main reasons - firstly: for non-trivial applications I suspect the person
+feeding requirements into the system (or &ldquo;prompt engineer&rdquo;) needs to have a
+reasonable idea of how to build software in the first place, so as to know how
+to form requests and to correct mistakes / close gaps. secondly: the code being
+generated isn&rsquo;t always sound - without an experienced engineer reviewing and
+taking ownership of whatever code is produced (ownership being important for
+maintainence reasons) then there&rsquo;s little guarantee that you will get what you
+are hoping for.</p>
+<p>However; this is still very early days. Can the problems outlined be closed
+further? Absolutely. Will this sort of tooling be &ldquo;bad&rdquo; for software
+engineering as a whole, long-term? Perhaps. Personally I&rsquo;m very excited to have
+this tool in my arsenal - already it has allowed me to scaffold prototype
+applications quickly. Would I use it for production code in a workplace? No
+more or less than I would snippets from stackoverflow or it&rsquo;s ilk. For now.</p>
+<p>Github repository: <a href="https://github.com/peter-mcconnell/gpt_sql_test_generator">https://github.com/peter-mcconnell/gpt_sql_test_generator</a></p>
+<p>Screenshots:</p>
+<p><img src="https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/2.png" alt="step 2" title="step 2">
+<img src="https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/3.png" alt="step 3" title="step 3">
+<img src="https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/4.png" alt="step 4" title="step 4">
+<img src="https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/5.png" alt="step 5" title="step 5">
+<img src="https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/6.png" alt="step 6" title="step 6">
+<img src="https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/7.png" alt="step 7" title="step 7">
+<img src="https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/8.png" alt="step 8" title="step 8">
+<img src="https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/9.png" alt="step 9" title="step 9">
+<img src="https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/10.png" alt="step 10" title="step 10">
+<img src="https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/11.png" alt="step 11" title="step 11">
+<img src="https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/12.png" alt="step 12" title="step 12">
+<img src="https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/13.png" alt="step 13" title="step 13">
+<img src="https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/14.png" alt="step 14" title="step 14">
+<img src="https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/15.png" alt="step 15" title="step 15">
+<img src="https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/16.png" alt="step 16" title="step 16"></p>
+
+      </div></div>
+
+  
+    
+<div class="pagination">
+    <div class="pagination__title">
+        <span class="pagination__title-h">Read other posts</span>
+        <hr />
+    </div>
+    <div class="pagination__buttons">
+        
+        
+        <span class="button next">
+            <a href="https://www.petermcconnell.com/posts/chatgpt/">
+                <span class="button__text">chatGPT - building a virtual machine</span>
+                <span class="button__icon">→</span>
+            </a>
+        </span>
+        
+    </div>
+</div>
+
+  
+
+  
+    
+
+  
+</article>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright">
+        <span>© 2022 Peter McConnell</span>
+    
+      </div>
+  </div>
+</footer>
+
+
+
+
+
+
+<script type="text/javascript" src="/bundle.min.js"></script>
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>
