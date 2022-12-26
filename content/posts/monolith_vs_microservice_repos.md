@@ -1,0 +1,64 @@
++++
+title = "Monolith_vs_microservice_repos"
+date = "2022-12-26T15:01:29Z"
+author = "Peter McConnell"
+authorTwitter = "peter-mcconnell" #do not include @
+cover = ""
+tags = ["", ""]
+keywords = ["", ""]
+description = ""
+showFullContent = false
+readingTime = false
+hideComments = false
+color = "" #color from the theme settings
++++
+
+Monolithic vs Microservice repository management
+================================================
+
+Here we'll take a quick look at monolithic vs microservice repository architecture for managing codebases.
+
+A monolithic repository is a version control system that stores all of the code for a software application in a single, centralized repository. This means that all of the code for an application, including the front-end, back-end, and any additional components, is stored in a single location and managed as a cohesive unit.
+
+On the other hand, a microservice repository is a version control system that stores the code for a software application in multiple, smaller repositories, with each repository containing a specific service or component of the application. This means that the code for an application is divided into smaller, more focused units, each with its own repository.
+
+There are several pros and cons to consider when deciding between a monolithic repository and a microservice repository for your software development project.
+
+Pros of Monolithic Repositories
+-------------------------------
+
+Simplicity: Monolithic repositories are simpler to set up and manage than microservice repositories. With all of the code for an application stored in a single location, it is easier to navigate and work with. It also helps implement "standard" tools, org-wide. Generating reports, such as license compliance, is also a lot more simple.
+
+Fewer Dependencies: In a monolithic repository, all of the code for an application is stored in a single location, which means that there are fewer dependencies between different components of the application. This can make it easier to understand how the different parts of the application fit together and how changes to one part might affect other parts of the application.
+
+Easier to Test: Testing a monolithic repository is generally easier than testing a microservice repository because all of the code is stored in a single location. This means that it is easier to set up test environments and run tests on the entire application.
+
+Cons of Monolithic Repositories
+-------------------------------
+
+Complexity: As an application grows and becomes more complex, a monolithic repository can become difficult to manage and maintain. With all of the code stored in a single location, it can be challenging to understand how different parts of the application fit together and how changes to one part might affect other parts of the application. Furthermore, trying to map this complexity to appropriate owners can be difficult to setup and maintain.
+
+Slow Deployment: Because a monolithic repository contains all of the code for an application, deploying updates or changes to the application can be slow and cumbersome. This can be particularly problematic for large applications with many dependencies and integrations. Care needs to be taken in the build tooling to avoid unnecessary cycles.
+
+Politics / Co-ownership: service owners are no longer repository administrators by default. Implementing change to the general build tooling, for example, requires careful coordination amongst external teams.
+
+Pros of Microservice Repositories
+---------------------------------
+
+Strong Ownership: with microservice repositories teams can manage their own repos, implementing the tooling which best fits the need for their team without having to consult too many external teams beforehand.
+
+Improved Deployment: Because each service or component of an application is stored in a separate repository, it is easier to deploy updates or changes to a specific service or component without affecting the rest of the application. It allows the CI/CD configuration to be very lean. This can make deployment faster and more efficient. It's also more common here for service teams to own their CI/CD pipelines.
+
+Better Organization: With each service or component of an application stored in a separate repository, it is easier to understand how different parts of the application fit together and how changes to one part might affect other parts of the application. This can improve organization and make it easier to manage and maintain the application. At the least it requires less cognitive load to understand parts of the system on their own.
+
+Cons of Microservice Repositories
+---------------------------------
+
+Complexity: Microservice repositories can be more complex to set up and manage than monolithic repositories. With each service or component of an application stored in a separate repository, there are more dependencies and integrations to manage and maintain.
+
+More Dependencies: With each service or component of an application stored in their own repositories it's harder to control the external dependencies the entire system is using. For example, repo A may use version 1.0.1 of a library, whilst repo B uses 1.0.2. Standardizing on libraries and binaries is very difficult and the result can be a lot of bloat to the sytem as a whole.
+
+Summary
+-------
+
+Having seen both in the wild my recommendation would be to go with a monolithic repository if you have people to throw at the tooling - this will make some eyes roll and implementing change to parts of the repo which affect all teams will feel slow, but frankly this is a good pain to feel - without it, people will choose the path of least resistence which often results in growing tech debt, system bloat and disparity in standards and pulling that back together retrospectively can be painful.
