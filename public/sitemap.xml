@@ -2,22 +2,46 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://www.petermcconnell.com/tags/linux/</loc>
+    <lastmod>2022-12-26T15:36:09+00:00</lastmod>
+  </url><url>
+    <loc>https://www.petermcconnell.com/posts/binary_perf_summary/</loc>
+    <lastmod>2022-12-26T15:36:09+00:00</lastmod>
+  </url><url>
+    <loc>https://www.petermcconnell.com/tags/perf/</loc>
+    <lastmod>2022-12-26T15:36:09+00:00</lastmod>
+  </url><url>
+    <loc>https://www.petermcconnell.com/</loc>
+    <lastmod>2022-12-26T15:36:09+00:00</lastmod>
+  </url><url>
+    <loc>https://www.petermcconnell.com/posts/</loc>
+    <lastmod>2022-12-26T15:36:09+00:00</lastmod>
+  </url><url>
+    <loc>https://www.petermcconnell.com/tags/</loc>
+    <lastmod>2022-12-26T15:36:09+00:00</lastmod>
+  </url><url>
+    <loc>https://www.petermcconnell.com/tags/web/</loc>
+    <lastmod>2022-12-26T15:30:38+00:00</lastmod>
+  </url><url>
+    <loc>https://www.petermcconnell.com/posts/website_perf/</loc>
+    <lastmod>2022-12-26T15:30:38+00:00</lastmod>
+  </url><url>
+    <loc>https://www.petermcconnell.com/tags/microservice/</loc>
+    <lastmod>2022-12-26T15:01:29+00:00</lastmod>
+  </url><url>
+    <loc>https://www.petermcconnell.com/posts/monolith_vs_microservice_repos/</loc>
+    <lastmod>2022-12-26T15:01:29+00:00</lastmod>
+  </url><url>
+    <loc>https://www.petermcconnell.com/tags/monorepo/</loc>
+    <lastmod>2022-12-26T15:01:29+00:00</lastmod>
+  </url><url>
     <loc>https://www.petermcconnell.com/tags/chatgpt/</loc>
     <lastmod>2022-12-08T14:07:06+00:00</lastmod>
   </url><url>
     <loc>https://www.petermcconnell.com/posts/chatgpt_for_engineers/</loc>
     <lastmod>2022-12-08T14:07:06+00:00</lastmod>
   </url><url>
-    <loc>https://www.petermcconnell.com/</loc>
-    <lastmod>2022-12-08T14:07:06+00:00</lastmod>
-  </url><url>
-    <loc>https://www.petermcconnell.com/posts/</loc>
-    <lastmod>2022-12-08T14:07:06+00:00</lastmod>
-  </url><url>
     <loc>https://www.petermcconnell.com/tags/software-engineering/</loc>
-    <lastmod>2022-12-08T14:07:06+00:00</lastmod>
-  </url><url>
-    <loc>https://www.petermcconnell.com/tags/</loc>
     <lastmod>2022-12-08T14:07:06+00:00</lastmod>
   </url><url>
     <loc>https://www.petermcconnell.com/posts/ai_db_testing/</loc>
@@ -66,9 +90,6 @@
     <lastmod>2022-11-29T20:30:52+00:00</lastmod>
   </url><url>
     <loc>https://www.petermcconnell.com/posts/current-reading/</loc>
-    <lastmod>2022-11-29T20:30:52+00:00</lastmod>
-  </url><url>
-    <loc>https://www.petermcconnell.com/tags/linux/</loc>
     <lastmod>2022-11-29T20:30:52+00:00</lastmod>
   </url><url>
     <loc>https://www.petermcconnell.com/categories/</loc>

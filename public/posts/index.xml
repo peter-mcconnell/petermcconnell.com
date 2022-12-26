@@ -6,7 +6,90 @@
     <description>Recent content in Posts on Peter McConnell</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 08 Dec 2022 14:07:06 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 26 Dec 2022 15:36:09 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Linux performance ideas</title>
+      <link>https://www.petermcconnell.com/posts/binary_perf_summary/</link>
+      <pubDate>Mon, 26 Dec 2022 15:36:09 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/posts/binary_perf_summary/</guid>
+      <description>Optimizing the Performance of your Linux Binaries When it comes to software performance, every little bit counts. This is especially true for Linux binaries, which are often used in resource-constrained environments or where every millisecond of performance matters. In this article, we&amp;rsquo;ll explore some tips for optimizing the performance of your Linux binaries.
+Tip 1: Use a high-performance compiler The first step to optimizing the performance of your Linux binaries is to use a high-performance compiler.</description>
+      <content>&lt;h1 id=&#34;optimizing-the-performance-of-your-linux-binaries&#34;&gt;Optimizing the Performance of your Linux Binaries&lt;/h1&gt;
+&lt;p&gt;When it comes to software performance, every little bit counts. This is especially true for Linux binaries, which are often used in resource-constrained environments or where every millisecond of performance matters. In this article, we&amp;rsquo;ll explore some tips for optimizing the performance of your Linux binaries.&lt;/p&gt;
+&lt;h2 id=&#34;tip-1-use-a-high-performance-compiler&#34;&gt;Tip 1: Use a high-performance compiler&lt;/h2&gt;
+&lt;p&gt;The first step to optimizing the performance of your Linux binaries is to use a high-performance compiler. Modern compilers like GCC and Clang have various optimization flags that can significantly improve the performance of your code. For example, the &amp;ldquo;-O2&amp;rdquo; flag enables a variety of optimization techniques that can improve the performance of your code, while the &amp;ldquo;-Ofast&amp;rdquo; flag enables even more aggressive optimizations that can further improve performance but may result in code that is less standards-compliant.&lt;/p&gt;
+&lt;h2 id=&#34;tip-2-use-a-faster-runtime&#34;&gt;Tip 2: Use a faster runtime&lt;/h2&gt;
+&lt;p&gt;The runtime environment of your Linux binary can also have a significant impact on its performance. For example, using a faster interpreter or just-in-time (JIT) compiler can improve the performance of interpreted or JIT-compiled languages like Python, JavaScript, and Java. You can also consider using a faster garbage collector to reduce the overhead of memory management.&lt;/p&gt;
+&lt;h2 id=&#34;tip-3-optimize-your-algorithms-and-data-structures&#34;&gt;Tip 3: Optimize your algorithms and data structures&lt;/h2&gt;
+&lt;p&gt;The algorithms and data structures you use can also have a big impact on the performance of your Linux binaries. Choosing the right algorithm and data structure for the task at hand can significantly improve the performance of your code. For example, using a hash table instead of a linked list for lookups can greatly improve the performance of your code.&lt;/p&gt;
+&lt;h2 id=&#34;tip-4-use-profiling-tools&#34;&gt;Tip 4: Use profiling tools&lt;/h2&gt;
+&lt;p&gt;Profiling tools can help you identify areas of your code that are causing performance bottlenecks. For example, you can use tools like perf, Valgrind, and gprof to measure the performance of your code and identify areas that could be optimized.&lt;/p&gt;
+&lt;h2 id=&#34;tip-5-use-a-performance-tuned-linux-distribution&#34;&gt;Tip 5: Use a performance-tuned Linux distribution&lt;/h2&gt;
+&lt;p&gt;Finally, using a performance-tuned Linux distribution can also improve the performance of your Linux binaries. Distributions like Arch Linux and Gentoo are known for their focus on performance and can provide a lightweight and optimized environment for your applications to run in.&lt;/p&gt;
+&lt;h2 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;Optimizing the performance of your Linux binaries requires a combination of tools and techniques. By using a high-performance compiler, a faster runtime, optimizing your algorithms and data structures, using profiling tools, and using a performance-tuned Linux distribution, you can significantly improve the performance of your Linux binaries and deliver better results to your users.&lt;/p&gt;
+</content>
+    </item>
+    
+    <item>
+      <title>website perf - a few common performance improvement ideas for web applications</title>
+      <link>https://www.petermcconnell.com/posts/website_perf/</link>
+      <pubDate>Mon, 26 Dec 2022 15:30:38 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/posts/website_perf/</guid>
+      <description>5 Tips for Improving the Performance of your Web Applications Performance is critical to the success of any application. Poor performance can lead to a poor user experience, reduced engagement, and ultimately, decreased revenue. In this article, we&amp;rsquo;ll explore five tips for improving the performance of your applications.
+Tip 1: Measure and monitor performance regularly The first step to improving performance is understanding where the bottlenecks are. To do this, you need to measure and monitor performance regularly.</description>
+      <content>&lt;h1 id=&#34;5-tips-for-improving-the-performance-of-your-web-applications&#34;&gt;5 Tips for Improving the Performance of your Web Applications&lt;/h1&gt;
+&lt;p&gt;Performance is critical to the success of any application. Poor performance can lead to a poor user experience, reduced engagement, and ultimately, decreased revenue. In this article, we&amp;rsquo;ll explore five tips for improving the performance of your applications.&lt;/p&gt;
+&lt;h2 id=&#34;tip-1-measure-and-monitor-performance-regularly&#34;&gt;Tip 1: Measure and monitor performance regularly&lt;/h2&gt;
+&lt;p&gt;The first step to improving performance is understanding where the bottlenecks are. To do this, you need to measure and monitor performance regularly. Use tools like profilers, load testers, and monitoring tools to gather data on the performance of your application. This will help you identify areas that are causing slowdowns and prioritize improvements. Setting up a visualisation tool for this, such as Grafana, will mean that you can get this data whenever you need it.&lt;/p&gt;
+&lt;h2 id=&#34;tip-2-optimize-database-queries&#34;&gt;Tip 2: Optimize database queries&lt;/h2&gt;
+&lt;p&gt;Databases are often a major source of performance issues. To optimize database queries, consider using indexing to speed up query execution, use caching to store frequently accessed data, and use explain plans to understand how queries are being executed. You should also consider using a database optimization tool to identify and fix common issues. You should ensure your query caching stragegy is sound for your application.&lt;/p&gt;
+&lt;h2 id=&#34;tip-3-use-a-cdn-for-static-content&#34;&gt;Tip 3: Use a CDN for static content&lt;/h2&gt;
+&lt;p&gt;Content Delivery Networks (CDNs) are a great way to improve the performance of your application. CDNs store static content like images, CSS, and JavaScript on servers around the world, so that users can access them from a location that is closer to them. This can significantly reduce the time it takes for static content to load, resulting in a faster overall page load time.&lt;/p&gt;
+&lt;h2 id=&#34;tip-4-optimize-front-end-performance&#34;&gt;Tip 4: Optimize front-end performance&lt;/h2&gt;
+&lt;p&gt;The front-end of your application plays a critical role in performance. To optimize front-end performance, consider using techniques like minification, compression, and lazy loading. You should also consider using a tool like Webpack to bundle and optimize your assets.&lt;/p&gt;
+&lt;h2 id=&#34;tip-5-use-a-load-balancer&#34;&gt;Tip 5: Use a load balancer&lt;/h2&gt;
+&lt;p&gt;If you have a high traffic application, using a load balancer can help distribute traffic across multiple servers, which can improve the performance of your application. Load balancers can also help improve the reliability of your application by automatically routing traffic away from overloaded servers.&lt;/p&gt;
+&lt;h2 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;Improving the performance of your application requires a combination of tools and techniques. By regularly measuring and monitoring performance, optimizing database queries, using a CDN for static content, optimizing front-end performance, and using a load balancer, you can significantly improve the performance of your application and provide a better user experience.&lt;/p&gt;
+</content>
+    </item>
+    
+    <item>
+      <title>Monolith vs Microservice repositories - some pros and cons</title>
+      <link>https://www.petermcconnell.com/posts/monolith_vs_microservice_repos/</link>
+      <pubDate>Mon, 26 Dec 2022 15:01:29 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/posts/monolith_vs_microservice_repos/</guid>
+      <description>Monolithic vs Microservice repository management Here we&amp;rsquo;ll take a quick look at monolithic vs microservice repository architecture for managing codebases.
+A monolithic repository is a version control system that stores all of the code for a software application in a single, centralized repository. This means that all of the code for an application, including the front-end, back-end, and any additional components, is stored in a single location and managed as a cohesive unit.</description>
+      <content>&lt;h1 id=&#34;monolithic-vs-microservice-repository-management&#34;&gt;Monolithic vs Microservice repository management&lt;/h1&gt;
+&lt;p&gt;Here we&amp;rsquo;ll take a quick look at monolithic vs microservice repository architecture for managing codebases.&lt;/p&gt;
+&lt;p&gt;A monolithic repository is a version control system that stores all of the code for a software application in a single, centralized repository. This means that all of the code for an application, including the front-end, back-end, and any additional components, is stored in a single location and managed as a cohesive unit.&lt;/p&gt;
+&lt;p&gt;On the other hand, a microservice repository is a version control system that stores the code for a software application in multiple, smaller repositories, with each repository containing a specific service or component of the application. This means that the code for an application is divided into smaller, more focused units, each with its own repository.&lt;/p&gt;
+&lt;p&gt;There are several pros and cons to consider when deciding between a monolithic repository and a microservice repository for your software development project.&lt;/p&gt;
+&lt;h2 id=&#34;pros-of-monolithic-repositories&#34;&gt;Pros of Monolithic Repositories&lt;/h2&gt;
+&lt;p&gt;Simplicity: Monolithic repositories are simpler to set up and manage than microservice repositories. With all of the code for an application stored in a single location, it is easier to navigate and work with. It also helps implement &amp;ldquo;standard&amp;rdquo; tools, org-wide. Generating reports, such as license compliance, is also a lot more simple.&lt;/p&gt;
+&lt;p&gt;Fewer Dependencies: In a monolithic repository, all of the code for an application is stored in a single location, which means that there are fewer dependencies between different components of the application. This can make it easier to understand how the different parts of the application fit together and how changes to one part might affect other parts of the application.&lt;/p&gt;
+&lt;p&gt;Easier to Test: Testing a monolithic repository is generally easier than testing a microservice repository because all of the code is stored in a single location. This means that it is easier to set up test environments and run tests on the entire application.&lt;/p&gt;
+&lt;h2 id=&#34;cons-of-monolithic-repositories&#34;&gt;Cons of Monolithic Repositories&lt;/h2&gt;
+&lt;p&gt;Complexity: As an application grows and becomes more complex, a monolithic repository can become difficult to manage and maintain. With all of the code stored in a single location, it can be challenging to understand how different parts of the application fit together and how changes to one part might affect other parts of the application. Furthermore, trying to map this complexity to appropriate owners can be difficult to setup and maintain.&lt;/p&gt;
+&lt;p&gt;Slow Deployment: Because a monolithic repository contains all of the code for an application, deploying updates or changes to the application can be slow and cumbersome. This can be particularly problematic for large applications with many dependencies and integrations. Care needs to be taken in the build tooling to avoid unnecessary cycles.&lt;/p&gt;
+&lt;p&gt;Politics / Co-ownership: service owners are no longer repository administrators by default. Implementing change to the general build tooling, for example, requires careful coordination amongst external teams.&lt;/p&gt;
+&lt;h2 id=&#34;pros-of-microservice-repositories&#34;&gt;Pros of Microservice Repositories&lt;/h2&gt;
+&lt;p&gt;Strong Ownership: with microservice repositories teams can manage their own repos, implementing the tooling which best fits the need for their team without having to consult too many external teams beforehand.&lt;/p&gt;
+&lt;p&gt;Improved Deployment: Because each service or component of an application is stored in a separate repository, it is easier to deploy updates or changes to a specific service or component without affecting the rest of the application. It allows the CI/CD configuration to be very lean. This can make deployment faster and more efficient. It&amp;rsquo;s also more common here for service teams to own their CI/CD pipelines.&lt;/p&gt;
+&lt;p&gt;Better Organization: With each service or component of an application stored in a separate repository, it is easier to understand how different parts of the application fit together and how changes to one part might affect other parts of the application. This can improve organization and make it easier to manage and maintain the application. At the least it requires less cognitive load to understand parts of the system on their own.&lt;/p&gt;
+&lt;h2 id=&#34;cons-of-microservice-repositories&#34;&gt;Cons of Microservice Repositories&lt;/h2&gt;
+&lt;p&gt;Complexity: Microservice repositories can be more complex to set up and manage than monolithic repositories. With each service or component of an application stored in a separate repository, there are more dependencies and integrations to manage and maintain.&lt;/p&gt;
+&lt;p&gt;More Dependencies: With each service or component of an application stored in their own repositories it&amp;rsquo;s harder to control the external dependencies the entire system is using. For example, repo A may use version 1.0.1 of a library, whilst repo B uses 1.0.2. Standardizing on libraries and binaries is very difficult and the result can be a lot of bloat to the sytem as a whole.&lt;/p&gt;
+&lt;h2 id=&#34;summary&#34;&gt;Summary&lt;/h2&gt;
+&lt;p&gt;Having seen both in the wild my recommendation would be to go with a monolithic repository if you have people to throw at the tooling - this will make some eyes roll and implementing change to parts of the repo which affect all teams will feel slow, but frankly this is a good pain to feel - without it, people will choose the path of least resistence which often results in growing tech debt, system bloat and disparity in standards and pulling that back together retrospectively can be painful.&lt;/p&gt;
+</content>
+    </item>
+    
     <item>
       <title>ChatGPT for software engineers</title>
       <link>https://www.petermcconnell.com/posts/chatgpt_for_engineers/</link>

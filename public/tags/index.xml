@@ -6,7 +6,57 @@
     <description>Recent content in Tags on Peter McConnell</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 08 Dec 2022 14:07:06 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 26 Dec 2022 15:36:09 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>linux</title>
+      <link>https://www.petermcconnell.com/tags/linux/</link>
+      <pubDate>Mon, 26 Dec 2022 15:36:09 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/tags/linux/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>perf</title>
+      <link>https://www.petermcconnell.com/tags/perf/</link>
+      <pubDate>Mon, 26 Dec 2022 15:36:09 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/tags/perf/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>web</title>
+      <link>https://www.petermcconnell.com/tags/web/</link>
+      <pubDate>Mon, 26 Dec 2022 15:30:38 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/tags/web/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>microservice</title>
+      <link>https://www.petermcconnell.com/tags/microservice/</link>
+      <pubDate>Mon, 26 Dec 2022 15:01:29 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/tags/microservice/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>monorepo</title>
+      <link>https://www.petermcconnell.com/tags/monorepo/</link>
+      <pubDate>Mon, 26 Dec 2022 15:01:29 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/tags/monorepo/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
     <item>
       <title>chatGPT</title>
       <link>https://www.petermcconnell.com/tags/chatgpt/</link>
@@ -103,16 +153,6 @@
       <pubDate>Tue, 29 Nov 2022 20:30:52 +0000</pubDate>
       
       <guid>https://www.petermcconnell.com/tags/books/</guid>
-      <description></description>
-      <content></content>
-    </item>
-    
-    <item>
-      <title>linux</title>
-      <link>https://www.petermcconnell.com/tags/linux/</link>
-      <pubDate>Tue, 29 Nov 2022 20:30:52 +0000</pubDate>
-      
-      <guid>https://www.petermcconnell.com/tags/linux/</guid>
       <description></description>
       <content></content>
     </item>

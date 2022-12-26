@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+    <title>Your first time running perf (part 1) ... :: Peter McConnell</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="This article is intended for those that have heard of &amp;lsquo;perf&amp;rsquo; for linux but are yet to use it. We&amp;rsquo;ll use the example here of wanting to generate a performance report for running &amp;lsquo;curl https://www.google.com&amp;rsquo;
+perf is a tool that allows you to measure and analyze the performance of a wide range of Linux systems, including applications, kernels, and libraries. To use perf to analyze the performance of curl, you can follow these steps:" />
+<meta name="keywords" content="linux, perf" />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="https://www.petermcconnell.com/posts/your_first_perf/" />
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="/style.css">
+
+
+
+
+
+
+
+  <link rel="shortcut icon" href="https://www.petermcconnell.com/img/theme-colors/pink.png">
+  <link rel="apple-touch-icon" href="https://www.petermcconnell.com/img/theme-colors/pink.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+  
+    <meta name="twitter:site" content="" />
+  
+    <meta name="twitter:creator" content="peter-mcconnell" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Your first time running perf (part 1) ...">
+<meta property="og:description" content="This article is intended for those that have heard of &amp;lsquo;perf&amp;rsquo; for linux but are yet to use it. We&amp;rsquo;ll use the example here of wanting to generate a performance report for running &amp;lsquo;curl https://www.google.com&amp;rsquo;
+perf is a tool that allows you to measure and analyze the performance of a wide range of Linux systems, including applications, kernels, and libraries. To use perf to analyze the performance of curl, you can follow these steps:" />
+<meta property="og:url" content="https://www.petermcconnell.com/posts/your_first_perf/" />
+<meta property="og:site_name" content="Peter McConnell" />
+
+  
+  
+  <meta property="og:image" content="https://www.petermcconnell.com/">
+
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="627">
+
+
+  <meta property="article:published_time" content="2022-12-26 15:53:21 &#43;0000 UTC" />
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+<body class="pink">
+
+
+<div class="container headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/">
+  <div class="logo">
+    Peter McConnell
+  </div>
+</a>
+
+    </div>
+    
+      <ul class="menu menu--mobile">
+  <li class="menu__trigger">Menu&nbsp;▾</li>
+  <li>
+    <ul class="menu__dropdown">
+      
+        
+          <li><a href="/about">About</a></li>
+        
+      
+        
+          <li><a href="/showcase">Showcase</a></li>
+        
+      
+        
+          <li><a href="/skills">Skills</a></li>
+        
+      
+      
+    </ul>
+  </li>
+</ul>
+
+    
+    
+  </div>
+  
+    <nav class="navigation-menu">
+  <ul class="navigation-menu__inner menu--desktop">
+    
+      
+        
+          <li><a href="/about">About</a></li>
+        
+      
+        
+          <li><a href="/showcase">Showcase</a></li>
+        
+      
+        
+          <li><a href="/skills">Skills</a></li>
+        
+      
+      
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<article class="post">
+  <h1 class="post-title">
+    <a href="https://www.petermcconnell.com/posts/your_first_perf/">Your first time running perf (part 1) &hellip;</a>
+  </h1>
+  <div class="post-meta">
+    
+      <time class="post-date">
+        2022-12-26 ::
+        
+      </time>
+    
+    
+      <span class="post-author">Peter McConnell</span>
+    
+    
+  </div>
+
+  
+    <span class="post-tags">
+      
+      #<a href="https://www.petermcconnell.com/tags/linux/">linux</a>&nbsp;
+      
+      #<a href="https://www.petermcconnell.com/tags/perf/">perf</a>&nbsp;
+      
+    </span>
+  
+  
+
+
+  
+
+  <div class="post-content"><div>
+        <p>This article is intended for those that have heard of &lsquo;perf&rsquo; for linux but are yet to use it. We&rsquo;ll use the example here of wanting to generate a performance report for running &lsquo;curl <a href="https://www.google.com">https://www.google.com</a>&rsquo;</p>
+<p>perf is a tool that allows you to measure and analyze the performance of a wide range of Linux systems, including applications, kernels, and libraries. To use perf to analyze the performance of curl, you can follow these steps:</p>
+<ul>
+<li>Install perf: perf is not installed by default on all Linux distributions, so you may need to install it first. On most distributions, you can install perf using your package manager, such as apt-get on Ubuntu or yum on CentOS.</li>
+<li>Run curl with perf: To use perf to analyze the performance of curl, you can run the perf command with the record subcommand and specify the curl command as the target. For example:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>perf record curl https://www.google.com
+</span></span></code></pre></div><p>This will run curl and record performance data for the command.</p>
+<p>If you get an error saying:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>Error:
+</span></span><span style="display:flex;"><span>Access to performance monitoring and observability operations is limited.
+</span></span><span style="display:flex;"><span>Consider adjusting /proc/sys/kernel/perf_event_paranoid setting to open
+</span></span><span style="display:flex;"><span>access to performance monitoring and observability operations <span style="color:#66d9ef">for</span> processes
+</span></span><span style="display:flex;"><span>without CAP_PERFMON, CAP_SYS_PTRACE or CAP_SYS_ADMIN Linux capability.
+</span></span><span style="display:flex;"><span>More information can be found at <span style="color:#e6db74">&#39;Perf events and tool security&#39;</span> document:
+</span></span><span style="display:flex;"><span>https://www.kernel.org/doc/html/latest/admin-guide/perf-security.html
+</span></span><span style="display:flex;"><span>perf_event_paranoid setting is 4:
+</span></span><span style="display:flex;"><span>  -1: Allow use of <span style="color:#f92672">(</span>almost<span style="color:#f92672">)</span> all events by all users
+</span></span><span style="display:flex;"><span>      Ignore mlock limit after perf_event_mlock_kb without CAP_IPC_LOCK
+</span></span><span style="display:flex;"><span>&gt;<span style="color:#f92672">=</span> 0: Disallow raw and ftrace <span style="color:#66d9ef">function</span> tracepoint access
+</span></span><span style="display:flex;"><span>&gt;<span style="color:#f92672">=</span> 1: Disallow CPU event access
+</span></span><span style="display:flex;"><span>&gt;<span style="color:#f92672">=</span> 2: Disallow kernel profiling
+</span></span><span style="display:flex;"><span>To make the adjusted perf_event_paranoid setting permanent preserve it
+</span></span><span style="display:flex;"><span>in /etc/sysctl.conf <span style="color:#f92672">(</span>e.g. kernel.perf_event_paranoid <span style="color:#f92672">=</span> &lt;setting&gt;<span style="color:#f92672">)</span>
+</span></span></code></pre></div><p>Follow the instructions:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#75715e"># switch to root</span>
+</span></span><span style="display:flex;"><span>sudo su
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># apply the relevant setting that suits your needs, e.g.</span>
+</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#39;-1&#39;</span> &gt; /proc/sys/kernel/perf_event_paranoid
+</span></span></code></pre></div><p>Analyze the performance data: After curl has completed, you can use the perf command with the report subcommand to analyze the recorded performance data. For example:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>perf report
+</span></span></code></pre></div><p>This will generate a report showing the performance of curl and the functions it called during execution. The report will include information on the time spent in each function, the number of calls to each function, and other metrics.</p>
+<p>You can also use various options with the perf command to customize the analysis, such as filtering the data by symbol, sorting the data by metric, or displaying the data in a specific format. For more information on the options available with perf, you can refer to the perf documentation or run perf &ndash;help.</p>
+<p>This will show you an ordered list of calls that were made by curl. Here you can see 19.93% of the total time was spent by libcrypto:</p>
+<p><img src="https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/main/assets/perf_example1.png" alt="perf example" title="perf example"></p>
+<p>Here the perf tool is showing us the performance data for the curl command that we ran. The top entry in the report indicates that the function at address 00000000001c20d3 in the shared object libcrypto.so.3 consumed the most CPU cycles (as indicated by the event &lsquo;cycles&rsquo;) during the execution of curl. Hitting &rsquo;enter&rsquo; on this line shows us some options:</p>
+<p><img src="https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/main/assets/perf_example2.png" alt="analysis options" title="analysis options"></p>
+<p>The annotate subcommand of perf shows you the disassembly of the function at the specified address, along with performance data for each instruction. Shaking hands with the devil to see what we&rsquo;re <em>actually</em> asking the computer to do. In this case, the function appears to be OSSL_SELF_TEST_free from the OpenSSL library. The performance data shown for each instruction includes the percentage of samples and the number of samples for that instruction. Given our example was curl&rsquo;ing an HTTPS endpoint this action is to be expected.</p>
+<p><img src="https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/main/assets/perf_example3.png" alt="shaking hands with the devil" title="shaking hands with the devil"></p>
+<p>In <a href="https://www.petermcconnell.com/posts/your_first_perf_part_2/">part 2</a> we&rsquo;ll take a deeper look at the specific machine instructions here to better understand what&rsquo;s going on.</p>
+
+      </div></div>
+
+  
+    
+<div class="pagination">
+    <div class="pagination__title">
+        <span class="pagination__title-h">Read other posts</span>
+        <hr />
+    </div>
+    <div class="pagination__buttons">
+        
+        <span class="button previous">
+            <a href="https://www.petermcconnell.com/posts/your_first_perf_part_2/">
+                <span class="button__icon">←</span>
+                <span class="button__text">Your first time running perf (part 2) ...</span>
+            </a>
+        </span>
+        
+        
+        <span class="button next">
+            <a href="https://www.petermcconnell.com/posts/binary_perf_summary/">
+                <span class="button__text">Linux performance ideas</span>
+                <span class="button__icon">→</span>
+            </a>
+        </span>
+        
+    </div>
+</div>
+
+  
+
+  
+    
+
+  
+</article>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright">
+        <span>© 2022 Peter McConnell</span>
+    
+      </div>
+  </div>
+</footer>
+
+
+
+
+
+
+<script type="text/javascript" src="/bundle.min.js"></script>
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>

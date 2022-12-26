@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+    <title>Monolith vs Microservice repositories - some pros and cons :: Peter McConnell</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Monolithic vs Microservice repository management Here we&amp;rsquo;ll take a quick look at monolithic vs microservice repository architecture for managing codebases.
+A monolithic repository is a version control system that stores all of the code for a software application in a single, centralized repository. This means that all of the code for an application, including the front-end, back-end, and any additional components, is stored in a single location and managed as a cohesive unit." />
+<meta name="keywords" content="monorepo, microservice" />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="https://www.petermcconnell.com/posts/monolith_vs_microservice_repos/" />
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="/style.css">
+
+
+
+
+
+
+
+  <link rel="shortcut icon" href="https://www.petermcconnell.com/img/theme-colors/pink.png">
+  <link rel="apple-touch-icon" href="https://www.petermcconnell.com/img/theme-colors/pink.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+  
+    <meta name="twitter:site" content="" />
+  
+    <meta name="twitter:creator" content="peter-mcconnell" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Monolith vs Microservice repositories - some pros and cons">
+<meta property="og:description" content="Monolithic vs Microservice repository management Here we&amp;rsquo;ll take a quick look at monolithic vs microservice repository architecture for managing codebases.
+A monolithic repository is a version control system that stores all of the code for a software application in a single, centralized repository. This means that all of the code for an application, including the front-end, back-end, and any additional components, is stored in a single location and managed as a cohesive unit." />
+<meta property="og:url" content="https://www.petermcconnell.com/posts/monolith_vs_microservice_repos/" />
+<meta property="og:site_name" content="Peter McConnell" />
+
+  
+  
+  <meta property="og:image" content="https://www.petermcconnell.com/">
+
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="627">
+
+
+  <meta property="article:published_time" content="2022-12-26 15:01:29 &#43;0000 UTC" />
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+<body class="pink">
+
+
+<div class="container headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/">
+  <div class="logo">
+    Peter McConnell
+  </div>
+</a>
+
+    </div>
+    
+      <ul class="menu menu--mobile">
+  <li class="menu__trigger">Menu&nbsp;▾</li>
+  <li>
+    <ul class="menu__dropdown">
+      
+        
+          <li><a href="/about">About</a></li>
+        
+      
+        
+          <li><a href="/showcase">Showcase</a></li>
+        
+      
+        
+          <li><a href="/skills">Skills</a></li>
+        
+      
+      
+    </ul>
+  </li>
+</ul>
+
+    
+    
+  </div>
+  
+    <nav class="navigation-menu">
+  <ul class="navigation-menu__inner menu--desktop">
+    
+      
+        
+          <li><a href="/about">About</a></li>
+        
+      
+        
+          <li><a href="/showcase">Showcase</a></li>
+        
+      
+        
+          <li><a href="/skills">Skills</a></li>
+        
+      
+      
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<article class="post">
+  <h1 class="post-title">
+    <a href="https://www.petermcconnell.com/posts/monolith_vs_microservice_repos/">Monolith vs Microservice repositories - some pros and cons</a>
+  </h1>
+  <div class="post-meta">
+    
+      <time class="post-date">
+        2022-12-26 ::
+        
+      </time>
+    
+    
+      <span class="post-author">Peter McConnell</span>
+    
+    
+  </div>
+
+  
+    <span class="post-tags">
+      
+      #<a href="https://www.petermcconnell.com/tags/monorepo/">monorepo</a>&nbsp;
+      
+      #<a href="https://www.petermcconnell.com/tags/microservice/">microservice</a>&nbsp;
+      
+    </span>
+  
+  
+
+
+  
+
+  <div class="post-content"><div>
+        <h1 id="monolithic-vs-microservice-repository-management">Monolithic vs Microservice repository management<a href="#monolithic-vs-microservice-repository-management" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<p>Here we&rsquo;ll take a quick look at monolithic vs microservice repository architecture for managing codebases.</p>
+<p>A monolithic repository is a version control system that stores all of the code for a software application in a single, centralized repository. This means that all of the code for an application, including the front-end, back-end, and any additional components, is stored in a single location and managed as a cohesive unit.</p>
+<p>On the other hand, a microservice repository is a version control system that stores the code for a software application in multiple, smaller repositories, with each repository containing a specific service or component of the application. This means that the code for an application is divided into smaller, more focused units, each with its own repository.</p>
+<p>There are several pros and cons to consider when deciding between a monolithic repository and a microservice repository for your software development project.</p>
+<h2 id="pros-of-monolithic-repositories">Pros of Monolithic Repositories<a href="#pros-of-monolithic-repositories" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>Simplicity: Monolithic repositories are simpler to set up and manage than microservice repositories. With all of the code for an application stored in a single location, it is easier to navigate and work with. It also helps implement &ldquo;standard&rdquo; tools, org-wide. Generating reports, such as license compliance, is also a lot more simple.</p>
+<p>Fewer Dependencies: In a monolithic repository, all of the code for an application is stored in a single location, which means that there are fewer dependencies between different components of the application. This can make it easier to understand how the different parts of the application fit together and how changes to one part might affect other parts of the application.</p>
+<p>Easier to Test: Testing a monolithic repository is generally easier than testing a microservice repository because all of the code is stored in a single location. This means that it is easier to set up test environments and run tests on the entire application.</p>
+<h2 id="cons-of-monolithic-repositories">Cons of Monolithic Repositories<a href="#cons-of-monolithic-repositories" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>Complexity: As an application grows and becomes more complex, a monolithic repository can become difficult to manage and maintain. With all of the code stored in a single location, it can be challenging to understand how different parts of the application fit together and how changes to one part might affect other parts of the application. Furthermore, trying to map this complexity to appropriate owners can be difficult to setup and maintain.</p>
+<p>Slow Deployment: Because a monolithic repository contains all of the code for an application, deploying updates or changes to the application can be slow and cumbersome. This can be particularly problematic for large applications with many dependencies and integrations. Care needs to be taken in the build tooling to avoid unnecessary cycles.</p>
+<p>Politics / Co-ownership: service owners are no longer repository administrators by default. Implementing change to the general build tooling, for example, requires careful coordination amongst external teams.</p>
+<h2 id="pros-of-microservice-repositories">Pros of Microservice Repositories<a href="#pros-of-microservice-repositories" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>Strong Ownership: with microservice repositories teams can manage their own repos, implementing the tooling which best fits the need for their team without having to consult too many external teams beforehand.</p>
+<p>Improved Deployment: Because each service or component of an application is stored in a separate repository, it is easier to deploy updates or changes to a specific service or component without affecting the rest of the application. It allows the CI/CD configuration to be very lean. This can make deployment faster and more efficient. It&rsquo;s also more common here for service teams to own their CI/CD pipelines.</p>
+<p>Better Organization: With each service or component of an application stored in a separate repository, it is easier to understand how different parts of the application fit together and how changes to one part might affect other parts of the application. This can improve organization and make it easier to manage and maintain the application. At the least it requires less cognitive load to understand parts of the system on their own.</p>
+<h2 id="cons-of-microservice-repositories">Cons of Microservice Repositories<a href="#cons-of-microservice-repositories" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>Complexity: Microservice repositories can be more complex to set up and manage than monolithic repositories. With each service or component of an application stored in a separate repository, there are more dependencies and integrations to manage and maintain.</p>
+<p>More Dependencies: With each service or component of an application stored in their own repositories it&rsquo;s harder to control the external dependencies the entire system is using. For example, repo A may use version 1.0.1 of a library, whilst repo B uses 1.0.2. Standardizing on libraries and binaries is very difficult and the result can be a lot of bloat to the sytem as a whole.</p>
+<h2 id="summary">Summary<a href="#summary" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>Having seen both in the wild my recommendation would be to go with a monolithic repository if you have people to throw at the tooling - this will make some eyes roll and implementing change to parts of the repo which affect all teams will feel slow, but frankly this is a good pain to feel - without it, people will choose the path of least resistence which often results in growing tech debt, system bloat and disparity in standards and pulling that back together retrospectively can be painful.</p>
+
+      </div></div>
+
+  
+    
+<div class="pagination">
+    <div class="pagination__title">
+        <span class="pagination__title-h">Read other posts</span>
+        <hr />
+    </div>
+    <div class="pagination__buttons">
+        
+        <span class="button previous">
+            <a href="https://www.petermcconnell.com/posts/website_perf/">
+                <span class="button__icon">←</span>
+                <span class="button__text">website perf - a few common performance improvement ideas for web applications</span>
+            </a>
+        </span>
+        
+        
+        <span class="button next">
+            <a href="https://www.petermcconnell.com/posts/chatgpt_for_engineers/">
+                <span class="button__text">ChatGPT for software engineers</span>
+                <span class="button__icon">→</span>
+            </a>
+        </span>
+        
+    </div>
+</div>
+
+  
+
+  
+    
+
+  
+</article>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright">
+        <span>© 2022 Peter McConnell</span>
+    
+      </div>
+  </div>
+</footer>
+
+
+
+
+
+
+<script type="text/javascript" src="/bundle.min.js"></script>
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>

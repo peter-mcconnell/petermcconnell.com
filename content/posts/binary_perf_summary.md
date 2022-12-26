@@ -1,12 +1,12 @@
 +++
 title = "Linux performance ideas"
 date = "2022-12-26T15:36:09Z"
-author = ""
-authorTwitter = "" #do not include @
+author = "Peter McConnell"
+authorTwitter = "peter-mcconnell" #do not include @
 cover = ""
 tags = ["linux", "perf"]
 keywords = ["linux", "perf"]
-description = "A quick look at some general linux performance improvement ideas"
+description = ""
 showFullContent = false
 readingTime = false
 hideComments = false
