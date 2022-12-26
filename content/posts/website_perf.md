@@ -1,12 +1,12 @@
 +++
-title = "Website_perf"
+title = "website perf - a few common performance improvement ideas for web applications"
 date = "2022-12-26T15:30:38Z"
 author = "Peter McConnell"
 authorTwitter = "peter-mcconnell" #do not include @
 cover = ""
-tags = ["", ""]
-keywords = ["", ""]
-description = ""
+tags = ["web", "perf"]
+keywords = ["web", "perf"]
+description = "A quick look at some very general ideas for perf improvements for websites"
 showFullContent = false
 readingTime = false
 hideComments = false

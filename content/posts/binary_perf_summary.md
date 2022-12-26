@@ -1,12 +1,12 @@
 +++
-title = "Binary_perf_summary"
+title = "Linux performance ideas"
 date = "2022-12-26T15:36:09Z"
 author = ""
 authorTwitter = "" #do not include @
 cover = ""
-tags = ["", ""]
-keywords = ["", ""]
-description = ""
+tags = ["linux", "perf"]
+keywords = ["linux", "perf"]
+description = "A quick look at some general linux performance improvement ideas"
 showFullContent = false
 readingTime = false
 hideComments = false
