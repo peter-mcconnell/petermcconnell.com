@@ -103,17 +103,19 @@ First I need to install it - the steps for this vary depending on OS - follow th
 
 ```sh
 # for me on ubuntu:22.04
-./configure
+export CFLAGS="-fno-omit-frame-pointer -mno-omit-leaf-frame-pointer"
+./configure --enable-optimizations
 make
 make test
 sudo make install
+unset CFLAGS
 
 # after this I reset my systems python3 symlink to 3.10 as 3.12 isn't yet stable
 # for testing python3.12 I'll call "python3.12" instead of "python3"
-ln -sf /usr/local/bin/python3 /usr/local/bin/python3.10
+ln -sf /usr/local/bin/python3.10 /usr/local/bin/python3
 ```
 
-With that installed I first need to enable perf support. This is detailed in https://docs.python.org/3.12/howto/perf_profiling.html and there are three options: 1) an environment variable, 2) an -X option or 3) dynamically using `sys`. I'll go for the environment variable approach:
+With that installed I first need to enable perf support. This is detailed in https://docs.python.org/3.12/howto/perf_profiling.html and there are three options: 1) an environment variable, 2) an -X option or 3) dynamically using `sys`. I'll go for the environment variable approach as I don't mind _everything_ being profiled for a small script:
 
 ```sh
 export PYTHONPERFSUPPORT=1
@@ -133,11 +135,17 @@ perf script > out.perf
 ~/FlameGraph/flamegraph.pl out.folded > ./assets/perf_example_python3.12.before.svg
 ```
 
-This gives us an updated SVG that visualises the traces with Python 3.12:
+First we'll take a peek at the report with `perf report -g -i perf.data`
+
+![python 3.12 perf report output](https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_report.png "python 3.12 perf report")
+
+Awesome! We can see our Python function names and script names!
+
+Now we can take a look at the updated SVG that visualises the traces with Python 3.12:
 
 ![python 3.12 perf flamegraph](https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_example_python3.12.before.svg "python 3.12 perf flamegraph")
 
-This is already looking much more useful. We see the majority of the time is being spent doing comparisons and in the list_contains method.
+This is already looking much more useful. We see the majority of the time is being spent doing comparisons and in the list_contains method. We can also see the specific file `before.py` and method `run_dummy` that is calling it.
 
 Investigation time / the fix
 ----------------------------
@@ -164,7 +172,18 @@ list_contains(PyListObject *a, PyObject *el)
 }
 ```
 
-Nasty... looking at this code I can see that each time it is invoked it iterates over the array and performs a comparison against each item. That's far from ideal for our usecase, so lets go back to the Python code we wrote:
+Nasty... looking at this code I can see that each time it is invoked it iterates over the array and performs a comparison against each item. That's far from ideal for our usecase, so lets go back to the Python code we wrote. Our Flamegraph shows us that the problem is in our `run_dummy` method:
+
+```python
+def run_dummy(numbers):
+    for findme in range(100000):
+        if findme in numbers:  #  <- this is what triggers list_contains
+            print("found", findme)
+        else:
+            print("missed", findme)
+```
+
+We can't really change that line as it is doing what we want it to do - identifying if an integer is in `numbers`. Perhaps we can change the `numbers` data type to one better suited to lookups. In our existing code we have:
 
 ```python
     numbers = [i for i in range(20000000)]
@@ -173,11 +192,11 @@ Nasty... looking at this code I can see that each time it is invoked it iterates
     run_dummy(numbers)  # run our inefficient method
 ```
 
-Here we used a LIST data type for our "numbers", which under the hood (in CPython) is implemented as dynamically-sized arrays and as such are nowhere near as efficient (O(N)) as the likes of a Hashtable for looking up an item (which is O(1)). A SET on the other hand (another Python datastructure) is implemented as a Hashtable and would give us the fast lookup we're looking for. Lets change the datatype in our Python code and see what the impact is:
+Here we used a LIST data type for our "numbers", which under the hood (in CPython) is implemented as dynamically-sized arrays and as such are nowhere near as efficient (O(N)) as the likes of a Hashtable for looking up an item (which is O(1)). A SET on the other hand (another Python data type) is implemented as a Hashtable and would give us the fast lookup we're looking for. Lets change the data type in our Python code and see what the impact is:
 
 ```python
     # we'll just change this line, casting numbers to a set before running run_dummy
-    run_dummy(set(numbers))  # run our inefficient method
+    run_dummy(set(numbers))  # passing a set() for fast lookups
 ```
 
 Now we can repeat the steps as above to generate our new flamegraph:
@@ -207,4 +226,4 @@ perf script > out.perf
 
 ![python 3.12 perf flamegraph improved](https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_example_python3.12.after.svg "python 3.12 perf flamegraph improved")
 
-This is a much healthier looking Flamegraph and our application is now much faster as a result. The perf profiling support in Python 3.12 brings a tremendously useful tool to software engineers that want to deliver fast programs.
+This is a much healthier looking Flamegraph and our application is now much faster as a result. The perf profiling support in Python 3.12 brings a tremendously useful tool to software engineers that want to deliver fast programs and I'm excited to see the impact this will have on the language.
