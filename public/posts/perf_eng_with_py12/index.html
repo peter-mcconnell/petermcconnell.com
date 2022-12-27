@@ -168,7 +168,7 @@ The important part (for this post) from the links above is:
       <span class="post-author">Peter McConnell</span>
     
     
-      <span class="post-reading-time">:: 7 min read (1299 words)</span>
+      <span class="post-reading-time">:: 8 min read (1524 words)</span>
     
   </div>
 
@@ -249,6 +249,10 @@ The Linux perf profiler is a very powerful tool that allows you to profile and o
 <h2 id="time-for-python-312">Time for Python 3.12&hellip;<a href="#time-for-python-312" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>First I need to install it - the steps for this vary depending on OS - follow the build instructions here for your environment: <a href="https://github.com/python/cpython/tree/v3.12.0a3#build-instructions">https://github.com/python/cpython/tree/v3.12.0a3#build-instructions</a></p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#75715e"># for me on ubuntu:22.04</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># ensure I have python3-dbg installed</span>
+</span></span><span style="display:flex;"><span>sudo apt-get install python3-dbg
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># build python</span>
 </span></span><span style="display:flex;"><span>export CFLAGS<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;-fno-omit-frame-pointer -mno-omit-leaf-frame-pointer&#34;</span>
 </span></span><span style="display:flex;"><span>./configure --enable-optimizations
 </span></span><span style="display:flex;"><span>make
@@ -279,6 +283,7 @@ The Linux perf profiler is a very powerful tool that allows you to profile and o
 <p>This is already looking much more useful. We see the majority of the time is being spent doing comparisons and in the list_contains method. We can also see the specific file <code>before.py</code> and method <code>run_dummy</code> that is calling it.</p>
 <h2 id="investigation-time--the-fix">Investigation time / the fix<a href="#investigation-time--the-fix" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>Now that we know where in our code the problem is, we can take a look at the source code in CPython to see why the <code>list_contains</code> method would be so slow: <a href="https://github.com/python/cpython/blob/199507b81a302ea19f93593965b1e5088195a6c5/Objects/listobject.c#L440">https://github.com/python/cpython/blob/199507b81a302ea19f93593965b1e5088195a6c5/Objects/listobject.c#L440</a></p>
+<p><em>note: you may not always have access to the source code - in circumstances such as this you can view the disassembly in perf report directly to get some idea of what&rsquo;s going on. I&rsquo;ll add a quick section at the end showing how this looks</em></p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">// I found this by going to https://github.com/python/cpython/ and searching for &#34;list_contains&#34;
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span>
@@ -330,6 +335,16 @@ The Linux perf profiler is a very powerful tool that allows you to profile and o
 </span></span><span style="display:flex;"><span>~/FlameGraph/flamegraph.pl out.folded &gt; ./assets/perf_example_python3.12.after.svg
 </span></span></code></pre></div><p><img src="https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_example_python3.12.after.svg" alt="python 3.12 perf flamegraph improved" title="python 3.12 perf flamegraph improved"></p>
 <p>This is a much healthier looking Flamegraph and our application is now much faster as a result. The perf profiling support in Python 3.12 brings a tremendously useful tool to software engineers that want to deliver fast programs and I&rsquo;m excited to see the impact this will have on the language.</p>
+<h2 id="bonus-round-what-to-do-when-you-cant-access-the-source-code">bonus round: what to do when you can&rsquo;t access the source code?<a href="#bonus-round-what-to-do-when-you-cant-access-the-source-code" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>Sometimes you don&rsquo;t have access to the underlying code which can make trying to understand what&rsquo;s going on much more difficult. Thankfully <code>perf report</code> allows us to view the dissassembled code which can help paint a picture of what the machine is actually doing. This is a reasonable first place to look - I tend to prefer the source code if I can get hold of it as it allows me to <code>git blame</code> / view the associated commits and PRs. To view this you can do the following:</p>
+<p>Open the perf report and select the line we&rsquo;re interested in:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#75715e"># this assumes we have already ran &#39;perf record&#39; to generate perf.data ...</span>
+</span></span><span style="display:flex;"><span>perf report -g -i perf.data
+</span></span></code></pre></div><p><img src="https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_report_dis.1.png" alt="perf report dissassembly" title="perf report dissassembly"></p>
+<p>Press enter and choose the annotate option:</p>
+<p><img src="https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_report_dis.2.png" alt="perf report dissassembly" title="perf report dissassembly"></p>
+<p>Behold! Here we can see both the C code and the machine instructions. Super useful! You can compare the screenshot below against the code snippet we&rsquo;re interested in: <a href="https://github.com/python/cpython/blob/199507b81a302ea19f93593965b1e5088195a6c5/Objects/listobject.c#L440">https://github.com/python/cpython/blob/199507b81a302ea19f93593965b1e5088195a6c5/Objects/listobject.c#L440</a></p>
+<p><img src="https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_report_dis.3.png" alt="perf report dissassembly" title="perf report dissassembly"></p>
 
       </div></div>
 

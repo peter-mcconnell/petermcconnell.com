@@ -103,6 +103,10 @@ First I need to install it - the steps for this vary depending on OS - follow th
 
 ```sh
 # for me on ubuntu:22.04
+# ensure I have python3-dbg installed
+sudo apt-get install python3-dbg
+
+# build python
 export CFLAGS="-fno-omit-frame-pointer -mno-omit-leaf-frame-pointer"
 ./configure --enable-optimizations
 make
@@ -151,6 +155,8 @@ Investigation time / the fix
 ----------------------------
 
 Now that we know where in our code the problem is, we can take a look at the source code in CPython to see why the `list_contains` method would be so slow: https://github.com/python/cpython/blob/199507b81a302ea19f93593965b1e5088195a6c5/Objects/listobject.c#L440
+
+_note: you may not always have access to the source code - in circumstances such as this you can view the disassembly in perf report directly to get some idea of what's going on. I'll add a quick section at the end showing how this looks_
 
 ```c
 // I found this by going to https://github.com/python/cpython/ and searching for "list_contains"
@@ -227,3 +233,25 @@ perf script > out.perf
 ![python 3.12 perf flamegraph improved](https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_example_python3.12.after.svg "python 3.12 perf flamegraph improved")
 
 This is a much healthier looking Flamegraph and our application is now much faster as a result. The perf profiling support in Python 3.12 brings a tremendously useful tool to software engineers that want to deliver fast programs and I'm excited to see the impact this will have on the language.
+
+bonus round: what to do when you can't access the source code?
+--------------------------------------------------------------
+
+Sometimes you don't have access to the underlying code which can make trying to understand what's going on much more difficult. Thankfully `perf report` allows us to view the dissassembled code which can help paint a picture of what the machine is actually doing. This is a reasonable first place to look - I tend to prefer the source code if I can get hold of it as it allows me to `git blame` / view the associated commits and PRs. To view this you can do the following:
+
+Open the perf report and select the line we're interested in:
+
+```sh
+# this assumes we have already ran 'perf record' to generate perf.data ...
+perf report -g -i perf.data
+```
+
+![perf report dissassembly](https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_report_dis.1.png "perf report dissassembly")
+
+Press enter and choose the annotate option:
+
+![perf report dissassembly](https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_report_dis.2.png "perf report dissassembly")
+
+Behold! Here we can see both the C code and the machine instructions. Super useful! You can compare the screenshot below against the code snippet we're interested in: https://github.com/python/cpython/blob/199507b81a302ea19f93593965b1e5088195a6c5/Objects/listobject.c#L440
+
+![perf report dissassembly](https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_report_dis.3.png "perf report dissassembly")
