@@ -35,7 +35,8 @@ debug interesting issues is a fascinating topic I'm spending more time on. The
 problem is, with such tools to hand life seemingly becomes an endless longing
 for a process to spin out of control with not a reasonable error in sight.
 
-If you are looking for me you can find me on Twitter (https://twitter.com/) or
+If you are looking for me you can find me on LinkedIn
+(https://www.linkedin.com/in/pemcconnell/), Twitter (https://twitter.com/) or
 Github (https://github.com/peter-mcconnell).
 
 
