@@ -233,7 +233,7 @@ The Linux perf profiler is a very powerful tool that allows you to profile and o
 </span></span><span style="display:flex;"><span>~/FlameGraph/stackcollapse-perf.pl out.perf &gt; out.folded
 </span></span><span style="display:flex;"><span><span style="color:#75715e"># generate flamegraph</span>
 </span></span><span style="display:flex;"><span>~/FlameGraph/flamegraph.pl out.folded &gt; ./assets/perf_example_python3.10.svg
-</span></span></code></pre></div><p>We have created our Python 3.10 FlameGraph. If you right-click this image and select “open image in a new tab” or whatever the alternative is for your browser, you will see that you can interact with this graph, zooming in and out as desired.</p>
+</span></span></code></pre></div><p>We have created our Python 3.10 FlameGraph.</p>
 <p><img src="https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_example_python3.10.svg" alt="python 3.10 perf flamegraph" title="python 3.10 perf flamegraph"></p>
 <p>This isn&rsquo;t useful &hellip; I can see most of the time was spent in &ldquo;new_keys_object.lto_priv.0&rdquo; but that is meaningless in the context of the code.</p>
 <p>Time for Python 3.12. First I need to install it - the steps for this vary depending on OS - follow the build instructions here for your environment: <a href="https://github.com/python/cpython/tree/v3.12.0a3#build-instructions">https://github.com/python/cpython/tree/v3.12.0a3#build-instructions</a></p>
@@ -242,7 +242,7 @@ The Linux perf profiler is a very powerful tool that allows you to profile and o
 </span></span><span style="display:flex;"><span>make
 </span></span><span style="display:flex;"><span>make test
 </span></span><span style="display:flex;"><span>sudo make install
-</span></span></code></pre></div><p>With that installed I first need to enable perf support. This is detailed in <a href="https://docs.python.org/3.12/howto/perf_profiling.html">https://docs.python.org/3.12/howto/perf_profiling.html</a> and there are two options: 1) an environment variable, 2) an -X option or 3) dynamically using <code>sys</code>. I&rsquo;ll go for the environment variable approach:</p>
+</span></span></code></pre></div><p>With that installed I first need to enable perf support. This is detailed in <a href="https://docs.python.org/3.12/howto/perf_profiling.html">https://docs.python.org/3.12/howto/perf_profiling.html</a> and there are three options: 1) an environment variable, 2) an -X option or 3) dynamically using <code>sys</code>. I&rsquo;ll go for the environment variable approach:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>export PYTHONPERFSUPPORT<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>
 </span></span></code></pre></div><p>Now we simply repeat the process above using the <code>python3.12</code> binary instead:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#75715e"># record profile to &#34;perf.data&#34; file (default output)</span>
@@ -254,9 +254,9 @@ The Linux perf profiler is a very powerful tool that allows you to profile and o
 </span></span><span style="display:flex;"><span>~/FlameGraph/stackcollapse-perf.pl out.perf &gt; out.folded
 </span></span><span style="display:flex;"><span><span style="color:#75715e"># generate flamegraph</span>
 </span></span><span style="display:flex;"><span>~/FlameGraph/flamegraph.pl out.folded &gt; ./assets/perf_example_python3.12.before.svg
-</span></span></code></pre></div><p>We have created our Python 3.12 FlameGraph. If you right-click this image and select “open image in a new tab” or whatever the alternative is for your browser, you will see that you can interact with this graph, zooming in and out as desired.</p>
+</span></span></code></pre></div><p>We have created our Python 3.12 FlameGraph.</p>
 <p><img src="https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_example_python3.12.before.svg" alt="python 3.12 perf flamegraph" title="python 3.12 perf flamegraph"></p>
-<p>This is already looking much more useful. We see the majority of the time is being spent doing comparisons and in the list_contains method and knowing that can take a look at the source code in CPython to see what it does: <a href="https://github.com/python/cpython/blob/199507b81a302ea19f93593965b1e5088195a6c5/Objects/listobject.c#L440">https://github.com/python/cpython/blob/199507b81a302ea19f93593965b1e5088195a6c5/Objects/listobject.c#L440</a></p>
+<p>This is already looking much more useful. We see the majority of the time is being spent doing comparisons and in the list_contains method. Now that we know that can take a look at the source code in CPython to see what it does: <a href="https://github.com/python/cpython/blob/199507b81a302ea19f93593965b1e5088195a6c5/Objects/listobject.c#L440">https://github.com/python/cpython/blob/199507b81a302ea19f93593965b1e5088195a6c5/Objects/listobject.c#L440</a></p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span>
 </span></span><span style="display:flex;"><span><span style="color:#a6e22e">list_contains</span>(PyListObject <span style="color:#f92672">*</span>a, PyObject <span style="color:#f92672">*</span>el)
 </span></span><span style="display:flex;"><span>{
@@ -297,9 +297,9 @@ The Linux perf profiler is a very powerful tool that allows you to profile and o
 </span></span><span style="display:flex;"><span>~/FlameGraph/stackcollapse-perf.pl out.perf &gt; out.folded
 </span></span><span style="display:flex;"><span><span style="color:#75715e"># generate flamegraph</span>
 </span></span><span style="display:flex;"><span>~/FlameGraph/flamegraph.pl out.folded &gt; ./assets/perf_example_python3.12.after.svg
-</span></span></code></pre></div><p>We have now created our updated Python 3.12 FlameGraph. If you right-click this image and select “open image in a new tab” or whatever the alternative is for your browser, you will see that you can interact with this graph, zooming in and out as desired.</p>
+</span></span></code></pre></div><p>We have now created our updated Python 3.12 FlameGraph.</p>
 <p><img src="https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_example_python3.12.after.svg" alt="python 3.12 perf flamegraph improved" title="python 3.12 perf flamegraph improved"></p>
-<p>This is a much healthier looking Flamegraph and our application is now much faster as a result.</p>
+<p>This is a much healthier looking Flamegraph and our application is now much faster as a result. The perf profiling support in Python 3.12 brings a tremendously useful tool to software engineers that want to deliver fast programs.</p>
 
       </div></div>
 

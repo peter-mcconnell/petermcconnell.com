@@ -83,7 +83,7 @@ perf script > out.perf
 ~/FlameGraph/flamegraph.pl out.folded > ./assets/perf_example_python3.10.svg
 ```
 
-We have created our Python 3.10 FlameGraph. If you right-click this image and select “open image in a new tab” or whatever the alternative is for your browser, you will see that you can interact with this graph, zooming in and out as desired.
+We have created our Python 3.10 FlameGraph.
 
 ![python 3.10 perf flamegraph](https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_example_python3.10.svg "python 3.10 perf flamegraph")
 
@@ -100,7 +100,7 @@ make test
 sudo make install
 ```
 
-With that installed I first need to enable perf support. This is detailed in https://docs.python.org/3.12/howto/perf_profiling.html and there are two options: 1) an environment variable, 2) an -X option or 3) dynamically using `sys`. I'll go for the environment variable approach:
+With that installed I first need to enable perf support. This is detailed in https://docs.python.org/3.12/howto/perf_profiling.html and there are three options: 1) an environment variable, 2) an -X option or 3) dynamically using `sys`. I'll go for the environment variable approach:
 
 ```sh
 export PYTHONPERFSUPPORT=1
@@ -120,11 +120,11 @@ perf script > out.perf
 ~/FlameGraph/flamegraph.pl out.folded > ./assets/perf_example_python3.12.before.svg
 ```
 
-We have created our Python 3.12 FlameGraph. If you right-click this image and select “open image in a new tab” or whatever the alternative is for your browser, you will see that you can interact with this graph, zooming in and out as desired.
+We have created our Python 3.12 FlameGraph.
 
 ![python 3.12 perf flamegraph](https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_example_python3.12.before.svg "python 3.12 perf flamegraph")
 
-This is already looking much more useful. We see the majority of the time is being spent doing comparisons and in the list_contains method and knowing that can take a look at the source code in CPython to see what it does: https://github.com/python/cpython/blob/199507b81a302ea19f93593965b1e5088195a6c5/Objects/listobject.c#L440
+This is already looking much more useful. We see the majority of the time is being spent doing comparisons and in the list_contains method. Now that we know that can take a look at the source code in CPython to see what it does: https://github.com/python/cpython/blob/199507b81a302ea19f93593965b1e5088195a6c5/Objects/listobject.c#L440
 
 ```c
 static int
@@ -185,8 +185,8 @@ perf script > out.perf
 ~/FlameGraph/flamegraph.pl out.folded > ./assets/perf_example_python3.12.after.svg
 ```
 
-We have now created our updated Python 3.12 FlameGraph. If you right-click this image and select “open image in a new tab” or whatever the alternative is for your browser, you will see that you can interact with this graph, zooming in and out as desired.
+We have now created our updated Python 3.12 FlameGraph.
 
 ![python 3.12 perf flamegraph improved](https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_example_python3.12.after.svg "python 3.12 perf flamegraph improved")
 
-This is a much healthier looking Flamegraph and our application is now much faster as a result.
+This is a much healthier looking Flamegraph and our application is now much faster as a result. The perf profiling support in Python 3.12 brings a tremendously useful tool to software engineers that want to deliver fast programs.
