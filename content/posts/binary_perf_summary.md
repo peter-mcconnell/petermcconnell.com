@@ -2,7 +2,7 @@
 title = "Linux performance ideas"
 date = "2022-12-26T15:36:09Z"
 author = "Peter McConnell"
-authorTwitter = "peter-mcconnell" #do not include @
+authorTwitter = "PeteMcConnell_" #do not include @
 cover = ""
 tags = ["linux", "perf"]
 keywords = ["linux", "perf"]

@@ -2,7 +2,7 @@
 title = "chatGPT - building a virtual machine"
 date = "2022-12-05T14:16:04Z"
 author = ""
-authorTwitter = "peter-mcconnell" #do not include @
+authorTwitter = "PeteMcConnell_" #do not include @
 cover = ""
 tags = ["chatGPT"]
 keywords = ["", ""]

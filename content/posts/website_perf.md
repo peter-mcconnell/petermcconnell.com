@@ -2,7 +2,7 @@
 title = "website perf - a few common performance improvement ideas for web applications"
 date = "2022-12-26T15:30:38Z"
 author = "Peter McConnell"
-authorTwitter = "peter-mcconnell" #do not include @
+authorTwitter = "PeteMcConnell_" #do not include @
 cover = ""
 tags = ["web", "perf"]
 keywords = ["web", "perf"]

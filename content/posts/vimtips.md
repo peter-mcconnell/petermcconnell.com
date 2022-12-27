@@ -2,7 +2,7 @@
 title = "Vimtips"
 date = "2022-12-01T11:36:49Z"
 author = "Peter McConnell"
-authorTwitter = "peter-mcconnell" #do not include @
+authorTwitter = "PeteMcConnell_" #do not include @
 cover = ""
 tags = ["vim", "neovim"]
 keywords = ["vim", "neovim"]

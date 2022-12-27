@@ -2,13 +2,13 @@
 title = "Perf engingeering with Python 3.12"
 date = "2022-12-26T22:54:29Z"
 author = "Peter McConnell"
-authorTwitter = "peter-mcconnell" #do not include @
+authorTwitter = "PeteMcConnell_" #do not include @
 cover = ""
-tags = ["python", "linux", "cpython", "perf"]
-keywords = ["python", "linux", "cpython", "perf"]
+tags = ["python", "linux", "perf"]
+keywords = ["python", "linux", "cpython", "perf", "performance", "flamegraph"]
 description = ""
 showFullContent = false
-readingTime = false
+readingTime = true
 hideComments = false
 color = "" #color from the theme settings
 +++

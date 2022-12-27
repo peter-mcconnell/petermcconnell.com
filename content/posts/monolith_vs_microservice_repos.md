@@ -2,7 +2,7 @@
 title = "Monolith vs Microservice repositories - some pros and cons"
 date = "2022-12-26T15:01:29Z"
 author = "Peter McConnell"
-authorTwitter = "peter-mcconnell" #do not include @
+authorTwitter = "PeteMcConnell_" #do not include @
 cover = ""
 tags = ["monorepo", "microservice"]
 keywords = ["monorepo", "microservice"]
