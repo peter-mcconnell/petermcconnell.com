@@ -168,7 +168,7 @@ The important part (for this post) from the links above is:
       <span class="post-author">Peter McConnell</span>
     
     
-      <span class="post-reading-time">:: 7 min read (1287 words)</span>
+      <span class="post-reading-time">:: 7 min read (1299 words)</span>
     
   </div>
 
@@ -278,7 +278,7 @@ The Linux perf profiler is a very powerful tool that allows you to profile and o
 <p><img src="https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_example_python3.12.before.svg" alt="python 3.12 perf flamegraph" title="python 3.12 perf flamegraph"></p>
 <p>This is already looking much more useful. We see the majority of the time is being spent doing comparisons and in the list_contains method. We can also see the specific file <code>before.py</code> and method <code>run_dummy</code> that is calling it.</p>
 <h2 id="investigation-time--the-fix">Investigation time / the fix<a href="#investigation-time--the-fix" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
-<p>Now that we know that can take a look at the source code in CPython to see what it does: <a href="https://github.com/python/cpython/blob/199507b81a302ea19f93593965b1e5088195a6c5/Objects/listobject.c#L440">https://github.com/python/cpython/blob/199507b81a302ea19f93593965b1e5088195a6c5/Objects/listobject.c#L440</a></p>
+<p>Now that we know where in our code the problem is, we can take a look at the source code in CPython to see why the <code>list_contains</code> method would be so slow: <a href="https://github.com/python/cpython/blob/199507b81a302ea19f93593965b1e5088195a6c5/Objects/listobject.c#L440">https://github.com/python/cpython/blob/199507b81a302ea19f93593965b1e5088195a6c5/Objects/listobject.c#L440</a></p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">// I found this by going to https://github.com/python/cpython/ and searching for &#34;list_contains&#34;
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span>

@@ -150,7 +150,7 @@ This is already looking much more useful. We see the majority of the time is bei
 Investigation time / the fix
 ----------------------------
 
-Now that we know that can take a look at the source code in CPython to see what it does: https://github.com/python/cpython/blob/199507b81a302ea19f93593965b1e5088195a6c5/Objects/listobject.c#L440
+Now that we know where in our code the problem is, we can take a look at the source code in CPython to see why the `list_contains` method would be so slow: https://github.com/python/cpython/blob/199507b81a302ea19f93593965b1e5088195a6c5/Objects/listobject.c#L440
 
 ```c
 // I found this by going to https://github.com/python/cpython/ and searching for "list_contains"
