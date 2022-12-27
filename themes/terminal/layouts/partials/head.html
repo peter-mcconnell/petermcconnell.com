@@ -5,7 +5,15 @@
 <meta name="robots" content="noodp" />
 <link rel="canonical" href="{{ .Permalink }}" />
 
-{{ template "_internal/google_analytics.html" . }}
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QJWXPMPB8F"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-QJWXPMPB8F');
+</script>
 
 {{ $defaultStyles := resources.Get "css/style.scss" }}
 <!-- Local Theme Variables -->
