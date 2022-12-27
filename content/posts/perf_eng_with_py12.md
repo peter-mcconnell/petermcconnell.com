@@ -1,5 +1,5 @@
 +++
-title = "Perf engingeering with Python 3.12"
+title = "Perf engineering with Python 3.12"
 date = "2022-12-26T22:54:29Z"
 author = "Peter McConnell"
 authorTwitter = "PeteMcConnell_" #do not include @
