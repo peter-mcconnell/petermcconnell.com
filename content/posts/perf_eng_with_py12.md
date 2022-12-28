@@ -11,6 +11,7 @@ showFullContent = false
 readingTime = true
 hideComments = false
 color = "" #color from the theme settings
+Toc = true
 +++
 
 3.12 brings perf profiling! Take a second to go check out https://docs.python.org/3.12/howto/perf_profiling.html and indeed the changelog at https://www.python.org/downloads/release/python-3120a3/

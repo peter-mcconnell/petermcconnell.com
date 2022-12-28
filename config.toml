@@ -21,7 +21,7 @@ paginate = 5
   showMenuItems = 5
 
   # show selector to switch language
-  showLanguageSelector = false
+  showLanguageSelector = true
 
   # set theme to full screen width
   fullWidthTheme = false
@@ -48,32 +48,33 @@ paginate = 5
   # oneHeadingSize = true # default
 
   # whether to show a page's estimated reading time
-  # readingTime = false # default
+  readingTime = true # default
 
   # whether to show a table of contents
   # can be overridden in a page's front-matter
-  # Toc = false # default
+  Toc = false # default
 
   # set title for the table of contents
   # can be overridden in a page's front-matter
-  # TocTitle = "Table of Contents" # default
+  TocTitle = "Table of Contents" # default
 
 
 [params.twitter]
   # set Twitter handles for Twitter cards
   # see https://developer.twitter.com/en/docs/tweets/optimize-with-cards/guides/getting-started#card-and-content-attribution
   # do not include @
-  creator = ""
-  site = ""
+  creator = "PeteMcConnell_"
+  site = "PeteMcConnell_"
 
+defaultContentLanguage = 'en'
 [languages]
   [languages.en]
     languageName = "English"
-    title = "Peter McConnell"
-    subtitle = "A simple, retro theme for Hugo"
-    owner = ""
-    keywords = ""
-    copyright = ""
+    title = "Peter McConnell :: Ponderings from a Linux Systems engineer"
+    subtitle = "A software focused blog for those interested in linux systems and performance"
+    owner = "Peter McConnell"
+    keywords = "software,engineering,linux,python,sre,peter,mcconnell,pemcconnell"
+    copyright = "&copy; Peter McConnell 2023"
     menuMore = "Show more"
     readMore = "Read more"
     readOtherPosts = "Read other posts"
@@ -99,6 +100,38 @@ paginate = 5
         identifier = "showcase"
         name = "Showcase"
         url = "/showcase"
+  [languages.fr]
+    languageName = "Français"
+    title = "Peter McConnell :: Réflexions d'un ingénieur système Linux"
+    subtitle = "Un blog axé sur les logiciels pour ceux qui s'intéressent aux systèmes Linux et à leurs performances"
+    owner = "Peter McConnell"
+    keywords = "logiciel,programmation,linux,python,sre,peter,mcconnell,pemcconnell"
+    copyright = "&copy; Peter McConnell 2023"
+    menuMore = "Afficher plus"
+    readMore = "Lire la suite"
+    readOtherPosts = "Lire d'autres articles"
+    newerPosts = "Articles plus récents"
+    olderPosts = "Articles plus anciens"
+    missingContentMessage = "Page introuvable..."
+    missingBackButtonLabel = "Retour à la page d'accueil"
+
+    [languages.fr.params.logo]
+      logoText = "Peter McConnell"
+      logoHomeLink = "/"
+
+    [languages.fr.menu]
+      [[languages.fr.menu.main]]
+        identifier = "about"
+        name = "Environ"
+        url = "/fr/about"
+      [[languages.fr.menu.main]]
+        identifier = "skills"
+        name = "Compétences"
+        url = "/fr/skills"
+      [[languages.fr.menu.main]]
+        identifier = "showcase"
+        name = "vitrine"
+        url = "/fr/showcase"
 
 [module]
   replacements = "github.com/panr/hugo-theme-terminal -> themes/terminal"
