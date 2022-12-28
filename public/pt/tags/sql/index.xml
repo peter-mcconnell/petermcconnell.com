@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>SQL on Peter McConnell :: Ponderações de um engenheiro de sistemas Linux</title>
+    <link>https://www.petermcconnell.com/pt/tags/sql/</link>
+    <description>Recent content in SQL on Peter McConnell :: Ponderações de um engenheiro de sistemas Linux</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; Peter McConnell 2023</copyright>
+    <lastBuildDate>Thu, 08 Dec 2022 11:41:50 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/pt/tags/sql/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>chatGPT - construindo uma ferramenta automatizada de teste de banco de dados</title>
+      <link>https://www.petermcconnell.com/pt/posts/ai_db_testing/</link>
+      <pubDate>Thu, 08 Dec 2022 11:41:50 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/pt/posts/ai_db_testing/</guid>
+      <description>Criando uma ferramenta automatizada de teste de banco de dados com ChatGPT Ontem à noite pensei em tentar fazer com que o ChatGPT criasse um banco de dados automatizado ferramenta de teste e os resultados foram bastante promissores.
+Em conclusão, com orientação, foi capaz de construir um projeto de raiz que executou um script python e um banco de dados postgres. Ele gerou algum esquema aleatório e valores para as tabelas geradas aleatoriamente.</description>
+      <content>&lt;h2 id=&#34;criando-uma-ferramenta-automatizada-de-teste-de-banco-de-dados-com-chatgpt&#34;&gt;Criando uma ferramenta automatizada de teste de banco de dados com ChatGPT&lt;/h2&gt;
+&lt;p&gt;Ontem à noite pensei em tentar fazer com que o ChatGPT criasse um banco de dados automatizado
+ferramenta de teste e os resultados foram bastante promissores.&lt;/p&gt;
+&lt;p&gt;Em conclusão, com orientação, foi capaz de construir um projeto de raiz que
+executou um script python e um banco de dados postgres. Ele gerou algum esquema aleatório e
+valores para as tabelas geradas aleatoriamente. Ele forneceu um script Python que
+faria uma introspecção do banco de dados e executaria consultas nele.&lt;/p&gt;
+&lt;p&gt;Tudo funcionou fora da caixa? Não. Existem alguns bugs para corrigir no python
+script que ele gerou. No entanto, o esforço para consertá-los não é alto e
+certamente todo o processo de ponta a ponta é mais barato, em termos de tempo, em comparação com
+começando do zero.&lt;/p&gt;
+&lt;p&gt;Descobri que os bugs encontrados eram em grande parte devido à minha falta de clareza ou
+ordenação das questões que lhe são colocadas. Era perfeitamente capaz de consertar seu próprio
+erros / atualização do código existente para corresponder aos novos requisitos ao
+solicitado a fazê-lo.&lt;/p&gt;
+&lt;p&gt;O único problema &lt;em&gt;real&lt;/em&gt; que encontrei foram erros gerais de API que
+esperar de algo tão popular em um estado de visualização inicial.&lt;/p&gt;
+&lt;p&gt;Saí desta experiência visualizando o ChatGPT e tudo o que o segue como um
+auxiliar de desenvolvimento realmente útil para quem já sabe programar. Isto
+me ajudou a construir uma ferramenta mais rápido do que eu poderia ter feito se tivesse sentado para fazê-lo de
+coçar, arranhão. Ainda não o vejo como um substituto para engenheiros de software para dois
+razões principais - em primeiro lugar: para aplicações não triviais, suspeito que a pessoa
+requisitos de alimentação no sistema (ou &amp;ldquo;engenheiro de prompt&amp;rdquo;) precisa ter um
+ideia razoável de como construir software em primeiro lugar, para saber como
+formular solicitações e corrigir erros / preencher lacunas. em segundo lugar: o código sendo
+gerado nem sempre é bom - sem um engenheiro experiente revisando e
+tomando posse de qualquer código que seja produzido (propriedade sendo importante para
+razões de manutenção), então há pouca garantia de que você obterá o que
+estão esperando.&lt;/p&gt;
+&lt;p&gt;No entanto; isso ainda é muito cedo. Os problemas descritos podem ser fechados
+avançar? Absolutamente. Esse tipo de ferramenta será &amp;ldquo;ruim&amp;rdquo; para software
+engenharia como um todo, a longo prazo? Possivelmente. Pessoalmente, estou muito animado por ter
+esta ferramenta em meu arsenal - já me permitiu construir um protótipo de scaffold
+aplicações rapidamente. Eu o usaria para código de produção em um local de trabalho? Não
+mais ou menos do que eu faria com trechos de stackoverflow ou algo parecido. Por agora.&lt;/p&gt;
+&lt;p&gt;Repositório Github: &lt;a href=&#34;https://github.com/peter-mcconnell/gpt_sql_test_generator&#34;&gt;https://github.com/peter-mcconnell/gpt_sql_test_generator&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Capturas de tela:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/2.png&#34; alt=&#34;step 2&#34; title=&#34;step 2&#34;&gt;
+&lt;img src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/3.png&#34; alt=&#34;step 3&#34; title=&#34;step 3&#34;&gt;
+&lt;img src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/4.png&#34; alt=&#34;step 4&#34; title=&#34;step 4&#34;&gt;
+&lt;img src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/5.png&#34; alt=&#34;step 5&#34; title=&#34;step 5&#34;&gt;
+&lt;img src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/6.png&#34; alt=&#34;step 6&#34; title=&#34;step 6&#34;&gt;
+&lt;img src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/7.png&#34; alt=&#34;step 7&#34; title=&#34;step 7&#34;&gt;
+&lt;img src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/8.png&#34; alt=&#34;step 8&#34; title=&#34;step 8&#34;&gt;
+&lt;img src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/9.png&#34; alt=&#34;step 9&#34; title=&#34;step 9&#34;&gt;
+&lt;img src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/10.png&#34; alt=&#34;step 10&#34; title=&#34;step 10&#34;&gt;
+&lt;img src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/11.png&#34; alt=&#34;step 11&#34; title=&#34;step 11&#34;&gt;
+&lt;img src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/12.png&#34; alt=&#34;step 12&#34; title=&#34;step 12&#34;&gt;
+&lt;img src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/13.png&#34; alt=&#34;step 13&#34; title=&#34;step 13&#34;&gt;
+&lt;img src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/14.png&#34; alt=&#34;step 14&#34; title=&#34;step 14&#34;&gt;
+&lt;img src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/15.png&#34; alt=&#34;step 15&#34; title=&#34;step 15&#34;&gt;
+&lt;img src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/16.png&#34; alt=&#34;step 16&#34; title=&#34;step 16&#34;&gt;&lt;/p&gt;
+</content>
+    </item>
+    
+  </channel>
+</rss>

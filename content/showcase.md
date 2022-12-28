@@ -36,4 +36,4 @@ I've been around for a while and done some things. Even some good things.
  - co-founded an award winning web design company (31interactive)
 
 20 years working in tech and the above is all the "good things" I can think of
-listing. Imagine how long the "bad things" list must be ..
+listing. Imagine how long the "bad things" list must be ...

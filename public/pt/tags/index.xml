@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on Peter McConnell :: Ponderações de um engenheiro de sistemas Linux</title>
+    <link>https://www.petermcconnell.com/pt/tags/</link>
+    <description>Recent content in Tags on Peter McConnell :: Ponderações de um engenheiro de sistemas Linux</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; Peter McConnell 2023</copyright>
+    <lastBuildDate>Mon, 26 Dec 2022 22:54:29 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/pt/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>linux</title>
+      <link>https://www.petermcconnell.com/pt/tags/linux/</link>
+      <pubDate>Mon, 26 Dec 2022 22:54:29 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/pt/tags/linux/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>perf</title>
+      <link>https://www.petermcconnell.com/pt/tags/perf/</link>
+      <pubDate>Mon, 26 Dec 2022 22:54:29 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/pt/tags/perf/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>Python</title>
+      <link>https://www.petermcconnell.com/pt/tags/python/</link>
+      <pubDate>Mon, 26 Dec 2022 22:54:29 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/pt/tags/python/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>chatGPT</title>
+      <link>https://www.petermcconnell.com/pt/tags/chatgpt/</link>
+      <pubDate>Thu, 08 Dec 2022 11:41:50 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/pt/tags/chatgpt/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>SQL</title>
+      <link>https://www.petermcconnell.com/pt/tags/sql/</link>
+      <pubDate>Thu, 08 Dec 2022 11:41:50 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/pt/tags/sql/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+  </channel>
+</rss>

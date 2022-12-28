@@ -133,8 +133,39 @@ defaultContentLanguage = 'en'
         url = "/fr/skills"
       [[languages.fr.menu.main]]
         identifier = "showcase"
-        name = "vitrine"
+        name = "Vitrine"
         url = "/fr/showcase"
+  [languages.pt]
+    languageName = "Português"
+    title = "Peter McConnell :: Ponderações de um engenheiro de sistemas Linux"
+    subtitle = "Um blog focado em software para os interessados em sistemas Linux e desempenho"
+    owner = "Peter McConnell"
+    keywords = "software,programação,linux,python,sre,peter,mcconnell,pemcconnell"
+    copyright = "&copy; Peter McConnell 2023"
+    menuMore = "Mostre mais"
+    readMore = "Consulte Mais informação"
+    readOtherPosts = "Leia outras postagens"
+    newerPosts = "Postagens mais recentes"
+    olderPosts = "Posts mais antigos"
+    missingContentMessage = "página não encontrada..."
+    missingBackButtonLabel = "Voltar à página inicial"
 
+    [languages.pt.params.logo]
+      logoText = "Peter McConnell"
+      logoHomeLink = "/"
+
+    [languages.pt.menu]
+      [[languages.pt.menu.main]]
+        identifier = "about"
+        name = "Sobre"
+        url = "/pt/about"
+      [[languages.pt.menu.main]]
+        identifier = "skills"
+        name = "Habilidades"
+        url = "/pt/skills"
+      [[languages.pt.menu.main]]
+        identifier = "showcase"
+        name = "Mostruário"
+        url = "/pt/showcase"
 [module]
   replacements = "github.com/panr/hugo-theme-terminal -> themes/terminal"

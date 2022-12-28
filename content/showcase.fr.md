@@ -36,4 +36,4 @@ Je suis là depuis un moment et j'ai fait certaines choses. Même quelques bonne
   - a cofondé une entreprise de conception de sites Web primée (31interactive)
 
 20 ans de travail dans la technologie et ce qui précède est toutes les "bonnes choses" auxquelles je peux penser
-référencement. Imaginez combien de temps la liste des "mauvaises choses" doit être ..
+référencement. Imaginez combien de temps la liste des "mauvaises choses" doit être ...

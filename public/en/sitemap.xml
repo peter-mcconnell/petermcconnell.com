@@ -11,6 +11,11 @@
                 />
     <xhtml:link
                 rel="alternate"
+                hreflang="pt"
+                href="https://www.petermcconnell.com/pt/tags/linux/"
+                />
+    <xhtml:link
+                rel="alternate"
                 hreflang="en"
                 href="https://www.petermcconnell.com/tags/linux/"
                 />
@@ -24,12 +29,22 @@
                 />
     <xhtml:link
                 rel="alternate"
+                hreflang="pt"
+                href="https://www.petermcconnell.com/pt/tags/perf/"
+                />
+    <xhtml:link
+                rel="alternate"
                 hreflang="en"
                 href="https://www.petermcconnell.com/tags/perf/"
                 />
   </url><url>
     <loc>https://www.petermcconnell.com/posts/perf_eng_with_py12/</loc>
     <lastmod>2022-12-26T22:54:29+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="pt"
+                href="https://www.petermcconnell.com/pt/posts/perf_eng_with_py12/"
+                />
     <xhtml:link
                 rel="alternate"
                 hreflang="fr"
@@ -43,6 +58,11 @@
   </url><url>
     <loc>https://www.petermcconnell.com/</loc>
     <lastmod>2022-12-26T22:54:29+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="pt"
+                href="https://www.petermcconnell.com/pt/"
+                />
     <xhtml:link
                 rel="alternate"
                 hreflang="fr"
@@ -63,6 +83,11 @@
                 />
     <xhtml:link
                 rel="alternate"
+                hreflang="pt"
+                href="https://www.petermcconnell.com/pt/posts/"
+                />
+    <xhtml:link
+                rel="alternate"
                 hreflang="en"
                 href="https://www.petermcconnell.com/posts/"
                 />
@@ -76,6 +101,11 @@
                 />
     <xhtml:link
                 rel="alternate"
+                hreflang="pt"
+                href="https://www.petermcconnell.com/pt/tags/python/"
+                />
+    <xhtml:link
+                rel="alternate"
                 hreflang="en"
                 href="https://www.petermcconnell.com/tags/python/"
                 />
@@ -86,6 +116,11 @@
                 rel="alternate"
                 hreflang="fr"
                 href="https://www.petermcconnell.com/fr/tags/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="pt"
+                href="https://www.petermcconnell.com/pt/tags/"
                 />
     <xhtml:link
                 rel="alternate"
@@ -120,6 +155,11 @@
                 />
     <xhtml:link
                 rel="alternate"
+                hreflang="pt"
+                href="https://www.petermcconnell.com/pt/tags/chatgpt/"
+                />
+    <xhtml:link
+                rel="alternate"
                 hreflang="en"
                 href="https://www.petermcconnell.com/tags/chatgpt/"
                 />
@@ -132,6 +172,11 @@
   </url><url>
     <loc>https://www.petermcconnell.com/posts/ai_db_testing/</loc>
     <lastmod>2022-12-08T11:41:50+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="pt"
+                href="https://www.petermcconnell.com/pt/posts/ai_db_testing/"
+                />
     <xhtml:link
                 rel="alternate"
                 hreflang="fr"
@@ -149,6 +194,11 @@
                 rel="alternate"
                 hreflang="fr"
                 href="https://www.petermcconnell.com/fr/tags/sql/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="pt"
+                href="https://www.petermcconnell.com/pt/tags/sql/"
                 />
     <xhtml:link
                 rel="alternate"
@@ -189,6 +239,11 @@
                 />
     <xhtml:link
                 rel="alternate"
+                hreflang="pt"
+                href="https://www.petermcconnell.com/pt/skills/"
+                />
+    <xhtml:link
+                rel="alternate"
                 hreflang="en"
                 href="https://www.petermcconnell.com/skills/"
                 />
@@ -202,12 +257,22 @@
                 />
     <xhtml:link
                 rel="alternate"
+                hreflang="pt"
+                href="https://www.petermcconnell.com/pt/showcase/"
+                />
+    <xhtml:link
+                rel="alternate"
                 hreflang="en"
                 href="https://www.petermcconnell.com/showcase/"
                 />
   </url><url>
     <loc>https://www.petermcconnell.com/about/</loc>
     <lastmod>2022-11-29T20:36:26+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="pt"
+                href="https://www.petermcconnell.com/pt/about/"
+                />
     <xhtml:link
                 rel="alternate"
                 hreflang="fr"
@@ -230,6 +295,11 @@
                 rel="alternate"
                 hreflang="fr"
                 href="https://www.petermcconnell.com/fr/categories/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="pt"
+                href="https://www.petermcconnell.com/pt/categories/"
                 />
     <xhtml:link
                 rel="alternate"
