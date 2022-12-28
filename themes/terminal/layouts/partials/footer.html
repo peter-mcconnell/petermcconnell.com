@@ -1,5 +1,10 @@
 <footer class="footer">
   <div class="footer__inner">
+    {{ with .OutputFormats.Get "rss" -}}
+      <div class="rss">
+        {{ printf `<a href="%s" title="rss feed">rss</a>` .Permalink | safeHTML }}
+      </div>
+    {{ end -}}
     {{ if $.Site.Copyright }}
       <div class="copyright copyright--user">
         <span>{{ $.Site.Copyright | safeHTML }}</span>
