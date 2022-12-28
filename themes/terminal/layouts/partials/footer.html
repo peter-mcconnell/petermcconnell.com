@@ -1,18 +1,21 @@
 <footer class="footer">
   <div class="footer__inner">
-    {{ with .OutputFormats.Get "rss" -}}
-      <div class="rss">
-        {{ printf `<a href="%s" title="rss feed">rss</a>` .Permalink | safeHTML }}
+    <div class="links">
+      {{ with .OutputFormats.Get "rss" -}}
+      {{ printf `<a href="%s" title="rss feed">rss</a> | ` .Permalink | safeHTML }}
+      {{ end -}}
+      <a href="https://twitter.com/PeteMcConnell_">twitter</a> |
+      <a href="https://github.com/peter-mcconnell/">github</a> |
+      <a href="https://www.linkedin.com/in/pemcconnell/">linkedin</a>
+      {{ if $.Site.Copyright }}
+        <div class="copyright copyright--user">
+          <span>{{ $.Site.Copyright | safeHTML }}</span>
+      {{ else }}
+        <div class="copyright">
+          <span>© {{ now.Year }} Peter McConnell</span>
+      {{ end }}
       </div>
-    {{ end -}}
-    {{ if $.Site.Copyright }}
-      <div class="copyright copyright--user">
-        <span>{{ $.Site.Copyright | safeHTML }}</span>
-    {{ else }}
-      <div class="copyright">
-        <span>© {{ now.Year }} Peter McConnell</span>
-    {{ end }}
-      </div>
+    </div>
   </div>
 </footer>
 
