@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  
+    <title>chatGPT :: Peter McConnell :: Reflexiones de un ingeniero de sistemas Linux</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="" />
+<meta name="keywords" content="software,programación,linux,python,sre,peter,mcconnell,pemcconnell" />
+<meta name="robots" content="noodp" />
+<link rel="alternate" type="application/rss+xml" href="https://www.petermcconnell.com/es/tags/chatgpt/index.xml" title="Peter McConnell :: Reflexiones de un ingeniero de sistemas Linux" />
+
+
+<link rel="canonical" href="https://www.petermcconnell.com/es/tags/chatgpt/" />
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QJWXPMPB8F"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-QJWXPMPB8F');
+</script>
+
+
+
+
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="/style.css">
+
+
+
+
+
+
+
+  <link rel="shortcut icon" href="https://www.petermcconnell.com/img/theme-colors/pink.png">
+  <link rel="apple-touch-icon" href="https://www.petermcconnell.com/img/theme-colors/pink.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+  
+    <meta name="twitter:site" content="PeteMcConnell_" />
+  
+    <meta name="twitter:creator" content="" />
+
+
+
+<meta property="og:locale" content="es" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="chatGPT">
+<meta property="og:description" content="" />
+<meta property="og:url" content="https://www.petermcconnell.com/es/tags/chatgpt/" />
+<meta property="og:site_name" content="Peter McConnell :: Reflexiones de un ingeniero de sistemas Linux" />
+
+  
+    <meta property="og:image" content="https://www.petermcconnell.com/img/favicon/pink.png">
+  
+
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="627">
+
+
+
+
+
+  <link href="/es/tags/chatgpt/index.xml" rel="alternate" type="application/rss+xml" title="Peter McConnell :: Reflexiones de un ingeniero de sistemas Linux" />
+
+
+
+
+
+
+
+
+
+</head>
+<body class="pink">
+
+
+<div class="container headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/es/">
+  <div class="logo">
+    Peter McConnell
+  </div>
+</a>
+
+    </div>
+    
+      <ul class="menu menu--mobile">
+  <li class="menu__trigger">Menu&nbsp;▾</li>
+  <li>
+    <ul class="menu__dropdown">
+      
+        
+          <li><a href="/es/showcase">Escaparate</a></li>
+        
+      
+        
+          <li><a href="/es/skills">Habilidades</a></li>
+        
+      
+        
+          <li><a href="/es/about">Sobre</a></li>
+        
+      
+      
+        <hr />
+        
+          <li>
+            <a href="https://www.petermcconnell.com/pt/">Português</a>
+          </li>
+        
+          <li>
+            <a href="https://www.petermcconnell.com/">English</a>
+          </li>
+        
+          <li>
+            <a href="https://www.petermcconnell.com/es/">Española</a>
+          </li>
+        
+          <li>
+            <a href="https://www.petermcconnell.com/fr/">Français</a>
+          </li>
+        
+      
+    </ul>
+  </li>
+</ul>
+
+    
+    
+      <ul class="menu menu--desktop menu--language-selector">
+  <li class="menu__trigger">Española&nbsp;▾</li>
+  <li>
+    <ul class="menu__dropdown">
+      
+        <li><a href="https://www.petermcconnell.com/pt/">Português</a></li>
+      
+        <li><a href="https://www.petermcconnell.com/">English</a></li>
+      
+        <li><a href="https://www.petermcconnell.com/es/">Española</a></li>
+      
+        <li><a href="https://www.petermcconnell.com/fr/">Français</a></li>
+      
+    </ul>
+  </li>
+</ul>
+
+    
+  </div>
+  
+    <nav class="navigation-menu">
+  <ul class="navigation-menu__inner menu--desktop">
+    
+      
+        
+          <li><a href="/es/showcase">Escaparate</a></li>
+        
+      
+        
+          <li><a href="/es/skills">Habilidades</a></li>
+        
+      
+        
+          <li><a href="/es/about">Sobre</a></li>
+        
+      
+      
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+  
+  <div class="posts">
+    
+      <article class="post on-list">
+        <h1 class="post-title">
+          <a href="https://www.petermcconnell.com/es/posts/ai_db_testing/">chatGPT: creación de una herramienta de prueba de base de datos automatizada</a>
+        </h1>
+        <div class="post-meta">
+          
+            <time class="post-date">
+              2022-12-08 ::
+            </time>
+          
+          
+        </div>
+
+        
+          <span class="post-tags">
+            
+            #<a href="https://www.petermcconnell.com/es/tags/chatgpt/">chatGPT</a>&nbsp;
+            
+            #<a href="https://www.petermcconnell.com/es/tags/sql/">SQL</a>&nbsp;
+            
+            #<a href="https://www.petermcconnell.com/es/tags/python/">Python</a>&nbsp;
+            
+          </span>
+        
+
+        
+
+
+        <div class="post-content">
+          
+            Creación de una herramienta de prueba de base de datos automatizada con ChatGPT Anoche pensé en intentar que ChatGPT creara una base de datos automatizada herramienta de prueba y los resultados fueron bastante prometedores.
+En conclusión, con orientación, fue capaz de construir un proyecto desde cero que ejecutó un script de python y una base de datos de postgres. Generó un esquema aleatorio y valores para las tablas generadas aleatoriamente. Proporcionó un script de Python que introspeccionaría la base de datos y ejecutaría consultas contra ella.
+          
+        </div>
+
+        
+          <div>
+            <a class="read-more button" href="/es/posts/ai_db_testing/">Lee mas →</a>
+          </div>
+        
+      </article>
+    
+
+    <div class="pagination">
+  <div class="pagination__buttons">
+    
+    
+  </div>
+</div>
+
+  </div>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    <div class="rss">
+        <a href="https://www.petermcconnell.com/es/tags/chatgpt/index.xml" title="rss feed">rss</a>
+      </div>
+    
+      <div class="copyright copyright--user">
+        <span>&copy; Peter McConnell 2023</span>
+    
+      </div>
+  </div>
+</footer>
+
+
+
+
+
+
+<script type="text/javascript" src="/bundle.min.js"></script>
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>

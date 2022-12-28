@@ -120,7 +120,7 @@ defaultContentLanguage = 'en'
 
     [languages.fr.params.logo]
       logoText = "Peter McConnell"
-      logoHomeLink = "/"
+      logoHomeLink = "/fr/"
 
     [languages.fr.menu]
       [[languages.fr.menu.main]]
@@ -152,7 +152,7 @@ defaultContentLanguage = 'en'
 
     [languages.pt.params.logo]
       logoText = "Peter McConnell"
-      logoHomeLink = "/"
+      logoHomeLink = "/pt/"
 
     [languages.pt.menu]
       [[languages.pt.menu.main]]
@@ -167,5 +167,38 @@ defaultContentLanguage = 'en'
         identifier = "showcase"
         name = "Mostruário"
         url = "/pt/showcase"
+  [languages.es]
+    languageName = "Española"
+    title = "Peter McConnell :: Reflexiones de un ingeniero de sistemas Linux"
+    subtitle = "Un blog centrado en el software para aquellos interesados en los sistemas y el rendimiento de Linux"
+    owner = "Peter McConnell"
+    keywords = "software,programación,linux,python,sre,peter,mcconnell,pemcconnell"
+    copyright = "&copy; Peter McConnell 2023"
+    menuMore = "Mostrar más"
+    readMore = "Lee mas"
+    readOtherPosts = "Leer otras publicaciones"
+    newerPosts = "las publicaciones más nuevas"
+    olderPosts = "Publicaciones más antiguas"
+    missingContentMessage = "Página no encontrada..."
+    missingBackButtonLabel = "Volver a la página de inicio"
+
+    [languages.es.params.logo]
+      logoText = "Peter McConnell"
+      logoHomeLink = "/es/"
+
+    [languages.es.menu]
+      [[languages.es.menu.main]]
+        identifier = "about"
+        name = "Sobre"
+        url = "/es/about"
+      [[languages.es.menu.main]]
+        identifier = "skills"
+        name = "Habilidades"
+        url = "/es/skills"
+      [[languages.es.menu.main]]
+        identifier = "showcase"
+        name = "Escaparate"
+        url = "/es/showcase"
+
 [module]
   replacements = "github.com/panr/hugo-theme-terminal -> themes/terminal"

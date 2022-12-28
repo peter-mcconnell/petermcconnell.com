@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  
+    <title>chatGPT: creación de una herramienta de prueba de base de datos automatizada :: Peter McConnell :: Reflexiones de un ingeniero de sistemas Linux</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Creación de una herramienta de prueba de base de datos automatizada con ChatGPT Anoche pensé en intentar que ChatGPT creara una base de datos automatizada herramienta de prueba y los resultados fueron bastante prometedores.
+En conclusión, con orientación, fue capaz de construir un proyecto desde cero que ejecutó un script de python y una base de datos de postgres. Generó un esquema aleatorio y valores para las tablas generadas aleatoriamente. Proporcionó un script de Python que introspeccionaría la base de datos y ejecutaría consultas contra ella." />
+<meta name="keywords" content="chatGPT, sql" />
+<meta name="robots" content="noodp" />
+
+
+<link rel="canonical" href="https://www.petermcconnell.com/es/posts/ai_db_testing/" />
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QJWXPMPB8F"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-QJWXPMPB8F');
+</script>
+
+
+
+
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="/style.css">
+
+
+
+
+
+
+
+  <link rel="shortcut icon" href="https://www.petermcconnell.com/img/theme-colors/pink.png">
+  <link rel="apple-touch-icon" href="https://www.petermcconnell.com/img/theme-colors/pink.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+  
+    <meta name="twitter:site" content="PeteMcConnell_" />
+  
+    <meta name="twitter:creator" content="PeteMcConnell_" />
+
+
+
+<meta property="og:locale" content="es" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="chatGPT: creación de una herramienta de prueba de base de datos automatizada">
+<meta property="og:description" content="Creación de una herramienta de prueba de base de datos automatizada con ChatGPT Anoche pensé en intentar que ChatGPT creara una base de datos automatizada herramienta de prueba y los resultados fueron bastante prometedores.
+En conclusión, con orientación, fue capaz de construir un proyecto desde cero que ejecutó un script de python y una base de datos de postgres. Generó un esquema aleatorio y valores para las tablas generadas aleatoriamente. Proporcionó un script de Python que introspeccionaría la base de datos y ejecutaría consultas contra ella." />
+<meta property="og:url" content="https://www.petermcconnell.com/es/posts/ai_db_testing/" />
+<meta property="og:site_name" content="Peter McConnell :: Reflexiones de un ingeniero de sistemas Linux" />
+
+  
+  
+  <meta property="og:image" content="https://www.petermcconnell.com/">
+
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="627">
+
+
+  <meta property="article:published_time" content="2022-12-08 11:41:50 &#43;0000 UTC" />
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+<body class="pink">
+
+
+<div class="container headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/es/">
+  <div class="logo">
+    Peter McConnell
+  </div>
+</a>
+
+    </div>
+    
+      <ul class="menu menu--mobile">
+  <li class="menu__trigger">Menu&nbsp;▾</li>
+  <li>
+    <ul class="menu__dropdown">
+      
+        
+          <li><a href="/es/showcase">Escaparate</a></li>
+        
+      
+        
+          <li><a href="/es/skills">Habilidades</a></li>
+        
+      
+        
+          <li><a href="/es/about">Sobre</a></li>
+        
+      
+      
+        <hr />
+        
+          <li>
+            <a href="https://www.petermcconnell.com/pt/">Português</a>
+          </li>
+        
+          <li>
+            <a href="https://www.petermcconnell.com/">English</a>
+          </li>
+        
+          <li>
+            <a href="https://www.petermcconnell.com/es/">Española</a>
+          </li>
+        
+          <li>
+            <a href="https://www.petermcconnell.com/fr/">Français</a>
+          </li>
+        
+      
+    </ul>
+  </li>
+</ul>
+
+    
+    
+      <ul class="menu menu--desktop menu--language-selector">
+  <li class="menu__trigger">Española&nbsp;▾</li>
+  <li>
+    <ul class="menu__dropdown">
+      
+        <li><a href="https://www.petermcconnell.com/pt/">Português</a></li>
+      
+        <li><a href="https://www.petermcconnell.com/">English</a></li>
+      
+        <li><a href="https://www.petermcconnell.com/es/">Española</a></li>
+      
+        <li><a href="https://www.petermcconnell.com/fr/">Français</a></li>
+      
+    </ul>
+  </li>
+</ul>
+
+    
+  </div>
+  
+    <nav class="navigation-menu">
+  <ul class="navigation-menu__inner menu--desktop">
+    
+      
+        
+          <li><a href="/es/showcase">Escaparate</a></li>
+        
+      
+        
+          <li><a href="/es/skills">Habilidades</a></li>
+        
+      
+        
+          <li><a href="/es/about">Sobre</a></li>
+        
+      
+      
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<article class="post">
+  <h1 class="post-title">
+    <a href="https://www.petermcconnell.com/es/posts/ai_db_testing/">chatGPT: creación de una herramienta de prueba de base de datos automatizada</a>
+  </h1>
+  <div class="post-meta">
+    
+      <time class="post-date">
+        2022-12-08 ::
+        
+      </time>
+    
+    
+    
+  </div>
+
+  
+    <span class="post-tags">
+      
+      #<a href="https://www.petermcconnell.com/es/tags/chatgpt/">chatGPT</a>&nbsp;
+      
+      #<a href="https://www.petermcconnell.com/es/tags/sql/">SQL</a>&nbsp;
+      
+      #<a href="https://www.petermcconnell.com/es/tags/python/">Python</a>&nbsp;
+      
+    </span>
+  
+  
+
+
+  
+
+  <div class="post-content"><div>
+        <h2 id="creación-de-una-herramienta-de-prueba-de-base-de-datos-automatizada-con-chatgpt">Creación de una herramienta de prueba de base de datos automatizada con ChatGPT<a href="#creación-de-una-herramienta-de-prueba-de-base-de-datos-automatizada-con-chatgpt" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>Anoche pensé en intentar que ChatGPT creara una base de datos automatizada
+herramienta de prueba y los resultados fueron bastante prometedores.</p>
+<p>En conclusión, con orientación, fue capaz de construir un proyecto desde cero que
+ejecutó un script de python y una base de datos de postgres. Generó un esquema aleatorio y
+valores para las tablas generadas aleatoriamente. Proporcionó un script de Python que
+introspeccionaría la base de datos y ejecutaría consultas contra ella.</p>
+<p>¿Funcionó todo fuera de la caja? No. Hay algunos errores que corregir en python.
+guión que generó. Sin embargo, el esfuerzo para entrar y arreglarlos no es alto y
+ciertamente, todo el proceso de extremo a extremo es más barato, en términos de tiempo, en comparación con
+comenzando desde cero.</p>
+<p>Descubrí que los errores que encontró se debían en gran medida a mi falta de claridad o
+orden de las preguntas que se le plantean. Era bastante capaz de arreglar su propio
+errores / actualizar el código existente para que coincida con los nuevos requisitos cuando
+solicitado para hacerlo.</p>
+<p>El único problema <em>real</em> que encontré fueron los errores generales de API que uno
+esperar de algo tan popular en un estado de vista previa temprana.</p>
+<p>Salí de este experimento viendo ChatGPT y todo lo que sigue como un
+ayudante de desarrollo realmente útil para aquellos que ya saben programar. Eso
+me ayudó a construir una herramienta más rápido de lo que podría haberlo hecho si me hubiera sentado a hacerlo desde
+rasga. Todavía no lo veo como un reemplazo para los ingenieros de software para dos
+razones principales - en primer lugar: para aplicaciones no triviales sospecho que la persona
+requisitos de alimentación en el sistema (o &ldquo;ingeniero rápido&rdquo;) necesita tener un
+idea razonable de cómo construir software en primer lugar, para saber cómo
+para formar solicitudes y para corregir errores / cerrar brechas. en segundo lugar: el código siendo
+generado no siempre es sólido, sin un ingeniero experimentado que revise y
+tomar posesión de cualquier código que se produzca (la propiedad es importante para
+razones de mantenimiento), entonces hay pocas garantías de que obtendrá lo que desea.
+están esperando.</p>
+<p>Sin embargo; esto es todavía muy pronto. ¿Se pueden cerrar los problemas descritos?
+¿más lejos? Absolutamente. ¿Será este tipo de herramientas &ldquo;malas&rdquo; para el software?
+ingeniería en su conjunto, a largo plazo? Tal vez. Personalmente, estoy muy emocionado de tener
+esta herramienta en mi arsenal - ya me ha permitido andamiar prototipo
+aplicaciones rápidamente. ¿Lo usaría para el código de producción en un lugar de trabajo? No
+más o menos de lo que haría con fragmentos de stackoverflow o de su calaña. Por ahora.</p>
+<p>Repositorio Github: <a href="https://github.com/peter-mcconnell/gpt_sql_test_generator">https://github.com/peter-mcconnell/gpt_sql_test_generator</a></p>
+<p>Capturas de pantalla:</p>
+<p><img src="https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/2.png" alt="step 2" title="step 2">
+<img src="https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/3.png" alt="step 3" title="step 3">
+<img src="https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/4.png" alt="step 4" title="step 4">
+<img src="https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/5.png" alt="step 5" title="step 5">
+<img src="https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/6.png" alt="step 6" title="step 6">
+<img src="https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/7.png" alt="step 7" title="step 7">
+<img src="https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/8.png" alt="step 8" title="step 8">
+<img src="https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/9.png" alt="step 9" title="step 9">
+<img src="https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/10.png" alt="step 10" title="step 10">
+<img src="https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/11.png" alt="step 11" title="step 11">
+<img src="https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/12.png" alt="step 12" title="step 12">
+<img src="https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/13.png" alt="step 13" title="step 13">
+<img src="https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/14.png" alt="step 14" title="step 14">
+<img src="https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/15.png" alt="step 15" title="step 15">
+<img src="https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/16.png" alt="step 16" title="step 16"></p>
+
+      </div></div>
+
+  
+    
+<div class="pagination">
+    <div class="pagination__title">
+        <span class="pagination__title-h">Leer otras publicaciones</span>
+        <hr />
+    </div>
+    <div class="pagination__buttons">
+        
+        <span class="button previous">
+            <a href="https://www.petermcconnell.com/es/posts/perf_eng_with_py12/">
+                <span class="button__icon">←</span>
+                <span class="button__text">Ingeniería de rendimiento con Python 3.12</span>
+            </a>
+        </span>
+        
+        
+    </div>
+</div>
+
+  
+
+  
+    
+
+  
+</article>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright copyright--user">
+        <span>&copy; Peter McConnell 2023</span>
+    
+      </div>
+  </div>
+</footer>
+
+
+
+
+
+
+<script type="text/javascript" src="/bundle.min.js"></script>
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>

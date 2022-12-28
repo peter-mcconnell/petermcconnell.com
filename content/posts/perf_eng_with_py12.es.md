@@ -1,0 +1,258 @@
++++
+title = "Ingeniería de rendimiento con Python 3.12"
+date = "2022-12-26T22:54:29Z"
+author = "Peter McConnell"
+authorTwitter = "PeteMcConnell_" #do not include @
+cover = ""
+tags = ["python", "linux", "perf"]
+keywords = ["python", "linux", "cpython", "perf", "performance", "flamegraph"]
+description = ""
+showFullContent = false
+readingTime = true
+hideComments = false
+color = "" #color from the theme settings
+Toc = true
++++
+
+¡La versión 3.12 trae perfiles de rendimiento! Tómese un segundo para consultar https://docs.python.org/3.12/howto/perf_profiling.html y, de hecho, el registro de cambios en https://www.python.org/downloads/release/python-3120a3/
+
+La parte importante (para esta publicación) de los enlaces anteriores es:
+
+"""
+El perfilador de rendimiento de Linux es una herramienta muy poderosa que le permite perfilar y obtener información sobre el rendimiento de su aplicación. perf también tiene un ecosistema muy vibrante de herramientas que ayudan con el análisis de los datos que produce.
+
+El principal problema de usar perf profiler con aplicaciones de Python es que perf solo permite obtener información sobre símbolos nativos, es decir, los nombres de las funciones y procedimientos escritos en C. Esto significa que los nombres y nombres de archivo de las funciones de Python en su código no aparecerá en la salida del perf.
+
+Desde Python 3.12, el intérprete puede ejecutarse en un modo especial que permite que las funciones de Python aparezcan en la salida del perfilador de rendimiento. Cuando este modo está habilitado, el intérprete interpondrá un pequeño fragmento de código compilado sobre la marcha antes de la ejecución de cada función de Python y enseñará a perf la relación entre este fragmento de código y la función de Python asociada utilizando archivos de mapa de rendimiento.
+"""
+
+escribir un programa "malo"
+-----------------------
+
+Estoy emocionado de probar esto, así que vamos a empezar. En primer lugar, creemos un script de python para que podamos perfilarlo. Estoy haciendo esto antes de instalar Python 3.12 porque quiero crear un FlameGraph de cómo se ve este proceso en 3.10 versos 3.12. Aquí tenemos un script que intenta realizar búsquedas en una lista grande:
+
+```python
+import time
+
+
+def run_dummy(numbers):
+    for findme in range(100000):
+        if findme in numbers:
+            print("found", findme)
+        else:
+            print("missed", findme)
+
+
+if __name__ == "__main__":
+    # create a large sized input to show off inefficiency
+    numbers = [i for i in range(20000000)]
+
+    start_time = time.time()  # get the current time [start]
+    run_dummy(numbers)  # run our inefficient method
+    end_time = time.time()  # get the current time [end]
+
+    duration = end_time - start_time  # Calculate the duration
+    print(f"Duration: {duration} seconds")  # Print the duration
+```
+
+Ejecutando esto obtengo el siguiente resultado:
+
+```sh
+python3.10 assets/dummy/perf_py_proj/before.py
+...
+found 99992
+found 99993
+found 99994
+found 99995
+found 99996
+found 99997
+found 99998
+found 99999
+Duration: 36.06884431838989 seconds
+```
+
+36 segundos es lo suficientemente malo para que recojamos una cantidad razonable de muestras.
+
+flamegraphs!
+------------
+
+Ahora podemos crear nuestro [FlameGraph](https://github.com/brendangregg/FlameGraph):
+
+```sh
+# record profile to "perf.data" file (default output)
+perf record -F 99 -g -- python3.10 assets/dummy/perf_py_proj/before.py
+# read perf.data (created above) and display trace output
+perf script > out.perf
+# fold stack samples into single lines
+# here I reference ~/FlameGraph/ - you can get this from https://github.com/brendangregg/FlameGraph
+~/FlameGraph/stackcollapse-perf.pl out.perf > out.folded
+# generate flamegraph
+~/FlameGraph/flamegraph.pl out.folded > ./assets/perf_example_python3.10.svg
+```
+
+Esto nos da un buen SVG que visualiza los rastros:
+
+![python 3.10 perf flamegraph](https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_example_python3.10.svg "python 3.10 perf flamegraph")
+
+Esto no es útil... Puedo ver que la mayor parte del tiempo se gastó en "new_keys_object.lto_priv.0", pero eso no tiene sentido en el contexto del código.
+
+Es hora de Python 3.12...
+-------------------------
+
+Primero necesito instalarlo; los pasos para esto varían según el sistema operativo; siga las instrucciones de compilación aquí para su entorno: https://github.com/python/cpython/tree/v3.12.0a3#build-instructions
+
+
+```sh
+# para mí en ubuntu: 22.04
+# ensure I have python3-dbg installed
+sudo apt-get install python3-dbg
+
+# build python
+export CFLAGS="-fno-omit-frame-pointer -mno-omit-leaf-frame-pointer"
+./configure --enable-optimizations
+make
+make test
+sudo make install
+unset CFLAGS
+
+# after this I reset my systems python3 symlink to 3.10 as 3.12 isn't yet stable
+# for testing python3.12 I'll call "python3.12" instead of "python3"
+ln -sf /usr/local/bin/python3.10 /usr/local/bin/python3
+```
+
+Con eso instalado, primero necesito habilitar el soporte perf. Esto se detalla en https://docs.python.org/3.12/howto/perf_profiling.html y hay tres opciones: 1) una variable de entorno, 2) una opción -X o 3) dinámicamente usando `sys`. Iré por el enfoque de la variable de entorno, ya que no me importa que se perfile _todo_ para un pequeño script:
+
+```sh
+export PYTHONPERFSUPPORT=1
+```
+
+Ahora simplemente repetimos el proceso anterior usando el binario `python3.12` en su lugar:
+
+```sh
+# record profile to "perf.data" file (default output)
+perf record -F 99 -g -- python3.12 assets/dummy/perf_py_proj/before.py
+# read perf.data (created above) and display trace output
+perf script > out.perf
+# fold stack samples into single lines
+# here I reference ~/FlameGraph/ - you can get this from https://github.com/brendangregg/FlameGraph
+~/FlameGraph/stackcollapse-perf.pl out.perf > out.folded
+# generate flamegraph
+~/FlameGraph/flamegraph.pl out.folded > ./assets/perf_example_python3.12.before.svg
+```
+
+Primero echaremos un vistazo al informe con `perf report -g -i perf.data`
+
+![python 3.12 perf report output](https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_report.png "python 3.12 perf report")
+
+¡Impresionante! ¡Podemos ver nuestros nombres de funciones de Python y nombres de scripts!
+
+Ahora podemos echar un vistazo al SVG actualizado que visualiza las trazas con Python 3.12:
+
+![python 3.12 perf flamegraph](https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_example_python3.12.before.svg "python 3.12 perf flamegraph")
+
+Esto ya parece mucho más útil. Vemos que la mayor parte del tiempo se dedica a hacer comparaciones y en el método list_contains. También podemos ver el archivo específico `before.py` y el método `run_dummy` que lo está llamando.
+
+Tiempo de investigación / la solución
+-------------------------------------
+
+Ahora que sabemos en qué parte de nuestro código está el problema, podemos echar un vistazo al código fuente en CPython para ver por qué el método `list_contains` sería tan lento: https://github.com/python/cpython/blob/ 199507b81a302ea19f93593965b1e5088195a6c5/Objects/listobject.c#L440
+
+_nota: es posible que no siempre tenga acceso al código fuente; en circunstancias como esta, puede ver el desensamblado en el informe de rendimiento directamente para tener una idea de lo que está sucediendo. Agregaré una sección rápida al final que muestra cómo se ve esto_
+
+```c
+// I found this by going to https://github.com/python/cpython/ and searching for "list_contains"
+
+static int
+list_contains(PyListObject *a, PyObject *el)
+{
+    PyObject *item;
+    Py_ssize_t i;
+    int cmp;
+
+    for (i = 0, cmp = 0 ; cmp == 0 && i < Py_SIZE(a); ++i) {
+        item = PyList_GET_ITEM(a, i);
+        Py_INCREF(item);
+        cmp = PyObject_RichCompareBool(item, el, Py_EQ);
+        Py_DECREF(item);
+    }
+    return cmp;
+}
+```
+
+Desagradable... mirando este código puedo ver que cada vez que se invoca itera sobre la matriz y realiza una comparación con cada elemento. Eso está lejos de ser ideal para nuestro caso de uso, así que volvamos al código de Python que escribimos. Nuestro Flamegraph nos muestra que el problema está en nuestro método `run_dummy`:
+
+```python
+def run_dummy(numbers):
+    for findme in range(100000):
+        if findme in numbers:  #  <- this is what triggers list_contains
+            print("found", findme)
+        else:
+            print("missed", findme)
+```
+
+Realmente no podemos cambiar esa línea ya que está haciendo lo que queremos que haga: identificar si un número entero está en "números". Tal vez podamos cambiar el tipo de datos `numbers` a uno más adecuado para las búsquedas. En nuestro código existente tenemos:
+
+```python
+    numbers = [i for i in range(20000000)]
+
+    start_time = time.time()  # get the current time [start]
+    run_dummy(numbers)  # run our inefficient method
+```
+
+Aquí usamos un tipo de datos LIST para nuestros "números", que bajo el capó (en CPython) se implementa como matrices de tamaño dinámico y, como tales, no son tan eficientes (O (N)) como una Hashtable para buscar un artículo (que es O(1)). Un SET, por otro lado (otro tipo de datos de Python) se implementa como una tabla Hash y nos daría la búsqueda rápida que estamos buscando. Cambiemos el tipo de datos en nuestro código Python y veamos cuál es el impacto:
+
+```python
+    # we'll just change this line, casting numbers to a set before running run_dummy
+    run_dummy(set(numbers))  # passing a set() for fast lookups
+```
+
+Ahora podemos repetir los pasos anteriores para generar nuestro nuevo flamegraph:
+
+```sh
+# record profile to "perf.data" file (default output)
+perf record -F 99 -g -- python3.12 assets/dummy/perf_py_proj/after.py
+...
+found 99998
+found 99999
+Duration: 0.8350753784179688 seconds
+[ perf record: Woken up 1 times to write data ]
+[ perf record: Captured and wrote 0.039 MB perf.data (134 samples) ]
+```
+
+Ya podemos ver que las cosas han mejorado enormemente. ¡Donde antes esto tardaba 36 segundos en ejecutarse, ahora tarda 0,8 segundos! Sigamos creando nuestro gráfico de llamas para el nuevo código mejorado:
+
+```sh
+# read perf.data (created above) and display trace output
+perf script > out.perf
+# fold stack samples into single lines
+# here I reference ~/FlameGraph/ - you can get this from https://github.com/brendangregg/FlameGraph
+~/FlameGraph/stackcollapse-perf.pl out.perf > out.folded
+# generate flamegraph
+~/FlameGraph/flamegraph.pl out.folded > ./assets/perf_example_python3.12.after.svg
+```
+
+![python 3.12 perf flamegraph improved](https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_example_python3.12.after.svg "python 3.12 perf flamegraph improved")
+
+Este es un Flamegraph de aspecto mucho más saludable y, como resultado, nuestra aplicación ahora es mucho más rápida. La compatibilidad con la creación de perfiles de rendimiento en Python 3.12 brinda una herramienta tremendamente útil para los ingenieros de software que desean ofrecer programas rápidos y estoy emocionado de ver el impacto que esto tendrá en el lenguaje.
+
+ronda de bonificación: ¿qué hacer cuando no puede acceder al código fuente?
+---------------------------------------------------------------------------
+
+A veces, no tiene acceso al código subyacente, lo que puede hacer que tratar de comprender lo que sucede sea mucho más difícil. Afortunadamente, el "informe de rendimiento" nos permite ver el código desensamblado que puede ayudar a pintar una imagen de lo que realmente está haciendo la máquina. Este es un primer lugar razonable para buscar: tiendo a preferir el código fuente si puedo conseguirlo, ya que me permite "culpar" / ver las confirmaciones y relaciones públicas asociadas. Para ver esto puedes hacer lo siguiente:
+
+Abra el informe de rendimiento y seleccione la línea que nos interesa:
+
+```sh
+# this assumes we have already ran 'perf record' to generate perf.data ...
+perf report -g -i perf.data
+```
+
+![perf report dissassembly](https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_report_dis.1.png "perf report dissassembly")
+
+Presiona enter y elige la opción de anotar:
+
+![perf report dissassembly](https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_report_dis.2.png "perf report dissassembly")
+
+¡Mirad! Aquí podemos ver tanto el código C como las instrucciones de la máquina. ¡Súper útil! Puede comparar la captura de pantalla a continuación con el fragmento de código que nos interesa: https://github.com/python/cpython/blob/199507b81a302ea19f93593965b1e5088195a6c5/Objects/listobject.c#L440
+
+![perf report dissassembly](https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_report_dis.3.png "perf report dissassembly")
