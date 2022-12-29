@@ -52,7 +52,7 @@ if __name__ == "__main__":
     end_time = time.time()  # get the current time [end]
 
     duration = end_time - start_time  # Calculate the duration
-    print(f"Duração: {duração} segundos") # Imprime a duração
+    print(f"Duração: {duration} segundos") # Imprime a duração
 ```
 
 Executando isso obtenho o seguinte resultado:
@@ -64,9 +64,7 @@ found 99992
 found 99993
 found 99994
 found 99995
-found 99996
-found 99997
-found 99998
+found 99996 found 99997 found 99998
 found 99999
 Duração: 36.06884431838989 segundos
 ```
