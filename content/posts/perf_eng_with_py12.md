@@ -263,3 +263,12 @@ Press enter and choose the annotate option:
 Behold! Here we can see both the C code and the machine instructions. Super useful! You can compare the screenshot below against the code snippet we're interested in: https://github.com/python/cpython/blob/199507b81a302ea19f93593965b1e5088195a6c5/Objects/listobject.c#L440
 
 ![perf report dissassembly](https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_report_dis.3.png "perf report dissassembly")
+
+recommended reading
+-------------------
+
+If this article has given you a taste for performance engineering, I can recommend the following Systems Performance book:
+
+{{< rawhtml >}}
+<a href="https://www.amazon.com/Systems-Performance-Brendan-Gregg/dp/0136820158?crid=2J7NSUPP1LBQ2&keywords=systems+performance+enterprise+and+the+cloud&qid=1672315747&sprefix=systems+performance%2Caps%2C167&sr=8-1&linkCode=li2&tag=mobile052c67f-20&linkId=042c48313bcd6eae20ae98499600e515&language=en_US&ref_=as_li_ss_il" target="_blank"><img border="0" height="140" src="https://m.media-amazon.com/images/W/WEBP_402378-T1/images/I/51Drvdub7TL._SX646_BO1,204,203,200_.jpg" ></a><img src="https://ir-na.amazon-adsystem.com/e/ir?t=mobile052c67f-20&language=en_US&l=li2&o=1&a=0136820158" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" />
+{{< /rawhtml >}}

@@ -205,7 +205,7 @@ Take a second to go check out https://docs.python.org/3.12/howto/perf_profiling.
       <span class="post-author">Peter McConnell</span>
     
     
-      <span class="post-reading-time">:: 8 min read (1577 words)</span>
+      <span class="post-reading-time">:: 8 min read (1598 words)</span>
     
   </div>
 
@@ -236,6 +236,7 @@ Take a second to go check out https://docs.python.org/3.12/howto/perf_profiling.
     <li><a href="#time-for-python-312">Time for Python 3.12&hellip;</a></li>
     <li><a href="#investigation-time--the-fix">Investigation time / the fix</a></li>
     <li><a href="#bonus-round-what-to-do-when-you-cant-access-the-source-code">bonus round: what to do when you can&rsquo;t access the source code?</a></li>
+    <li><a href="#recommended-reading">recommended reading</a></li>
   </ul>
 </nav>
     </div>
@@ -403,6 +404,13 @@ The Linux perf profiler is a very powerful tool that allows you to profile and o
 <p><img src="https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_report_dis.2.png" alt="perf report dissassembly" title="perf report dissassembly"></p>
 <p>Behold! Here we can see both the C code and the machine instructions. Super useful! You can compare the screenshot below against the code snippet we&rsquo;re interested in: <a href="https://github.com/python/cpython/blob/199507b81a302ea19f93593965b1e5088195a6c5/Objects/listobject.c#L440">https://github.com/python/cpython/blob/199507b81a302ea19f93593965b1e5088195a6c5/Objects/listobject.c#L440</a></p>
 <p><img src="https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_report_dis.3.png" alt="perf report dissassembly" title="perf report dissassembly"></p>
+<h2 id="recommended-reading">recommended reading<a href="#recommended-reading" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>If this article has given you a taste for performance engineering, I can recommend the following Systems Performance book:</p>
+
+
+<a href="https://www.amazon.com/Systems-Performance-Brendan-Gregg/dp/0136820158?crid=2J7NSUPP1LBQ2&keywords=systems+performance+enterprise+and+the+cloud&qid=1672315747&sprefix=systems+performance%2Caps%2C167&sr=8-1&linkCode=li2&tag=mobile052c67f-20&linkId=042c48313bcd6eae20ae98499600e515&language=en_US&ref_=as_li_ss_il" target="_blank"><img border="0" height="140" src="https://m.media-amazon.com/images/W/WEBP_402378-T1/images/I/51Drvdub7TL._SX646_BO1,204,203,200_.jpg" ></a><img src="https://ir-na.amazon-adsystem.com/e/ir?t=mobile052c67f-20&language=en_US&l=li2&o=1&a=0136820158" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" />
+
+
 
       </div></div>
 
