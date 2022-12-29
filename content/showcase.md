@@ -4,9 +4,13 @@ date: 2022-11-29T20:51:24Z
 draft: false
 ---
 
-I've been around for a while and done some things. Even some good things.
+I've been around the tech scene for two decades and in that time have
+delivered much that I'm proud of. The following lists a few key highlights:
 
  - helped take two companies to acquisition
+ - have worked on web products for Google, Virgin, Red Bull, Disney & YouTube
+ [ Python. PHP. During my time as a lead at https://www.rehabagency.ai/work ]
+ - helped many companies implement devops properly, enabling teams to take full control of their workflows
  - developed a custom query language (TQL - an opencypher variant) which went to market
  [ Java. Golang. ANTLR ]
  - added support into the Terraform AWS provider for shipping your own keys to ACM
@@ -23,8 +27,6 @@ I've been around for a while and done some things. Even some good things.
  [ Golang ]
  - developed an image delivery service for a very large org (30k+ engineers)
  [ AWS, Python, Bash/Shell, OpenStack ]
- - have worked on web products for Google, Virgin, Red Bull, Disney & YouTube
- [ Python. PHP. During my time as a lead at https://www.rehabagency.ai/work ]
  - design and build out of various deployment infrastructure
  [ Kubernetes. Mesos. Marathon. Docker-compose. ]
  - developed a Jira plugin which extended JQL (jira query language) to allow grouping by "roles"
@@ -34,6 +36,3 @@ I've been around for a while and done some things. Even some good things.
  - mentored many amazing engineers over the years from Junior to Staff
  - spoken at various conferences in the UK, Ireland, Australia and the U.S on docker, prometheus, bash, terraform, aws etc
  - co-founded an award winning web design company (31interactive)
-
-20 years working in tech and the above is all the "good things" I can think of
-listing. Imagine how long the "bad things" list must be ...

@@ -476,11 +476,15 @@ shake the rust off or learn something new in a week or two.&lt;/p&gt;
       <pubDate>Tue, 29 Nov 2022 20:51:24 +0000</pubDate>
       
       <guid>https://www.petermcconnell.com/showcase/</guid>
-      <description>I&amp;rsquo;ve been around for a while and done some things. Even some good things.
-helped take two companies to acquisition developed a custom query language (TQL - an opencypher variant) which went to market [ Java. Golang. ANTLR ] added support into the Terraform AWS provider for shipping your own keys to ACM [ Golang ] developed an orchestration framework for researchers in AI to schedule workloads [ Python. Terraform. AWS.</description>
-      <content>&lt;p&gt;I&amp;rsquo;ve been around for a while and done some things. Even some good things.&lt;/p&gt;
+      <description>I&amp;rsquo;ve been around the tech scene for two decades and in that time have delivered much that I&amp;rsquo;m proud of. The following lists a few key highlights:
+helped take two companies to acquisition have worked on web products for Google, Virgin, Red Bull, Disney &amp;amp; YouTube [ Python. PHP. During my time as a lead at https://www.rehabagency.ai/work ] helped many companies implement devops properly, enabling teams to take full control of their workflows developed a custom query language (TQL - an opencypher variant) which went to market [ Java.</description>
+      <content>&lt;p&gt;I&amp;rsquo;ve been around the tech scene for two decades and in that time have
+delivered much that I&amp;rsquo;m proud of. The following lists a few key highlights:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;helped take two companies to acquisition&lt;/li&gt;
+&lt;li&gt;have worked on web products for Google, Virgin, Red Bull, Disney &amp;amp; YouTube
+[ Python. PHP. During my time as a lead at https://www.rehabagency.ai/work ]&lt;/li&gt;
+&lt;li&gt;helped many companies implement devops properly, enabling teams to take full control of their workflows&lt;/li&gt;
 &lt;li&gt;developed a custom query language (TQL - an opencypher variant) which went to market
 [ Java. Golang. ANTLR ]&lt;/li&gt;
 &lt;li&gt;added support into the Terraform AWS provider for shipping your own keys to ACM
@@ -497,8 +501,6 @@ helped take two companies to acquisition developed a custom query language (TQL 
 [ Golang ]&lt;/li&gt;
 &lt;li&gt;developed an image delivery service for a very large org (30k+ engineers)
 [ AWS, Python, Bash/Shell, OpenStack ]&lt;/li&gt;
-&lt;li&gt;have worked on web products for Google, Virgin, Red Bull, Disney &amp;amp; YouTube
-[ Python. PHP. During my time as a lead at https://www.rehabagency.ai/work ]&lt;/li&gt;
 &lt;li&gt;design and build out of various deployment infrastructure
 [ Kubernetes. Mesos. Marathon. Docker-compose. ]&lt;/li&gt;
 &lt;li&gt;developed a Jira plugin which extended JQL (jira query language) to allow grouping by &amp;ldquo;roles&amp;rdquo;
@@ -509,8 +511,6 @@ helped take two companies to acquisition developed a custom query language (TQL 
 &lt;li&gt;spoken at various conferences in the UK, Ireland, Australia and the U.S on docker, prometheus, bash, terraform, aws etc&lt;/li&gt;
 &lt;li&gt;co-founded an award winning web design company (31interactive)&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;20 years working in tech and the above is all the &amp;ldquo;good things&amp;rdquo; I can think of
-listing. Imagine how long the &amp;ldquo;bad things&amp;rdquo; list must be &amp;hellip;&lt;/p&gt;
 </content>
     </item>
     
