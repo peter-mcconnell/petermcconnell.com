@@ -14,11 +14,15 @@
       <pubDate>Mon, 26 Dec 2022 22:54:29 +0000</pubDate>
       
       <guid>https://www.petermcconnell.com/posts/perf_eng_with_py12/</guid>
-      <description>3.12 brings perf profiling! Take a second to go check out https://docs.python.org/3.12/howto/perf_profiling.html and indeed the changelog at https://www.python.org/downloads/release/python-3120a3/
-The important part (for this post) from the links above is:
-&amp;quot;&amp;quot;&amp;quot; The Linux perf profiler is a very powerful tool that allows you to profile and obtain information about the performance of your application. perf also has a very vibrant ecosystem of tools that aid with the analysis of the data that it produces.</description>
-      <content>&lt;p&gt;3.12 brings perf profiling! Take a second to go check out &lt;a href=&#34;https://docs.python.org/3.12/howto/perf_profiling.html&#34;&gt;https://docs.python.org/3.12/howto/perf_profiling.html&lt;/a&gt; and indeed the changelog at &lt;a href=&#34;https://www.python.org/downloads/release/python-3120a3/&#34;&gt;https://www.python.org/downloads/release/python-3120a3/&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;The important part (for this post) from the links above is:&lt;/p&gt;
+      <description>overview 3.12 brings perf profiling! In this article we take a look at how the new perf profiling support helps reduce our dummy Python script from 36 seconds to 0.8 seconds. We&amp;rsquo;ll introduce the Linux tool perf and also FlameGraph.pl, look at some disassembly and go bug hunting. You can view the code for this article here: https://github.com/peter-mcconnell/petermcconnell.com/tree/main/assets/dummy/perf_py_proj
+Take a second to go check out https://docs.python.org/3.12/howto/perf_profiling.html and indeed the changelog at https://www.</description>
+      <content>&lt;h2 id=&#34;overview&#34;&gt;overview&lt;/h2&gt;
+&lt;p&gt;3.12 brings perf profiling! In this article we take a look at how the new perf
+profiling support helps reduce our dummy Python script from 36 seconds to 0.8
+seconds. We&amp;rsquo;ll introduce the Linux tool &lt;code&gt;perf&lt;/code&gt; and also &lt;code&gt;FlameGraph.pl&lt;/code&gt;, look
+at some disassembly and go bug hunting. You can view the code for this article
+here: &lt;a href=&#34;https://github.com/peter-mcconnell/petermcconnell.com/tree/main/assets/dummy/perf_py_proj&#34;&gt;https://github.com/peter-mcconnell/petermcconnell.com/tree/main/assets/dummy/perf_py_proj&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Take a second to go check out &lt;a href=&#34;https://docs.python.org/3.12/howto/perf_profiling.html&#34;&gt;https://docs.python.org/3.12/howto/perf_profiling.html&lt;/a&gt; and indeed the changelog at &lt;a href=&#34;https://www.python.org/downloads/release/python-3120a3/&#34;&gt;https://www.python.org/downloads/release/python-3120a3/&lt;/a&gt;. The important part (for this post) from these links is:&lt;/p&gt;
 &lt;p&gt;&amp;quot;&amp;quot;&amp;quot;
 The Linux perf profiler is a very powerful tool that allows you to profile and obtain information about the performance of your application. perf also has a very vibrant ecosystem of tools that aid with the analysis of the data that it produces.&lt;/p&gt;
 &lt;p&gt;The main problem with using the perf profiler with Python applications is that perf only allows to get information about native symbols, this is, the names of the functions and procedures written in C. This means that the names and file names of the Python functions in your code will not appear in the output of the perf.&lt;/p&gt;

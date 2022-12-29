@@ -14,9 +14,16 @@ color = "" #color from the theme settings
 Toc = true
 +++
 
-3.12 brings perf profiling! Take a second to go check out https://docs.python.org/3.12/howto/perf_profiling.html and indeed the changelog at https://www.python.org/downloads/release/python-3120a3/
+overview
+--------
 
-The important part (for this post) from the links above is:
+3.12 brings perf profiling! In this article we take a look at how the new perf
+profiling support helps reduce our dummy Python script from 36 seconds to 0.8
+seconds. We'll introduce the Linux tool `perf` and also `FlameGraph.pl`, look
+at some disassembly and go bug hunting. You can view the code for this article
+here: https://github.com/peter-mcconnell/petermcconnell.com/tree/main/assets/dummy/perf_py_proj
+
+Take a second to go check out https://docs.python.org/3.12/howto/perf_profiling.html and indeed the changelog at https://www.python.org/downloads/release/python-3120a3/. The important part (for this post) from these links is:
 
 """
 The Linux perf profiler is a very powerful tool that allows you to profile and obtain information about the performance of your application. perf also has a very vibrant ecosystem of tools that aid with the analysis of the data that it produces.
