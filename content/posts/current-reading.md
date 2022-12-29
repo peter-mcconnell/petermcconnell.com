@@ -26,9 +26,9 @@ do this so that I could get over as much content as possible, with the view of
 circling back over the examples once I'm finished The C Programming Language
 book so that I can make better decisions about the code I'm writing.
 
-![alt text](https://s.cdnshm.com/catalog/pt/t/33820519/linux-programming-interface.jpg "Buy it")
-
-https://www.amazon.co.uk/Linux-Programming-Interface-System-Handbook/dp/1593272200
+{{< rawhtml >}}
+<a href="https://www.amazon.com/Linux-Programming-Interface-System-Handbook/dp/1593272200?crid=1DXMBKFNYR6I4&keywords=the+linux+programming+interface&qid=1672318042&sprefix=the+linux+programming+interfa%2Caps%2C183&sr=8-1&linkCode=li2&tag=mobile052c67f-20&linkId=5a628a4a0310f010f8843eec26340d21&language=en_US&ref_=as_li_ss_il" target="_blank"><img border="0" src="https://s.cdnshm.com/catalog/pt/t/33820519/linux-programming-interface.jpg" height="180" ></a><img src="https://ir-na.amazon-adsystem.com/e/ir?t=mobile052c67f-20&language=en_US&l=li2&o=1&a=1593272200" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" />
+{{< /rawhtml >}}
 
 
 The C Programming Language
@@ -45,9 +45,9 @@ important book to read, but not much of a page-turner. For me the biggest
 advantage of the book was seeing syscall libraries in action and also
 appreciating more about what cpp gives us.
 
-![alt text](https://m.media-amazon.com/images/I/C1bOAdsnZnS._CR504,0,3024,3024_UX256.jpg "Buy it")
-
-https://www.amazon.co.uk/C-Programming-Language-2nd/dp/0131103628
+{{< rawhtml >}}
+<a href="https://www.amazon.com/Programming-Language-2nd-Brian-Kernighan/dp/0131103628?crid=18TBDWGH446SY&keywords=the+c+programming+language&qid=1672318154&sprefix=the+c+progr%2Caps%2C161&sr=8-1&linkCode=li2&tag=mobile052c67f-20&linkId=a74299466e17d38e6564338bf456bedd&language=en_US&ref_=as_li_ss_il" target="_blank"><img border="0" src="https://m.media-amazon.com/images/I/C1bOAdsnZnS._CR504,0,3024,3024_UX256.jpg" ></a><img src="https://ir-na.amazon-adsystem.com/e/ir?t=mobile052c67f-20&language=en_US&l=li2&o=1&a=0131103628" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" />
+{{< /rawhtml >}}
 
 
 Up next
@@ -55,5 +55,5 @@ Up next
 
 I have two "crackers" on my desk. Really looking forward to these:
 
-- Linux Kernel Development (https://www.amazon.co.uk/Linux-Kernel-Development-Developers-Library/dp/0672329468)
-- Systems Performance (https://www.amazon.co.uk/Systems-Performance-Brendan-Gregg/dp/0136820158)
+- Linux Kernel Development (https://amzn.to/3hXuWTw)
+- Systems Performance (https://amzn.to/3I9iU49)
