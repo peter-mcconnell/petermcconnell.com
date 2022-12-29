@@ -4,6 +4,36 @@ date: 2022-11-29T20:36:26Z
 draft: false
 ---
 
+$HABILIDADES
+------------
+
+https://www.petermcconnell.com/skills/
+
+
+$VÍDEOS
+-------
+
+Una charla sobre herramientas de automatización, con Rundeck (alrededor de las 5:15:00):
+
+{{< youtube hvtZnbDXpzM >}}
+
+Introducción a la terraformación:
+
+{{< youtube FvOHfsTmBfo >}}
+
+Ingeniería del caos con Prometheus:
+
+{{< youtube WUHKCkrz-NA >}}
+
+
+$LOGROS
+-------
+
+Mis dos hijos son, por supuesto, lo que más me enorgullece. He hecho algunas cosas en tecnología.
+que estoy orgulloso de también:
+
+https://www.petermcconnell.com/showcase/
+
 $PATH
 -----
 

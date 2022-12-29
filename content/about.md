@@ -4,6 +4,37 @@ date: 2022-11-29T20:36:26Z
 draft: false
 ---
 
+$SKILLS
+-------
+
+https://www.petermcconnell.com/skills/
+
+
+$VIDEOS
+-------
+
+A talk on Automation tooling, with Rundeck (around the 5:15:00 mark):
+
+{{< youtube hvtZnbDXpzM >}}
+
+Terraform introduction:
+
+{{< youtube FvOHfsTmBfo >}}
+
+Chaos engineering with Prometheus:
+
+{{< youtube WUHKCkrz-NA >}}
+
+
+$ACHIEVEMENTS
+-------------
+
+My two kids are of course what I'm proudest of. I have done some things in tech
+that I'm proud of also:
+
+https://www.petermcconnell.com/showcase/
+
+
 $PATH
 -----
 
@@ -38,8 +69,6 @@ for a process to spin out of control with not a reasonable error in sight.
 If you are looking for me you can find me on LinkedIn
 (https://www.linkedin.com/in/pemcconnell/), Twitter (https://twitter.com/) or
 Github (https://github.com/peter-mcconnell).
-
-
 
 Fun trinkets from along the way:
 

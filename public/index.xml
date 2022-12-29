@@ -520,8 +520,39 @@ listing. Imagine how long the &amp;ldquo;bad things&amp;rdquo; list must be &amp
       <pubDate>Tue, 29 Nov 2022 20:36:26 +0000</pubDate>
       
       <guid>https://www.petermcconnell.com/about/</guid>
-      <description>$PATH When I was around 9 through some miracle mum brought home a Commodore Amiga. My family never had much growing up but somehow we still got a computer. Little did she know at the time just how big an impact that would have on my life - thanks Mum. I gorged on all the Warez I could get my hands slowly increasing my exposure to programming and hacking. The culture has always felt like home.</description>
-      <content>&lt;h2 id=&#34;path&#34;&gt;$PATH&lt;/h2&gt;
+      <description>$SKILLS https://www.petermcconnell.com/skills/
+$VIDEOS A talk on Automation tooling, with Rundeck (around the 5:15:00 mark):
+Terraform introduction:
+Chaos engineering with Prometheus:
+$ACHIEVEMENTS My two kids are of course what I&amp;rsquo;m proudest of. I have done some things in tech that I&amp;rsquo;m proud of also:
+https://www.petermcconnell.com/showcase/
+$PATH When I was around 9 through some miracle mum brought home a Commodore Amiga. My family never had much growing up but somehow we still got a computer.</description>
+      <content>&lt;h2 id=&#34;skills&#34;&gt;$SKILLS&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.petermcconnell.com/skills/&#34;&gt;https://www.petermcconnell.com/skills/&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;videos&#34;&gt;$VIDEOS&lt;/h2&gt;
+&lt;p&gt;A talk on Automation tooling, with Rundeck (around the 5:15:00 mark):&lt;/p&gt;
+
+&lt;div style=&#34;position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;&#34;&gt;
+  &lt;iframe src=&#34;https://www.youtube.com/embed/hvtZnbDXpzM&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;&#34; allowfullscreen title=&#34;YouTube Video&#34;&gt;&lt;/iframe&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Terraform introduction:&lt;/p&gt;
+
+&lt;div style=&#34;position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;&#34;&gt;
+  &lt;iframe src=&#34;https://www.youtube.com/embed/FvOHfsTmBfo&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;&#34; allowfullscreen title=&#34;YouTube Video&#34;&gt;&lt;/iframe&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Chaos engineering with Prometheus:&lt;/p&gt;
+
+&lt;div style=&#34;position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;&#34;&gt;
+  &lt;iframe src=&#34;https://www.youtube.com/embed/WUHKCkrz-NA&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;&#34; allowfullscreen title=&#34;YouTube Video&#34;&gt;&lt;/iframe&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&#34;achievements&#34;&gt;$ACHIEVEMENTS&lt;/h2&gt;
+&lt;p&gt;My two kids are of course what I&amp;rsquo;m proudest of. I have done some things in tech
+that I&amp;rsquo;m proud of also:&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.petermcconnell.com/showcase/&#34;&gt;https://www.petermcconnell.com/showcase/&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;path&#34;&gt;$PATH&lt;/h2&gt;
 &lt;p&gt;When I was around 9 through some miracle mum brought home a Commodore Amiga.
 My family never had much growing up but somehow we still got a computer. Little
 did she know at the time just how big an impact that would have on my life -

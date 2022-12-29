@@ -327,8 +327,39 @@ référencement. Imaginez combien de temps la liste des &amp;ldquo;mauvaises cho
       <pubDate>Tue, 29 Nov 2022 20:36:26 +0000</pubDate>
       
       <guid>https://www.petermcconnell.com/fr/about/</guid>
-      <description>$PATH Quand j&amp;rsquo;avais environ 9 ans, par miracle, ma mère a ramené à la maison un Commodore Amiga. Ma famille n&amp;rsquo;a jamais beaucoup grandi, mais d&amp;rsquo;une manière ou d&amp;rsquo;une autre, nous avons toujours un ordinateur. Peu savait-elle à l&amp;rsquo;époque à quel point cela aurait un impact sur ma vie - Merci maman. Je me suis gavé de tout le Warez que j&amp;rsquo;ai pu obtenir, mes mains augmentant lentement mon exposition à la programmation et au piratage.</description>
-      <content>&lt;h2 id=&#34;path&#34;&gt;$PATH&lt;/h2&gt;
+      <description>$COMPÉTENCES https://www.petermcconnell.com/skills/
+$VIDÉOS Une conférence sur les outils d&amp;rsquo;automatisation, avec Rundeck (vers 5:15:00):
+Présentation de Terraform :
+Ingénierie du chaos avec Prometheus :
+$RÉALISATIONS Mes deux enfants sont bien sûr ce dont je suis le plus fier. J&amp;rsquo;ai fait des choses dans la technologie dont je suis fier aussi :
+https://www.petermcconnell.com/showcase/
+$PATH Quand j&amp;rsquo;avais environ 9 ans, par miracle, ma mère a ramené à la maison un Commodore Amiga. Ma famille n&amp;rsquo;a jamais beaucoup grandi, mais d&amp;rsquo;une manière ou d&amp;rsquo;une autre, nous avons toujours un ordinateur.</description>
+      <content>&lt;h2 id=&#34;compétences&#34;&gt;$COMPÉTENCES&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.petermcconnell.com/skills/&#34;&gt;https://www.petermcconnell.com/skills/&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;vidéos&#34;&gt;$VIDÉOS&lt;/h2&gt;
+&lt;p&gt;Une conférence sur les outils d&amp;rsquo;automatisation, avec Rundeck (vers 5:15:00):&lt;/p&gt;
+
+&lt;div style=&#34;position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;&#34;&gt;
+  &lt;iframe src=&#34;https://www.youtube.com/embed/hvtZnbDXpzM&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;&#34; allowfullscreen title=&#34;YouTube Video&#34;&gt;&lt;/iframe&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Présentation de Terraform :&lt;/p&gt;
+
+&lt;div style=&#34;position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;&#34;&gt;
+  &lt;iframe src=&#34;https://www.youtube.com/embed/FvOHfsTmBfo&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;&#34; allowfullscreen title=&#34;YouTube Video&#34;&gt;&lt;/iframe&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Ingénierie du chaos avec Prometheus :&lt;/p&gt;
+
+&lt;div style=&#34;position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;&#34;&gt;
+  &lt;iframe src=&#34;https://www.youtube.com/embed/WUHKCkrz-NA&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;&#34; allowfullscreen title=&#34;YouTube Video&#34;&gt;&lt;/iframe&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&#34;réalisations&#34;&gt;$RÉALISATIONS&lt;/h2&gt;
+&lt;p&gt;Mes deux enfants sont bien sûr ce dont je suis le plus fier. J&amp;rsquo;ai fait des choses dans la technologie
+dont je suis fier aussi :&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.petermcconnell.com/showcase/&#34;&gt;https://www.petermcconnell.com/showcase/&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;path&#34;&gt;$PATH&lt;/h2&gt;
 &lt;p&gt;Quand j&amp;rsquo;avais environ 9 ans, par miracle, ma mère a ramené à la maison un
 Commodore Amiga. Ma famille n&amp;rsquo;a jamais beaucoup grandi, mais d&amp;rsquo;une manière ou
 d&amp;rsquo;une autre, nous avons toujours un ordinateur. Peu savait-elle à l&amp;rsquo;époque à

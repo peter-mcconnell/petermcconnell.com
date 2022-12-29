@@ -317,8 +317,39 @@ listagem. Imagine quanto tempo a lista de &amp;ldquo;coisas ruins&amp;rdquo; dev
       <pubDate>Tue, 29 Nov 2022 20:36:26 +0000</pubDate>
       
       <guid>https://www.petermcconnell.com/pt/about/</guid>
-      <description>$PATH Quando eu tinha cerca de 9 anos, por algum milagre, minha mãe trouxe para casa um Commodore Amiga. Minha família nunca cresceu muito, mas de alguma forma ainda temos um computador. Pequeno ela sabia na época o tamanho do impacto que isso teria na minha vida - obrigado mamãe. Eu me empanturrei de todos os Warez que pude fazer minhas mãos aumentarem lentamente minha exposição à programação e hacking. A cultura sempre me senti em casa.</description>
-      <content>&lt;h2 id=&#34;path&#34;&gt;$PATH&lt;/h2&gt;
+      <description>$ HABILIDADES https://www.petermcconnell.com/skills/
+$VIDEOS Uma palestra sobre ferramentas de automação, com Rundeck (por volta das 5:15:00):
+Introdução ao Terraform:
+Engenharia de caos com Prometheus:
+$CONQUISTAS Meus dois filhos são, claro, o que mais me orgulha. Eu fiz algumas coisas em tecnologia que também me orgulho:
+https://www.petermcconnell.com/showcase/
+$PATH Quando eu tinha cerca de 9 anos, por algum milagre, minha mãe trouxe para casa um Commodore Amiga. Minha família nunca cresceu muito, mas de alguma forma ainda temos um computador.</description>
+      <content>&lt;h2 id=&#34;-habilidades&#34;&gt;$ HABILIDADES&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.petermcconnell.com/skills/&#34;&gt;https://www.petermcconnell.com/skills/&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;videos&#34;&gt;$VIDEOS&lt;/h2&gt;
+&lt;p&gt;Uma palestra sobre ferramentas de automação, com Rundeck (por volta das 5:15:00):&lt;/p&gt;
+
+&lt;div style=&#34;position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;&#34;&gt;
+  &lt;iframe src=&#34;https://www.youtube.com/embed/hvtZnbDXpzM&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;&#34; allowfullscreen title=&#34;YouTube Video&#34;&gt;&lt;/iframe&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Introdução ao Terraform:&lt;/p&gt;
+
+&lt;div style=&#34;position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;&#34;&gt;
+  &lt;iframe src=&#34;https://www.youtube.com/embed/FvOHfsTmBfo&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;&#34; allowfullscreen title=&#34;YouTube Video&#34;&gt;&lt;/iframe&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Engenharia de caos com Prometheus:&lt;/p&gt;
+
+&lt;div style=&#34;position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;&#34;&gt;
+  &lt;iframe src=&#34;https://www.youtube.com/embed/WUHKCkrz-NA&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;&#34; allowfullscreen title=&#34;YouTube Video&#34;&gt;&lt;/iframe&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&#34;conquistas&#34;&gt;$CONQUISTAS&lt;/h2&gt;
+&lt;p&gt;Meus dois filhos são, claro, o que mais me orgulha. Eu fiz algumas coisas em tecnologia
+que também me orgulho:&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.petermcconnell.com/showcase/&#34;&gt;https://www.petermcconnell.com/showcase/&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;path&#34;&gt;$PATH&lt;/h2&gt;
 &lt;p&gt;Quando eu tinha cerca de 9 anos, por algum milagre, minha mãe trouxe para casa um Commodore Amiga.
 Minha família nunca cresceu muito, mas de alguma forma ainda temos um computador. Pequeno
 ela sabia na época o tamanho do impacto que isso teria na minha vida -
