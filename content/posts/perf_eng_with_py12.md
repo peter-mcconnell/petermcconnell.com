@@ -103,7 +103,7 @@ This gives us a nice SVG that visualises the traces:
 
 This isn't useful ... I can see most of the time was spent in "new_keys_object.lto_priv.0" but that is meaningless in the context of the code.
 
-Time for Python 3.12...
+time for Python 3.12...
 -----------------------
 
 First I need to install it - the steps for this vary depending on OS - follow the build instructions here for your environment: https://github.com/python/cpython/tree/v3.12.0a3#build-instructions
@@ -159,7 +159,7 @@ Now we can take a look at the updated SVG that visualises the traces with Python
 
 This is already looking much more useful. We see the majority of the time is being spent doing comparisons and in the list_contains method. We can also see the specific file `before.py` and method `run_dummy` that is calling it.
 
-Investigation time / the fix
+investigation time / the fix
 ----------------------------
 
 Now that we know where in our code the problem is, we can take a look at the source code in CPython to see why the `list_contains` method would be so slow: https://github.com/python/cpython/blob/199507b81a302ea19f93593965b1e5088195a6c5/Objects/listobject.c#L440

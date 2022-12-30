@@ -7,11 +7,41 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; Peter McConnell 2023</copyright>
-    <lastBuildDate>Mon, 26 Dec 2022 22:54:29 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 30 Dec 2022 14:28:12 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>debugging</title>
+      <link>https://www.petermcconnell.com/tags/debugging/</link>
+      <pubDate>Fri, 30 Dec 2022 14:28:12 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/tags/debugging/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>df</title>
+      <link>https://www.petermcconnell.com/tags/df/</link>
+      <pubDate>Fri, 30 Dec 2022 14:28:12 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/tags/df/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>iostat</title>
+      <link>https://www.petermcconnell.com/tags/iostat/</link>
+      <pubDate>Fri, 30 Dec 2022 14:28:12 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/tags/iostat/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
     <item>
       <title>linux</title>
       <link>https://www.petermcconnell.com/tags/linux/</link>
-      <pubDate>Mon, 26 Dec 2022 22:54:29 +0000</pubDate>
+      <pubDate>Fri, 30 Dec 2022 14:28:12 +0000</pubDate>
       
       <guid>https://www.petermcconnell.com/tags/linux/</guid>
       <description></description>
@@ -19,11 +49,51 @@
     </item>
     
     <item>
+      <title>lsblk</title>
+      <link>https://www.petermcconnell.com/tags/lsblk/</link>
+      <pubDate>Fri, 30 Dec 2022 14:28:12 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/tags/lsblk/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>mpstat</title>
+      <link>https://www.petermcconnell.com/tags/mpstat/</link>
+      <pubDate>Fri, 30 Dec 2022 14:28:12 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/tags/mpstat/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
       <title>perf</title>
       <link>https://www.petermcconnell.com/tags/perf/</link>
-      <pubDate>Mon, 26 Dec 2022 22:54:29 +0000</pubDate>
+      <pubDate>Fri, 30 Dec 2022 14:28:12 +0000</pubDate>
       
       <guid>https://www.petermcconnell.com/tags/perf/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>sar</title>
+      <link>https://www.petermcconnell.com/tags/sar/</link>
+      <pubDate>Fri, 30 Dec 2022 14:28:12 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/tags/sar/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>top</title>
+      <link>https://www.petermcconnell.com/tags/top/</link>
+      <pubDate>Fri, 30 Dec 2022 14:28:12 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/tags/top/</guid>
       <description></description>
       <content></content>
     </item>

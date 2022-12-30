@@ -121,11 +121,11 @@ Take a second to go check out https://docs.python.org/3.12/howto/perf_profiling.
         <hr />
         
           <li>
-            <a href="https://www.petermcconnell.com/pt/">Português</a>
+            <a href="https://www.petermcconnell.com/">English</a>
           </li>
         
           <li>
-            <a href="https://www.petermcconnell.com/">English</a>
+            <a href="https://www.petermcconnell.com/pt/">Português</a>
           </li>
         
           <li>
@@ -148,9 +148,9 @@ Take a second to go check out https://docs.python.org/3.12/howto/perf_profiling.
   <li>
     <ul class="menu__dropdown">
       
-        <li><a href="https://www.petermcconnell.com/pt/">Português</a></li>
-      
         <li><a href="https://www.petermcconnell.com/">English</a></li>
+      
+        <li><a href="https://www.petermcconnell.com/pt/">Português</a></li>
       
         <li><a href="https://www.petermcconnell.com/es/">Española</a></li>
       
@@ -233,8 +233,8 @@ Take a second to go check out https://docs.python.org/3.12/howto/perf_profiling.
     <li><a href="#overview">overview</a></li>
     <li><a href="#writing-a-bad-program">writing a &ldquo;bad&rdquo; program</a></li>
     <li><a href="#flamegraphs">flamegraphs!</a></li>
-    <li><a href="#time-for-python-312">Time for Python 3.12&hellip;</a></li>
-    <li><a href="#investigation-time--the-fix">Investigation time / the fix</a></li>
+    <li><a href="#time-for-python-312">time for Python 3.12&hellip;</a></li>
+    <li><a href="#investigation-time--the-fix">investigation time / the fix</a></li>
     <li><a href="#bonus-round-what-to-do-when-you-cant-access-the-source-code">bonus round: what to do when you can&rsquo;t access the source code?</a></li>
     <li><a href="#recommended-reading">recommended reading</a></li>
   </ul>
@@ -305,7 +305,7 @@ The Linux perf profiler is a very powerful tool that allows you to profile and o
 </span></span></code></pre></div><p>This gives us a nice SVG that visualises the traces:</p>
 <p><img src="https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_example_python3.10.svg" alt="python 3.10 perf flamegraph" title="python 3.10 perf flamegraph"></p>
 <p>This isn&rsquo;t useful &hellip; I can see most of the time was spent in &ldquo;new_keys_object.lto_priv.0&rdquo; but that is meaningless in the context of the code.</p>
-<h2 id="time-for-python-312">Time for Python 3.12&hellip;<a href="#time-for-python-312" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<h2 id="time-for-python-312">time for Python 3.12&hellip;<a href="#time-for-python-312" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>First I need to install it - the steps for this vary depending on OS - follow the build instructions here for your environment: <a href="https://github.com/python/cpython/tree/v3.12.0a3#build-instructions">https://github.com/python/cpython/tree/v3.12.0a3#build-instructions</a></p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#75715e"># for me on ubuntu:22.04</span>
 </span></span><span style="display:flex;"><span><span style="color:#75715e"># ensure I have python3-dbg installed</span>
@@ -340,7 +340,7 @@ The Linux perf profiler is a very powerful tool that allows you to profile and o
 <p>Now we can take a look at the updated SVG that visualises the traces with Python 3.12:</p>
 <p><img src="https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_example_python3.12.before.svg" alt="python 3.12 perf flamegraph" title="python 3.12 perf flamegraph"></p>
 <p>This is already looking much more useful. We see the majority of the time is being spent doing comparisons and in the list_contains method. We can also see the specific file <code>before.py</code> and method <code>run_dummy</code> that is calling it.</p>
-<h2 id="investigation-time--the-fix">Investigation time / the fix<a href="#investigation-time--the-fix" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<h2 id="investigation-time--the-fix">investigation time / the fix<a href="#investigation-time--the-fix" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>Now that we know where in our code the problem is, we can take a look at the source code in CPython to see why the <code>list_contains</code> method would be so slow: <a href="https://github.com/python/cpython/blob/199507b81a302ea19f93593965b1e5088195a6c5/Objects/listobject.c#L440">https://github.com/python/cpython/blob/199507b81a302ea19f93593965b1e5088195a6c5/Objects/listobject.c#L440</a></p>
 <p><em>note: you may not always have access to the source code - in circumstances such as this you can view the disassembly in perf report directly to get some idea of what&rsquo;s going on. I&rsquo;ll add a quick section at the end showing how this looks</em></p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">// I found this by going to https://github.com/python/cpython/ and searching for &#34;list_contains&#34;
@@ -422,6 +422,13 @@ The Linux perf profiler is a very powerful tool that allows you to profile and o
         <hr />
     </div>
     <div class="pagination__buttons">
+        
+        <span class="button previous">
+            <a href="https://www.petermcconnell.com/posts/linuxtools/">
+                <span class="button__icon">←</span>
+                <span class="button__text">A quick introduction to basic debugging tools for linux systems</span>
+            </a>
+        </span>
         
         
         <span class="button next">

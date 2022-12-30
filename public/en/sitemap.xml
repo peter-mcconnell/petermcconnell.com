@@ -2,8 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://www.petermcconnell.com/posts/linuxtools/</loc>
+    <lastmod>2022-12-30T14:28:12+00:00</lastmod>
+  </url><url>
+    <loc>https://www.petermcconnell.com/tags/debugging/</loc>
+    <lastmod>2022-12-30T14:28:12+00:00</lastmod>
+  </url><url>
+    <loc>https://www.petermcconnell.com/tags/df/</loc>
+    <lastmod>2022-12-30T14:28:12+00:00</lastmod>
+  </url><url>
+    <loc>https://www.petermcconnell.com/tags/iostat/</loc>
+    <lastmod>2022-12-30T14:28:12+00:00</lastmod>
+  </url><url>
     <loc>https://www.petermcconnell.com/tags/linux/</loc>
-    <lastmod>2022-12-26T22:54:29+00:00</lastmod>
+    <lastmod>2022-12-30T14:28:12+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="es"
@@ -25,8 +37,14 @@
                 href="https://www.petermcconnell.com/tags/linux/"
                 />
   </url><url>
+    <loc>https://www.petermcconnell.com/tags/lsblk/</loc>
+    <lastmod>2022-12-30T14:28:12+00:00</lastmod>
+  </url><url>
+    <loc>https://www.petermcconnell.com/tags/mpstat/</loc>
+    <lastmod>2022-12-30T14:28:12+00:00</lastmod>
+  </url><url>
     <loc>https://www.petermcconnell.com/tags/perf/</loc>
-    <lastmod>2022-12-26T22:54:29+00:00</lastmod>
+    <lastmod>2022-12-30T14:28:12+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="es"
@@ -47,6 +65,81 @@
                 hreflang="en"
                 href="https://www.petermcconnell.com/tags/perf/"
                 />
+  </url><url>
+    <loc>https://www.petermcconnell.com/</loc>
+    <lastmod>2022-12-30T14:28:12+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="pt"
+                href="https://www.petermcconnell.com/pt/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="es"
+                href="https://www.petermcconnell.com/es/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="fr"
+                href="https://www.petermcconnell.com/fr/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://www.petermcconnell.com/"
+                />
+  </url><url>
+    <loc>https://www.petermcconnell.com/posts/</loc>
+    <lastmod>2022-12-30T14:28:12+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="es"
+                href="https://www.petermcconnell.com/es/posts/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="fr"
+                href="https://www.petermcconnell.com/fr/posts/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="pt"
+                href="https://www.petermcconnell.com/pt/posts/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://www.petermcconnell.com/posts/"
+                />
+  </url><url>
+    <loc>https://www.petermcconnell.com/tags/sar/</loc>
+    <lastmod>2022-12-30T14:28:12+00:00</lastmod>
+  </url><url>
+    <loc>https://www.petermcconnell.com/tags/</loc>
+    <lastmod>2022-12-30T14:28:12+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="es"
+                href="https://www.petermcconnell.com/es/tags/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="fr"
+                href="https://www.petermcconnell.com/fr/tags/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="pt"
+                href="https://www.petermcconnell.com/pt/tags/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://www.petermcconnell.com/tags/"
+                />
+  </url><url>
+    <loc>https://www.petermcconnell.com/tags/top/</loc>
+    <lastmod>2022-12-30T14:28:12+00:00</lastmod>
   </url><url>
     <loc>https://www.petermcconnell.com/posts/perf_eng_with_py12/</loc>
     <lastmod>2022-12-26T22:54:29+00:00</lastmod>
@@ -71,52 +164,6 @@
                 href="https://www.petermcconnell.com/posts/perf_eng_with_py12/"
                 />
   </url><url>
-    <loc>https://www.petermcconnell.com/</loc>
-    <lastmod>2022-12-26T22:54:29+00:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="pt"
-                href="https://www.petermcconnell.com/pt/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="es"
-                href="https://www.petermcconnell.com/es/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="fr"
-                href="https://www.petermcconnell.com/fr/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://www.petermcconnell.com/"
-                />
-  </url><url>
-    <loc>https://www.petermcconnell.com/posts/</loc>
-    <lastmod>2022-12-26T22:54:29+00:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="es"
-                href="https://www.petermcconnell.com/es/posts/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="fr"
-                href="https://www.petermcconnell.com/fr/posts/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="pt"
-                href="https://www.petermcconnell.com/pt/posts/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://www.petermcconnell.com/posts/"
-                />
-  </url><url>
     <loc>https://www.petermcconnell.com/tags/python/</loc>
     <lastmod>2022-12-26T22:54:29+00:00</lastmod>
     <xhtml:link
@@ -138,29 +185,6 @@
                 rel="alternate"
                 hreflang="en"
                 href="https://www.petermcconnell.com/tags/python/"
-                />
-  </url><url>
-    <loc>https://www.petermcconnell.com/tags/</loc>
-    <lastmod>2022-12-26T22:54:29+00:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="es"
-                href="https://www.petermcconnell.com/es/tags/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="fr"
-                href="https://www.petermcconnell.com/fr/tags/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="pt"
-                href="https://www.petermcconnell.com/pt/tags/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://www.petermcconnell.com/tags/"
                 />
   </url><url>
     <loc>https://www.petermcconnell.com/posts/binary_perf_summary/</loc>
