@@ -6,9 +6,9 @@
   
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Firstly let me qualify &amp;ldquo;basic&amp;rdquo; - I&amp;rsquo;m using this term because the breadth of debugging tools on Linux is so large. &amp;ldquo;basic&amp;rdquo; does not mean that these tools are super simple to understand deeply or if you aren&amp;rsquo;t already an expert in them that you are somehow &amp;ldquo;noob&amp;rdquo;; that&amp;rsquo;s not the case at all. Hopefully from this document you should get a high level view of these tools and takeaway an understanding of how you may start to identify where on a Linux system a problem may be." />
+<meta name="description" content="Firstly: let me qualify &amp;ldquo;basic&amp;rdquo;. I&amp;rsquo;m using this term because the breadth of debugging tools on Linux is so large. &amp;ldquo;basic&amp;rdquo; does not mean that these tools are super simple to understand deeply or if you aren&amp;rsquo;t already an expert in them that you are somehow &amp;ldquo;noob&amp;rdquo;; that&amp;rsquo;s not the case at all.
+Secondly: there is no inventing being done here. I&amp;rsquo;m just surfacing information in this article which you can already find in the man pages." />
 <meta name="keywords" content="top, iostat, mpstat, sar, df, lsblk, free, perf, uptime, linux, debugging" />
-<meta name="robots" content="noodp" />
 
 
 <link rel="canonical" href="https://www.petermcconnell.com/posts/linuxtools/" />
@@ -56,7 +56,8 @@
 <meta property="og:locale" content="en" />
 <meta property="og:type" content="article" />
 <meta property="og:title" content="A quick introduction to basic debugging tools for linux systems">
-<meta property="og:description" content="Firstly let me qualify &amp;ldquo;basic&amp;rdquo; - I&amp;rsquo;m using this term because the breadth of debugging tools on Linux is so large. &amp;ldquo;basic&amp;rdquo; does not mean that these tools are super simple to understand deeply or if you aren&amp;rsquo;t already an expert in them that you are somehow &amp;ldquo;noob&amp;rdquo;; that&amp;rsquo;s not the case at all. Hopefully from this document you should get a high level view of these tools and takeaway an understanding of how you may start to identify where on a Linux system a problem may be." />
+<meta property="og:description" content="Firstly: let me qualify &amp;ldquo;basic&amp;rdquo;. I&amp;rsquo;m using this term because the breadth of debugging tools on Linux is so large. &amp;ldquo;basic&amp;rdquo; does not mean that these tools are super simple to understand deeply or if you aren&amp;rsquo;t already an expert in them that you are somehow &amp;ldquo;noob&amp;rdquo;; that&amp;rsquo;s not the case at all.
+Secondly: there is no inventing being done here. I&amp;rsquo;m just surfacing information in this article which you can already find in the man pages." />
 <meta property="og:url" content="https://www.petermcconnell.com/posts/linuxtools/" />
 <meta property="og:site_name" content="Peter McConnell :: Ponderings from a Linux Systems engineer" />
 
@@ -203,7 +204,7 @@
       <span class="post-author">Peter McConnell</span>
     
     
-      <span class="post-reading-time">:: 14 min read (2950 words)</span>
+      <span class="post-reading-time">:: 15 min read (2983 words)</span>
     
   </div>
 
@@ -258,9 +259,9 @@
   
 
   <div class="post-content"><div>
-        <p>Firstly let me qualify &ldquo;basic&rdquo; - I&rsquo;m using this term because the breadth of debugging tools on Linux is so large. &ldquo;basic&rdquo; does not mean that these tools are super simple to understand deeply or if you aren&rsquo;t already an expert in them that you are somehow &ldquo;noob&rdquo;; that&rsquo;s not the case at all. Hopefully from this document you should get a high level view of these tools and takeaway an understanding of how you may start to identify where on a Linux system a problem may be.</p>
-<p>Secondly there is no inventing being done here. I&rsquo;m just surfacing information in this article which you can already find in the <code>man</code> pages. I would strongly recommend you check the relevant man page for the tool you find of interest in this article.</p>
-<p>Lastly; for the curious, these tools generally get their information from existing counters and statistics in <code>/proc/</code> and <code>/sys/</code>. In the man pages for these tools you can see a <code>FILES</code> section which details the data source for the given tool.</p>
+        <p>Firstly:  let me qualify &ldquo;basic&rdquo;. I&rsquo;m using this term because the breadth of debugging tools on Linux is so large. &ldquo;basic&rdquo; does not mean that these tools are super simple to understand deeply or if you aren&rsquo;t already an expert in them that you are somehow &ldquo;noob&rdquo;; that&rsquo;s not the case at all.</p>
+<p>Secondly: there is no inventing being done here. I&rsquo;m just surfacing information in this article which you can already find in the <code>man</code> pages. I would strongly recommend you check the relevant man page for the tool you find of interest in this article.</p>
+<p>Thirdly: for the curious, these tools generally get their information from existing counters and statistics in <code>/proc/</code> and <code>/sys/</code>. In the man pages for these tools you can see a <code>FILES</code> section which details the data source for the given tool.</p>
 <h2 id="crisis-tools">&ldquo;crisis tools&rdquo;<a href="#crisis-tools" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>This section is taken from Brendan Gregg&rsquo;s book <a href="https://amzn.to/3I9iU49%5D">&lsquo;System Performance&rsquo; (4.1.2)</a>. It covers not only where you can install some of the binaries mentioned in this article but also other useful tools for debugging. All credit to him for this list.</p>
 <table>
@@ -490,6 +491,7 @@
 <li>The number of used and available buffers (a type of cache used to store data temporarily) and cache (data stored in memory to speed up access to frequently used data)</li>
 </ul>
 <h2 id="lsblk">lsblk<a href="#lsblk" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>When: you assume there&rsquo;s an issue with the block devices and want to first check everything is in place.</p>
 <p>The <code>lsblk</code> (List Block Devices) command is a command-line utility in Linux that allows users to view a list of block devices (e.g. hard drives, SSDs, USB drives) attached to their system. It can be used to view the available block devices, their mount points, and their partition layouts. You may want to use this tool to validate if block devices are available and mounted.</p>
 <p>To use <code>lsblk</code>, you simply need to enter the command followed by any desired options. The following command will display a list of all block devices on the system:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ lsblk -f
@@ -507,6 +509,7 @@
 <li>The filesystem type (if the device is formatted with a filesystem)</li>
 </ul>
 <h2 id="df">df<a href="#df" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>When: you&rsquo;re aware of disk space issues and want to check the current availability.</p>
 <p>The <code>df</code> (Disk Free) command is a command-line utility in Linux that allows users to view the amount of available and used disk space on their system. It can be used to identify if a disk is approaching or at capacity.</p>
 <p>To use <code>df</code>, you simply need to enter the command followed by any desired options. The following command will display the total amount of available and used disk space on the system:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>df -h /
@@ -521,6 +524,7 @@
 <li>The mount point (the location where the file system is mounted in the directory structure)</li>
 </ul>
 <h2 id="perf">perf<a href="#perf" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>When: you are aware of a processing issue and want to understand which process it&rsquo;s coming from, or you want to drill into the process to understand why it&rsquo;s not performing to the expected standard.</p>
 <p>This tool allows users to monitor various performance metrics and events on their system. It can be used to identify performance bottlenecks, track the usage of system resources, and troubleshoot issues on a Linux system. Unlike the other tools in this article <code>perf</code> allows us to actually peek into the running program to see which parts of it are consuming cpu cycles. This is an incredibly valuable tool to have for those wanting to performance engineer on Linux and I have a practical example of this detailed in <a href="https://www.petermcconnell.com/posts/perf_eng_with_py12/">https://www.petermcconnell.com/posts/perf_eng_with_py12/</a>.</p>
 <p>To use <code>perf</code>, you need to specify the type of performance data you want to collect, as well as the specific events or metrics you want to monitor. To get general cpu profiling you can run:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>perf top -a

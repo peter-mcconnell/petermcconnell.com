@@ -14,11 +14,11 @@ color = "" #color from the theme settings
 Toc = true
 +++
 
-Firstly let me qualify "basic" - I'm using this term because the breadth of debugging tools on Linux is so large. "basic" does not mean that these tools are super simple to understand deeply or if you aren't already an expert in them that you are somehow "noob"; that's not the case at all. Hopefully from this document you should get a high level view of these tools and takeaway an understanding of how you may start to identify where on a Linux system a problem may be.
+Firstly:  let me qualify "basic". I'm using this term because the breadth of debugging tools on Linux is so large. "basic" does not mean that these tools are super simple to understand deeply or if you aren't already an expert in them that you are somehow "noob"; that's not the case at all.
 
-Secondly there is no inventing being done here. I'm just surfacing information in this article which you can already find in the `man` pages. I would strongly recommend you check the relevant man page for the tool you find of interest in this article.
+Secondly: there is no inventing being done here. I'm just surfacing information in this article which you can already find in the `man` pages. I would strongly recommend you check the relevant man page for the tool you find of interest in this article.
 
-Lastly; for the curious, these tools generally get their information from existing counters and statistics in `/proc/` and `/sys/`. In the man pages for these tools you can see a `FILES` section which details the data source for the given tool.
+Thirdly: for the curious, these tools generally get their information from existing counters and statistics in `/proc/` and `/sys/`. In the man pages for these tools you can see a `FILES` section which details the data source for the given tool.
 
 "crisis tools"
 --------------
@@ -291,6 +291,8 @@ Here we see:
 lsblk
 -----
 
+When: you assume there's an issue with the block devices and want to first check everything is in place.
+
 The `lsblk` (List Block Devices) command is a command-line utility in Linux that allows users to view a list of block devices (e.g. hard drives, SSDs, USB drives) attached to their system. It can be used to view the available block devices, their mount points, and their partition layouts. You may want to use this tool to validate if block devices are available and mounted.
 
 To use `lsblk`, you simply need to enter the command followed by any desired options. The following command will display a list of all block devices on the system:
@@ -315,6 +317,8 @@ The output of lsblk will include the following information for each block device
 df
 --
 
+When: you're aware of disk space issues and want to check the current availability.
+
 The `df` (Disk Free) command is a command-line utility in Linux that allows users to view the amount of available and used disk space on their system. It can be used to identify if a disk is approaching or at capacity.
 
 To use `df`, you simply need to enter the command followed by any desired options. The following command will display the total amount of available and used disk space on the system:
@@ -335,6 +339,8 @@ The output of df will include the following information for each file system:
 
 perf
 ----
+
+When: you are aware of a processing issue and want to understand which process it's coming from, or you want to drill into the process to understand why it's not performing to the expected standard.
 
 This tool allows users to monitor various performance metrics and events on their system. It can be used to identify performance bottlenecks, track the usage of system resources, and troubleshoot issues on a Linux system. Unlike the other tools in this article `perf` allows us to actually peek into the running program to see which parts of it are consuming cpu cycles. This is an incredibly valuable tool to have for those wanting to performance engineer on Linux and I have a practical example of this detailed in https://www.petermcconnell.com/posts/perf_eng_with_py12/.
 
