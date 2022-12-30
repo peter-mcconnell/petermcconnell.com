@@ -49,16 +49,23 @@ Frankly I think we're now in a world that looks more like the pre-devops days.
 SWE teams are no longer handing over a package of code and saying "hey, take my
 source code, install these dependencies and run this" but are now in control of
 their applications deployment manifest and can containerise their applications.
+The original problem to solve feels like much smaller a problem now.
 
 Operators can run a platform such as Kubernetes which for the most part the
-other engineering teams can treat like a PAAS.
+other engineering teams can treat like a PAAS. "How will devs know how to
+configure their apps to run on the platform" - they'll have to learn. Somehow.
+Guardrails should be put in place (e.g. policies) to stop people "doing bad
+things" but it shouldn't go as far as "that devops engineer will write your
+cicd config" or "that devops engineer will write your kubernetes config". Teams
+MUST own their config, and to own it they need to understand it.
 
-It shouldn't be a team or a job title. There shouldn't be "devops tools" or a
-"devops environment". You might have a kubernetes team, an OPA/IAM/network
-policy team, a streaming services team etc. Just don't have a "devops" team.
+So it shouldn't be a team or a job title. There shouldn't be "devops tools" or a
+"devops environment". A problem can never be "a devops issue". You might have a
+kubernetes team, an OPA/IAM/network policy team, a streaming services team etc.
+Just don't have a "devops" team.
 
-We shouldn't give it a name either. Stop giving everything a name just so you
-can sell books and tshirts. This just creates distance from the problem to
+We shouldn't give it a new name either. Stop giving everything a name just so
+you can sell books and tshirts. This just creates distance from the problem to
 solve - we all just want to ship code reliably so that our business meets its
 goals and so that we don't spend overtime fixing bugs or doing manual work that
 could have been done by a computer.

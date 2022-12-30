@@ -111,7 +111,7 @@ If we notice that one of the CPU cores is consistently running at a higher utili
 iostat
 ------
 
-When: you think there's an issue with an IO device.
+When: you think there's an issue with IO.
 
 The `iostat` tool is a command-line utility in Linux that allows users to monitor input/output (I/O) statistics for devices, partitions, and network filesystems. It can be used to identify performance bottlenecks and track the usage of system resources by I/O operations.
 

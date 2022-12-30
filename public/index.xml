@@ -43,14 +43,21 @@ is a reasonable ask.&lt;/p&gt;
 &lt;p&gt;Frankly I think we&amp;rsquo;re now in a world that looks more like the pre-devops days.
 SWE teams are no longer handing over a package of code and saying &amp;ldquo;hey, take my
 source code, install these dependencies and run this&amp;rdquo; but are now in control of
-their applications deployment manifest and can containerise their applications.&lt;/p&gt;
+their applications deployment manifest and can containerise their applications.
+The original problem to solve feels like much smaller a problem now.&lt;/p&gt;
 &lt;p&gt;Operators can run a platform such as Kubernetes which for the most part the
-other engineering teams can treat like a PAAS.&lt;/p&gt;
-&lt;p&gt;It shouldn&amp;rsquo;t be a team or a job title. There shouldn&amp;rsquo;t be &amp;ldquo;devops tools&amp;rdquo; or a
-&amp;ldquo;devops environment&amp;rdquo;. You might have a kubernetes team, an OPA/IAM/network
-policy team, a streaming services team etc. Just don&amp;rsquo;t have a &amp;ldquo;devops&amp;rdquo; team.&lt;/p&gt;
-&lt;p&gt;We shouldn&amp;rsquo;t give it a name either. Stop giving everything a name just so you
-can sell books and tshirts. This just creates distance from the problem to
+other engineering teams can treat like a PAAS. &amp;ldquo;How will devs know how to
+configure their apps to run on the platform&amp;rdquo; - they&amp;rsquo;ll have to learn. Somehow.
+Guardrails should be put in place (e.g. policies) to stop people &amp;ldquo;doing bad
+things&amp;rdquo; but it shouldn&amp;rsquo;t go as far as &amp;ldquo;that devops engineer will write your
+cicd config&amp;rdquo; or &amp;ldquo;that devops engineer will write your kubernetes config&amp;rdquo;. Teams
+MUST own their config, and to own it they need to understand it.&lt;/p&gt;
+&lt;p&gt;So it shouldn&amp;rsquo;t be a team or a job title. There shouldn&amp;rsquo;t be &amp;ldquo;devops tools&amp;rdquo; or a
+&amp;ldquo;devops environment&amp;rdquo;. A problem can never be &amp;ldquo;a devops issue&amp;rdquo;. You might have a
+kubernetes team, an OPA/IAM/network policy team, a streaming services team etc.
+Just don&amp;rsquo;t have a &amp;ldquo;devops&amp;rdquo; team.&lt;/p&gt;
+&lt;p&gt;We shouldn&amp;rsquo;t give it a new name either. Stop giving everything a name just so
+you can sell books and tshirts. This just creates distance from the problem to
 solve - we all just want to ship code reliably so that our business meets its
 goals and so that we don&amp;rsquo;t spend overtime fixing bugs or doing manual work that
 could have been done by a computer.&lt;/p&gt;
@@ -179,7 +186,7 @@ Secondly: there is no inventing being done here. I&amp;rsquo;m just surfacing in
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This will print statistics from each core every second, showing the current CPU usage. By watching the output over time, we can see if there are any patterns or spikes in the usage of a particular CPU core.&lt;/p&gt;
 &lt;p&gt;If we notice that one of the CPU cores is consistently running at a higher utilization than the others, we can try to identify the cause of the problem. One way to do this is by using the &lt;code&gt;top&lt;/code&gt; command to see which processes are using the most CPU resources. It could be that the program itself is misconfigured and not properly distributing load over the available cores.&lt;/p&gt;
 &lt;h2 id=&#34;iostat&#34;&gt;iostat&lt;/h2&gt;
-&lt;p&gt;When: you think there&amp;rsquo;s an issue with an IO device.&lt;/p&gt;
+&lt;p&gt;When: you think there&amp;rsquo;s an issue with IO.&lt;/p&gt;
 &lt;p&gt;The &lt;code&gt;iostat&lt;/code&gt; tool is a command-line utility in Linux that allows users to monitor input/output (I/O) statistics for devices, partitions, and network filesystems. It can be used to identify performance bottlenecks and track the usage of system resources by I/O operations.&lt;/p&gt;
 &lt;p&gt;To use &lt;code&gt;iostat&lt;/code&gt;, you need to specify the interval at which you want to collect data, as well as the devices or partitions you want to monitor. For example, the following command will display I/O statistics for all devices every 2 seconds, 5 times:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ iostat -p ALL &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;
@@ -744,15 +751,14 @@ running.&lt;/p&gt;
       
       <guid>https://www.petermcconnell.com/skills/</guid>
       <description>https://www.youtube.com/watch?v=dL6kQ0v1PQ8
-I&amp;rsquo;m a solid debugger, reasonable systems designer, ok coder &amp;amp; natural leader who leans heavy into automation / giving people the power to do their jobs. I&amp;rsquo;ve worked with enough talent to know I&amp;rsquo;m nothing special; but I have a great track record for being easy to work with and getting shit done be it as an IC, a manager, or a group lead.
-Usually never far from:
-Linux Python Golang Bash Docker Kubernetes AWS Over 20 years I&amp;rsquo;ve touched a lot of different tech and generally speaking can shake the rust off or learn something new in a week or two.</description>
+I&amp;rsquo;m a solid debugger, reasonable systems designer, ok coder &amp;amp; natural leader who leans heavy into automation / giving people the power to do their jobs. I&amp;rsquo;ve worked with enough talent to know I&amp;rsquo;m nothing special; but I have a great track record for learning fast, being easy to work with and getting shit done be it as an IC, a manager, or a group lead.
+Usually never far from:</description>
       <content>&lt;p&gt;&lt;a href=&#34;https://www.youtube.com/watch?v=dL6kQ0v1PQ8&#34;&gt;https://www.youtube.com/watch?v=dL6kQ0v1PQ8&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;I&amp;rsquo;m a solid debugger, reasonable systems designer, ok coder &amp;amp; natural leader
 who leans heavy into automation / giving people the power to do their jobs.
 I&amp;rsquo;ve worked with enough talent to know I&amp;rsquo;m nothing special; but I have a great
-track record for being easy to work with and getting shit done be it as an IC,
-a manager, or a group lead.&lt;/p&gt;
+track record for learning fast, being easy to work with and getting shit done
+be it as an IC, a manager, or a group lead.&lt;/p&gt;
 &lt;p&gt;Usually never far from:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Linux&lt;/li&gt;

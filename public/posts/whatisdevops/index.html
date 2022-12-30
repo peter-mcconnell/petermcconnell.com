@@ -200,7 +200,7 @@
     
     
     
-      <span class="post-reading-time">:: 3 min read (469 words)</span>
+      <span class="post-reading-time">:: 3 min read (563 words)</span>
     
   </div>
 
@@ -249,14 +249,21 @@ is a reasonable ask.</p>
 <p>Frankly I think we&rsquo;re now in a world that looks more like the pre-devops days.
 SWE teams are no longer handing over a package of code and saying &ldquo;hey, take my
 source code, install these dependencies and run this&rdquo; but are now in control of
-their applications deployment manifest and can containerise their applications.</p>
+their applications deployment manifest and can containerise their applications.
+The original problem to solve feels like much smaller a problem now.</p>
 <p>Operators can run a platform such as Kubernetes which for the most part the
-other engineering teams can treat like a PAAS.</p>
-<p>It shouldn&rsquo;t be a team or a job title. There shouldn&rsquo;t be &ldquo;devops tools&rdquo; or a
-&ldquo;devops environment&rdquo;. You might have a kubernetes team, an OPA/IAM/network
-policy team, a streaming services team etc. Just don&rsquo;t have a &ldquo;devops&rdquo; team.</p>
-<p>We shouldn&rsquo;t give it a name either. Stop giving everything a name just so you
-can sell books and tshirts. This just creates distance from the problem to
+other engineering teams can treat like a PAAS. &ldquo;How will devs know how to
+configure their apps to run on the platform&rdquo; - they&rsquo;ll have to learn. Somehow.
+Guardrails should be put in place (e.g. policies) to stop people &ldquo;doing bad
+things&rdquo; but it shouldn&rsquo;t go as far as &ldquo;that devops engineer will write your
+cicd config&rdquo; or &ldquo;that devops engineer will write your kubernetes config&rdquo;. Teams
+MUST own their config, and to own it they need to understand it.</p>
+<p>So it shouldn&rsquo;t be a team or a job title. There shouldn&rsquo;t be &ldquo;devops tools&rdquo; or a
+&ldquo;devops environment&rdquo;. A problem can never be &ldquo;a devops issue&rdquo;. You might have a
+kubernetes team, an OPA/IAM/network policy team, a streaming services team etc.
+Just don&rsquo;t have a &ldquo;devops&rdquo; team.</p>
+<p>We shouldn&rsquo;t give it a new name either. Stop giving everything a name just so
+you can sell books and tshirts. This just creates distance from the problem to
 solve - we all just want to ship code reliably so that our business meets its
 goals and so that we don&rsquo;t spend overtime fixing bugs or doing manual work that
 could have been done by a computer.</p>

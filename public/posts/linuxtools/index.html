@@ -202,7 +202,7 @@
       <span class="post-author">Peter McConnell</span>
     
     
-      <span class="post-reading-time">:: 15 min read (2983 words)</span>
+      <span class="post-reading-time">:: 14 min read (2981 words)</span>
     
   </div>
 
@@ -371,7 +371,7 @@
 </span></span></code></pre></div><p>This will print statistics from each core every second, showing the current CPU usage. By watching the output over time, we can see if there are any patterns or spikes in the usage of a particular CPU core.</p>
 <p>If we notice that one of the CPU cores is consistently running at a higher utilization than the others, we can try to identify the cause of the problem. One way to do this is by using the <code>top</code> command to see which processes are using the most CPU resources. It could be that the program itself is misconfigured and not properly distributing load over the available cores.</p>
 <h2 id="iostat">iostat<a href="#iostat" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
-<p>When: you think there&rsquo;s an issue with an IO device.</p>
+<p>When: you think there&rsquo;s an issue with IO.</p>
 <p>The <code>iostat</code> tool is a command-line utility in Linux that allows users to monitor input/output (I/O) statistics for devices, partitions, and network filesystems. It can be used to identify performance bottlenecks and track the usage of system resources by I/O operations.</p>
 <p>To use <code>iostat</code>, you need to specify the interval at which you want to collect data, as well as the devices or partitions you want to monitor. For example, the following command will display I/O statistics for all devices every 2 seconds, 5 times:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ iostat -p ALL <span style="color:#ae81ff">2</span> <span style="color:#ae81ff">5</span>
