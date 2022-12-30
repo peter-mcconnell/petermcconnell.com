@@ -497,31 +497,6 @@ The Linux perf profiler is a very powerful tool that allows you to profile and o
     </item>
     
     <item>
-      <title>website perf - a few common performance improvement ideas for web applications</title>
-      <link>https://www.petermcconnell.com/posts/website_perf/</link>
-      <pubDate>Mon, 26 Dec 2022 15:30:38 +0000</pubDate>
-      
-      <guid>https://www.petermcconnell.com/posts/website_perf/</guid>
-      <description>5 Tips for Improving the Performance of your Web Applications Performance is critical to the success of any application. Poor performance can lead to a poor user experience, reduced engagement, and ultimately, decreased revenue. In this article, we&amp;rsquo;ll explore five tips for improving the performance of your applications.
-Tip 1: Measure and monitor performance regularly The first step to improving performance is understanding where the bottlenecks are. To do this, you need to measure and monitor performance regularly.</description>
-      <content>&lt;h1 id=&#34;5-tips-for-improving-the-performance-of-your-web-applications&#34;&gt;5 Tips for Improving the Performance of your Web Applications&lt;/h1&gt;
-&lt;p&gt;Performance is critical to the success of any application. Poor performance can lead to a poor user experience, reduced engagement, and ultimately, decreased revenue. In this article, we&amp;rsquo;ll explore five tips for improving the performance of your applications.&lt;/p&gt;
-&lt;h2 id=&#34;tip-1-measure-and-monitor-performance-regularly&#34;&gt;Tip 1: Measure and monitor performance regularly&lt;/h2&gt;
-&lt;p&gt;The first step to improving performance is understanding where the bottlenecks are. To do this, you need to measure and monitor performance regularly. Use tools like profilers, load testers, and monitoring tools to gather data on the performance of your application. This will help you identify areas that are causing slowdowns and prioritize improvements. Setting up a visualisation tool for this, such as Grafana, will mean that you can get this data whenever you need it.&lt;/p&gt;
-&lt;h2 id=&#34;tip-2-optimize-database-queries&#34;&gt;Tip 2: Optimize database queries&lt;/h2&gt;
-&lt;p&gt;Databases are often a major source of performance issues. To optimize database queries, consider using indexing to speed up query execution, use caching to store frequently accessed data, and use explain plans to understand how queries are being executed. You should also consider using a database optimization tool to identify and fix common issues. You should ensure your query caching stragegy is sound for your application.&lt;/p&gt;
-&lt;h2 id=&#34;tip-3-use-a-cdn-for-static-content&#34;&gt;Tip 3: Use a CDN for static content&lt;/h2&gt;
-&lt;p&gt;Content Delivery Networks (CDNs) are a great way to improve the performance of your application. CDNs store static content like images, CSS, and JavaScript on servers around the world, so that users can access them from a location that is closer to them. This can significantly reduce the time it takes for static content to load, resulting in a faster overall page load time.&lt;/p&gt;
-&lt;h2 id=&#34;tip-4-optimize-front-end-performance&#34;&gt;Tip 4: Optimize front-end performance&lt;/h2&gt;
-&lt;p&gt;The front-end of your application plays a critical role in performance. To optimize front-end performance, consider using techniques like minification, compression, and lazy loading. You should also consider using a tool like Webpack to bundle and optimize your assets.&lt;/p&gt;
-&lt;h2 id=&#34;tip-5-use-a-load-balancer&#34;&gt;Tip 5: Use a load balancer&lt;/h2&gt;
-&lt;p&gt;If you have a high traffic application, using a load balancer can help distribute traffic across multiple servers, which can improve the performance of your application. Load balancers can also help improve the reliability of your application by automatically routing traffic away from overloaded servers.&lt;/p&gt;
-&lt;h2 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h2&gt;
-&lt;p&gt;Improving the performance of your application requires a combination of tools and techniques. By regularly measuring and monitoring performance, optimizing database queries, using a CDN for static content, optimizing front-end performance, and using a load balancer, you can significantly improve the performance of your application and provide a better user experience.&lt;/p&gt;
-</content>
-    </item>
-    
-    <item>
       <title>Monolith vs Microservice repositories - some pros and cons</title>
       <link>https://www.petermcconnell.com/posts/monolith_vs_microservice_repos/</link>
       <pubDate>Mon, 26 Dec 2022 15:01:29 +0000</pubDate>
