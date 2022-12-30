@@ -7,7 +7,56 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; Peter McConnell 2023</copyright>
-    <lastBuildDate>Fri, 30 Dec 2022 14:28:12 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 30 Dec 2022 20:34:57 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>What is DevOps?</title>
+      <link>https://www.petermcconnell.com/posts/whatisdevops/</link>
+      <pubDate>Fri, 30 Dec 2022 20:34:57 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/posts/whatisdevops/</guid>
+      <description>The term &amp;ldquo;devops&amp;rdquo; has been floating around since the late 2000s and frankly has always annoyed me. Not that I think the intent was bad but rather the adoption was so varied and confusing that simply saying the word out loud seemed to make things worse and lead to fear and confusion. I&amp;rsquo;d like to make &amp;ldquo;DevOps&amp;rdquo; the &amp;ldquo;Voldermort&amp;rdquo; of tech buzzwords - &amp;ldquo;He-Who-Must-Not-Be-Named&amp;rdquo;. This happened with Agile also which is even more confusing given it has a &amp;ldquo;manifesto&amp;rdquo; that&amp;rsquo;s all but a single paragraph, but I&amp;rsquo;ll leave that for another day.</description>
+      <content>&lt;p&gt;The term &amp;ldquo;devops&amp;rdquo; has been floating around since the late  2000s and frankly has
+always annoyed me. Not that I think the intent was bad but rather the adoption
+was so varied and confusing that simply saying the word out loud seemed to make
+things worse and lead to fear and confusion. I&amp;rsquo;d like to make &amp;ldquo;DevOps&amp;rdquo; the
+&amp;ldquo;Voldermort&amp;rdquo; of tech buzzwords - &amp;ldquo;He-Who-Must-Not-Be-Named&amp;rdquo;. This happened with
+Agile also which is even more confusing given it has a &amp;ldquo;manifesto&amp;rdquo; that&amp;rsquo;s all
+but a single paragraph, but I&amp;rsquo;ll leave that for another day.&lt;/p&gt;
+&lt;p&gt;The Wikipedia (&lt;a href=&#34;https://en.wikipedia.org/wiki/DevOps&#34;&gt;https://en.wikipedia.org/wiki/DevOps&lt;/a&gt;) page for DevOps is fairly
+hand-wavey which somewhat highlights the issue. Like most documents talking to
+&amp;ldquo;organisational change&amp;rdquo; it&amp;rsquo;s a word-salad with no real actionable takeaways.&lt;/p&gt;
+&lt;p&gt;I&amp;rsquo;ve had several &amp;ldquo;DevOps&amp;rdquo; jobs and each of them were functionally and
+organisationally different. All projects were delivered but done so more often
+than not via silos. Wasn&amp;rsquo;t this the problem &amp;ldquo;DevOps&amp;rdquo; was meant to solve?&lt;/p&gt;
+&lt;p&gt;Speaking of &amp;hellip; What &lt;em&gt;is&lt;/em&gt; the problem to solve? Shipping code to production
+quickly and reliably. In ye olden times there were issues of siloed development
+teams and operations teams meaning the devs wouldn&amp;rsquo;t optimise for production
+workloads and the operators wouldn&amp;rsquo;t have a clue what they were shipping onto
+their servers. There&amp;rsquo;s a lot of domain expertise in both camps - asking people
+to become experts of both was unreasonable.&lt;/p&gt;
+&lt;p&gt;But that was also a different time &amp;hellip; we didn&amp;rsquo;t have the abundance of tooling
+and services that we do today. Kubernetes didn&amp;rsquo;t exist. Docker didn&amp;rsquo;t exist.
+Cloud offerings were pretty light. With the tools available today, asking SWEs
+to take on more responsibility to account for their applications in production
+is a reasonable ask.&lt;/p&gt;
+&lt;h2 id=&#34;so-what-should-we-do&#34;&gt;so what should we do?&lt;/h2&gt;
+&lt;p&gt;Frankly I think we&amp;rsquo;re now in a world that looks more like the pre-devops days.
+SWE teams are no longer handing over a package of code and saying &amp;ldquo;hey, take my
+source code, install these dependencies and run this&amp;rdquo; but are now in control of
+their applications deployment manifest and can containerise their applications.&lt;/p&gt;
+&lt;p&gt;Operators can run a platform such as Kubernetes which for the most part the
+other engineering teams can treat like a PAAS.&lt;/p&gt;
+&lt;p&gt;It shouldn&amp;rsquo;t be a team or a job title. There shouldn&amp;rsquo;t be &amp;ldquo;devops tools&amp;rdquo; or a
+&amp;ldquo;devops environment&amp;rdquo;. You might have a kubernetes team, an OPA/IAM/network
+policy team, a streaming services team etc. Just don&amp;rsquo;t have a &amp;ldquo;devops&amp;rdquo; team.&lt;/p&gt;
+&lt;p&gt;We shouldn&amp;rsquo;t give it a name either. Stop giving everything a name just so you
+can sell books and tshirts. This just creates distance from the problem to
+solve - we all just want to ship code reliably so that our business meets its
+goals and so that we don&amp;rsquo;t spend overtime fixing bugs or doing manual work that
+could have been done by a computer.&lt;/p&gt;
+</content>
+    </item>
+    
     <item>
       <title>A quick introduction to basic debugging tools for linux systems</title>
       <link>https://www.petermcconnell.com/posts/linuxtools/</link>

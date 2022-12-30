@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+    <title>What is DevOps? :: Peter McConnell :: Ponderings from a Linux Systems engineer</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="&#39;What is DevOps?&#39; - according to me. To cut to the chase, I think the term is bollocks and we should stop using it" />
+<meta name="keywords" content="devops, platform, engineering" />
+
+
+<link rel="canonical" href="https://www.petermcconnell.com/posts/whatisdevops/" />
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QJWXPMPB8F"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-QJWXPMPB8F');
+</script>
+
+
+
+
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="/style.css">
+
+
+
+
+
+
+
+  <link rel="shortcut icon" href="https://www.petermcconnell.com/img/theme-colors/pink.png">
+  <link rel="apple-touch-icon" href="https://www.petermcconnell.com/img/theme-colors/pink.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+  
+    <meta name="twitter:site" content="PeteMcConnell_" />
+  
+    <meta name="twitter:creator" content="Peter McConnell" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="What is DevOps?">
+<meta property="og:description" content="&#39;What is DevOps?&#39; - according to me. To cut to the chase, I think the term is bollocks and we should stop using it" />
+<meta property="og:url" content="https://www.petermcconnell.com/posts/whatisdevops/" />
+<meta property="og:site_name" content="Peter McConnell :: Ponderings from a Linux Systems engineer" />
+
+  
+  
+  <meta property="og:image" content="https://www.petermcconnell.com/">
+
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="627">
+
+
+  <meta property="article:published_time" content="2022-12-30 20:34:57 &#43;0000 UTC" />
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+<body class="pink">
+
+
+<div class="container headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/">
+  <div class="logo">
+    Peter McConnell
+  </div>
+</a>
+
+    </div>
+    
+      <ul class="menu menu--mobile">
+  <li class="menu__trigger">Menu&nbsp;▾</li>
+  <li>
+    <ul class="menu__dropdown">
+      
+        
+          <li><a href="/about">About</a></li>
+        
+      
+        
+          <li><a href="/showcase">Showcase</a></li>
+        
+      
+        
+          <li><a href="/skills">Skills</a></li>
+        
+      
+      
+        <hr />
+        
+          <li>
+            <a href="https://www.petermcconnell.com/">English</a>
+          </li>
+        
+          <li>
+            <a href="https://www.petermcconnell.com/pt/">Português</a>
+          </li>
+        
+          <li>
+            <a href="https://www.petermcconnell.com/es/">Española</a>
+          </li>
+        
+          <li>
+            <a href="https://www.petermcconnell.com/fr/">Français</a>
+          </li>
+        
+      
+    </ul>
+  </li>
+</ul>
+
+    
+    
+      <ul class="menu menu--desktop menu--language-selector">
+  <li class="menu__trigger">English&nbsp;▾</li>
+  <li>
+    <ul class="menu__dropdown">
+      
+        <li><a href="https://www.petermcconnell.com/">English</a></li>
+      
+        <li><a href="https://www.petermcconnell.com/pt/">Português</a></li>
+      
+        <li><a href="https://www.petermcconnell.com/es/">Española</a></li>
+      
+        <li><a href="https://www.petermcconnell.com/fr/">Français</a></li>
+      
+    </ul>
+  </li>
+</ul>
+
+    
+  </div>
+  
+    <nav class="navigation-menu">
+  <ul class="navigation-menu__inner menu--desktop">
+    
+      
+        
+          <li><a href="/about">About</a></li>
+        
+      
+        
+          <li><a href="/showcase">Showcase</a></li>
+        
+      
+        
+          <li><a href="/skills">Skills</a></li>
+        
+      
+      
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<article class="post">
+  <h1 class="post-title">
+    <a href="https://www.petermcconnell.com/posts/whatisdevops/">What is DevOps?</a>
+  </h1>
+  <div class="post-meta">
+    
+      <time class="post-date">
+        2022-12-30 ::
+        
+      </time>
+    
+    
+    
+      <span class="post-reading-time">:: 3 min read (469 words)</span>
+    
+  </div>
+
+  
+    <span class="post-tags">
+      
+      #<a href="https://www.petermcconnell.com/tags/devops/">devops</a>&nbsp;
+      
+      #<a href="https://www.petermcconnell.com/tags/platform/">platform</a>&nbsp;
+      
+      #<a href="https://www.petermcconnell.com/tags/engineering/">engineering</a>&nbsp;
+      
+    </span>
+  
+  
+
+
+  
+
+  <div class="post-content"><div>
+        <p>The term &ldquo;devops&rdquo; has been floating around since the late  2000s and frankly has
+always annoyed me. Not that I think the intent was bad but rather the adoption
+was so varied and confusing that simply saying the word out loud seemed to make
+things worse and lead to fear and confusion. I&rsquo;d like to make &ldquo;DevOps&rdquo; the
+&ldquo;Voldermort&rdquo; of tech buzzwords - &ldquo;He-Who-Must-Not-Be-Named&rdquo;. This happened with
+Agile also which is even more confusing given it has a &ldquo;manifesto&rdquo; that&rsquo;s all
+but a single paragraph, but I&rsquo;ll leave that for another day.</p>
+<p>The Wikipedia (<a href="https://en.wikipedia.org/wiki/DevOps">https://en.wikipedia.org/wiki/DevOps</a>) page for DevOps is fairly
+hand-wavey which somewhat highlights the issue. Like most documents talking to
+&ldquo;organisational change&rdquo; it&rsquo;s a word-salad with no real actionable takeaways.</p>
+<p>I&rsquo;ve had several &ldquo;DevOps&rdquo; jobs and each of them were functionally and
+organisationally different. All projects were delivered but done so more often
+than not via silos. Wasn&rsquo;t this the problem &ldquo;DevOps&rdquo; was meant to solve?</p>
+<p>Speaking of &hellip; What <em>is</em> the problem to solve? Shipping code to production
+quickly and reliably. In ye olden times there were issues of siloed development
+teams and operations teams meaning the devs wouldn&rsquo;t optimise for production
+workloads and the operators wouldn&rsquo;t have a clue what they were shipping onto
+their servers. There&rsquo;s a lot of domain expertise in both camps - asking people
+to become experts of both was unreasonable.</p>
+<p>But that was also a different time &hellip; we didn&rsquo;t have the abundance of tooling
+and services that we do today. Kubernetes didn&rsquo;t exist. Docker didn&rsquo;t exist.
+Cloud offerings were pretty light. With the tools available today, asking SWEs
+to take on more responsibility to account for their applications in production
+is a reasonable ask.</p>
+<h2 id="so-what-should-we-do">so what should we do?<a href="#so-what-should-we-do" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>Frankly I think we&rsquo;re now in a world that looks more like the pre-devops days.
+SWE teams are no longer handing over a package of code and saying &ldquo;hey, take my
+source code, install these dependencies and run this&rdquo; but are now in control of
+their applications deployment manifest and can containerise their applications.</p>
+<p>Operators can run a platform such as Kubernetes which for the most part the
+other engineering teams can treat like a PAAS.</p>
+<p>It shouldn&rsquo;t be a team or a job title. There shouldn&rsquo;t be &ldquo;devops tools&rdquo; or a
+&ldquo;devops environment&rdquo;. You might have a kubernetes team, an OPA/IAM/network
+policy team, a streaming services team etc. Just don&rsquo;t have a &ldquo;devops&rdquo; team.</p>
+<p>We shouldn&rsquo;t give it a name either. Stop giving everything a name just so you
+can sell books and tshirts. This just creates distance from the problem to
+solve - we all just want to ship code reliably so that our business meets its
+goals and so that we don&rsquo;t spend overtime fixing bugs or doing manual work that
+could have been done by a computer.</p>
+
+      </div></div>
+
+  
+    
+<div class="pagination">
+    <div class="pagination__title">
+        <span class="pagination__title-h">Read other posts</span>
+        <hr />
+    </div>
+    <div class="pagination__buttons">
+        
+        
+        <span class="button next">
+            <a href="https://www.petermcconnell.com/posts/linuxtools/">
+                <span class="button__text">A quick introduction to basic debugging tools for linux systems</span>
+                <span class="button__icon">→</span>
+            </a>
+        </span>
+        
+    </div>
+</div>
+
+  
+
+  
+    
+
+  
+</article>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    <div class="links">
+      <a href="https://twitter.com/PeteMcConnell_">twitter</a> |
+      <a href="https://github.com/peter-mcconnell/">github</a> |
+      <a href="https://www.linkedin.com/in/pemcconnell/">linkedin</a>
+      
+        <div class="copyright copyright--user">
+          <span>&copy; Peter McConnell 2023</span>
+      
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+
+
+
+
+<script type="text/javascript" src="/bundle.min.js"></script>
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>

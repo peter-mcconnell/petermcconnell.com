@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>devops on Peter McConnell :: Ponderings from a Linux Systems engineer</title>
-    <link>https://www.petermcconnell.com/tags/devops/</link>
-    <description>Recent content in devops on Peter McConnell :: Ponderings from a Linux Systems engineer</description>
+    <title>platform on Peter McConnell :: Ponderings from a Linux Systems engineer</title>
+    <link>https://www.petermcconnell.com/tags/platform/</link>
+    <description>Recent content in platform on Peter McConnell :: Ponderings from a Linux Systems engineer</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; Peter McConnell 2023</copyright>
-    <lastBuildDate>Fri, 30 Dec 2022 20:34:57 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/devops/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 30 Dec 2022 20:34:57 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/platform/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>What is DevOps?</title>
       <link>https://www.petermcconnell.com/posts/whatisdevops/</link>
