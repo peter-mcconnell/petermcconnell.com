@@ -221,7 +221,14 @@ To view the code around the current point of execution just press `l`:
     12:		fmt.Printf("doubleit 4: %d\n", doubleit(4))
 ```
 
-Which of course shows our very hard to find logic error, `* 3` instead of `* 2`
+Which of course shows our very hard to find logic error, `* 3` instead of `* 2`.
+
+Note: you can also set breakpoints in the stdlib functions (paths will vary depending on your setup):
+
+```sh
+(dlv) b src/net/http/request.go:899
+Breakpoint 1 set at 0x794599 for net/http.NewRequestWithContext() /usr/local/go./net/http/request.go:899
+```
 
 summary
 -------

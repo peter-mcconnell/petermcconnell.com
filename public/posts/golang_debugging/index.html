@@ -202,7 +202,7 @@
       <span class="post-author">Peter McConnell</span>
     
     
-      <span class="post-reading-time">:: 5 min read (1013 words)</span>
+      <span class="post-reading-time">:: 5 min read (1041 words)</span>
     
   </div>
 
@@ -376,8 +376,11 @@
 </span></span><span style="display:flex;"><span>    10:	func main<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
 </span></span><span style="display:flex;"><span>    11:		fmt.Printf<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;doubleit 2: %d\n&#34;</span>, doubleit<span style="color:#f92672">(</span>2<span style="color:#f92672">))</span>
 </span></span><span style="display:flex;"><span>    12:		fmt.Printf<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;doubleit 4: %d\n&#34;</span>, doubleit<span style="color:#f92672">(</span>4<span style="color:#f92672">))</span>
-</span></span></code></pre></div><p>Which of course shows our very hard to find logic error, <code>* 3</code> instead of <code>* 2</code></p>
-<h2 id="summary">summary<a href="#summary" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+</span></span></code></pre></div><p>Which of course shows our very hard to find logic error, <code>* 3</code> instead of <code>* 2</code>.</p>
+<p>Note: you can also set breakpoints in the stdlib functions (paths will vary depending on your setup):</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#f92672">(</span>dlv<span style="color:#f92672">)</span> b src/net/http/request.go:899
+</span></span><span style="display:flex;"><span>Breakpoint <span style="color:#ae81ff">1</span> set at 0x794599 <span style="color:#66d9ef">for</span> net/http.NewRequestWithContext<span style="color:#f92672">()</span> /usr/local/go./net/http/request.go:899
+</span></span></code></pre></div><h2 id="summary">summary<a href="#summary" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>The example above is extremely trivial - where <code>dlv</code> and it&rsquo;s ilk shine are on complex usecases where you may not even know what methods are between the input and output, such as debugging the stdlib. Just this week I used <code>dlv</code> to identify why a <code>POST</code> wasn&rsquo;t honouring a <code>307</code> temporary redirect - on inspection, using <code>dlv</code>, I learned that the <code>body</code> is disregarded if it is an unrecognised <code>type</code> <a href="https://github.com/golang/go/blob/master/src/net/http/request.go#L899">https://github.com/golang/go/blob/master/src/net/http/request.go#L899</a>. Having to do this without a debugger would have taken quite a bit of code hopping - the debugger took care of that for me and allowed me to validate argument values as I did it.</p>
 <h2 id="why-not-gdb">why not gdb?<a href="#why-not-gdb" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>I know some folk feel strongly that <code>gdb</code> is the tool to use for debugging go code, but given the Golang docs itself encourage you to use Delve over GDB I personally stay away from it:</p>
