@@ -1,8 +1,8 @@
 +++
 title = "What is DevOps?"
 date = "2022-12-30T20:34:57Z"
-author = ""
-authorTwitter = "Peter McConnell" #do not include @
+author = "Peter McConnell"
+authorTwitter = "PeteMcConnell_" #do not include @
 cover = ""
 tags = ["devops", "platform", "engineering"]
 keywords = ["devops", "platform", "engineering"]
