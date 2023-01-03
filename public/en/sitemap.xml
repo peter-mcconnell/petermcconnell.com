@@ -2,14 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://www.petermcconnell.com/tags/devops/</loc>
-    <lastmod>2022-12-30T20:34:57+00:00</lastmod>
+    <loc>https://www.petermcconnell.com/tags/debugging/</loc>
+    <lastmod>2023-01-03T12:33:02+00:00</lastmod>
   </url><url>
-    <loc>https://www.petermcconnell.com/tags/engineering/</loc>
-    <lastmod>2022-12-30T20:34:57+00:00</lastmod>
+    <loc>https://www.petermcconnell.com/tags/delve/</loc>
+    <lastmod>2023-01-03T12:33:02+00:00</lastmod>
+  </url><url>
+    <loc>https://www.petermcconnell.com/tags/golang/</loc>
+    <lastmod>2023-01-03T12:33:02+00:00</lastmod>
+  </url><url>
+    <loc>https://www.petermcconnell.com/posts/golang_debugging/</loc>
+    <lastmod>2023-01-03T12:33:02+00:00</lastmod>
   </url><url>
     <loc>https://www.petermcconnell.com/</loc>
-    <lastmod>2022-12-30T20:34:57+00:00</lastmod>
+    <lastmod>2023-01-03T12:33:02+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="pt"
@@ -31,11 +37,8 @@
                 href="https://www.petermcconnell.com/"
                 />
   </url><url>
-    <loc>https://www.petermcconnell.com/tags/platform/</loc>
-    <lastmod>2022-12-30T20:34:57+00:00</lastmod>
-  </url><url>
     <loc>https://www.petermcconnell.com/posts/</loc>
-    <lastmod>2022-12-30T20:34:57+00:00</lastmod>
+    <lastmod>2023-01-03T12:33:02+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="es"
@@ -58,7 +61,7 @@
                 />
   </url><url>
     <loc>https://www.petermcconnell.com/tags/</loc>
-    <lastmod>2022-12-30T20:34:57+00:00</lastmod>
+    <lastmod>2023-01-03T12:33:02+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="es"
@@ -80,13 +83,19 @@
                 href="https://www.petermcconnell.com/tags/"
                 />
   </url><url>
+    <loc>https://www.petermcconnell.com/tags/devops/</loc>
+    <lastmod>2022-12-30T20:34:57+00:00</lastmod>
+  </url><url>
+    <loc>https://www.petermcconnell.com/tags/engineering/</loc>
+    <lastmod>2022-12-30T20:34:57+00:00</lastmod>
+  </url><url>
+    <loc>https://www.petermcconnell.com/tags/platform/</loc>
+    <lastmod>2022-12-30T20:34:57+00:00</lastmod>
+  </url><url>
     <loc>https://www.petermcconnell.com/posts/whatisdevops/</loc>
     <lastmod>2022-12-30T20:34:57+00:00</lastmod>
   </url><url>
     <loc>https://www.petermcconnell.com/posts/linuxtools/</loc>
-    <lastmod>2022-12-30T14:28:12+00:00</lastmod>
-  </url><url>
-    <loc>https://www.petermcconnell.com/tags/debugging/</loc>
     <lastmod>2022-12-30T14:28:12+00:00</lastmod>
   </url><url>
     <loc>https://www.petermcconnell.com/tags/df/</loc>
