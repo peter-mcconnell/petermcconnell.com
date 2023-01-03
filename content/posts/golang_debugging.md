@@ -1,5 +1,5 @@
 +++
-title = "Golang_debugging"
+title = "Golang debugging"
 date = "2023-01-03T12:33:02Z"
 author = "Peter McConnell"
 authorTwitter = "PeteMcConnell_" #do not include @
