@@ -202,7 +202,7 @@
       <span class="post-author">Peter McConnell</span>
     
     
-      <span class="post-reading-time">:: 14 min read (2981 words)</span>
+      <span class="post-reading-time">:: 15 min read (3001 words)</span>
     
   </div>
 
@@ -257,7 +257,8 @@
   
 
   <div class="post-content"><div>
-        <p>Firstly:  let me qualify &ldquo;basic&rdquo;. I&rsquo;m using this term because the breadth of debugging tools on Linux is so large. &ldquo;basic&rdquo; does not mean that these tools are super simple to understand deeply or if you aren&rsquo;t already an expert in them that you are somehow &ldquo;noob&rdquo;; that&rsquo;s not the case at all.</p>
+        <p>The scope of this article is to cover the best common-use debugging tools available on Linux systems.</p>
+<p>Firstly:  let me qualify &ldquo;basic&rdquo;. I&rsquo;m using this term because the breadth of debugging tools on Linux is so large. &ldquo;basic&rdquo; does not mean that these tools are super simple to understand deeply or if you aren&rsquo;t already an expert in them that you are somehow &ldquo;noob&rdquo;; that&rsquo;s not the case at all.</p>
 <p>Secondly: there is no inventing being done here. I&rsquo;m just surfacing information in this article which you can already find in the <code>man</code> pages. I would strongly recommend you check the relevant man page for the tool you find of interest in this article.</p>
 <p>Thirdly: for the curious, these tools generally get their information from existing counters and statistics in <code>/proc/</code> and <code>/sys/</code>. In the man pages for these tools you can see a <code>FILES</code> section which details the data source for the given tool.</p>
 <h2 id="crisis-tools">&ldquo;crisis tools&rdquo;<a href="#crisis-tools" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
@@ -337,7 +338,7 @@
 </tbody>
 </table>
 <h2 id="top">top<a href="#top" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
-<p>When: A reasonable first place to look.</p>
+<p>When: A reasonable first place to look for an issue.</p>
 <p>This is a command-line utility in Linux that allows users to view the processes running on their system and monitor their resource usage in real-time. It can be used to identify performance bottlenecks, track the usage of system resources, and troubleshoot issues on a Linux system.</p>
 <p>The output of top will include a list of processes running on the system, along with the following information for each process:</p>
 <ul>

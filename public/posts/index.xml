@@ -70,9 +70,10 @@ could have been done by a computer.&lt;/p&gt;
       <pubDate>Fri, 30 Dec 2022 14:28:12 +0000</pubDate>
       
       <guid>https://www.petermcconnell.com/posts/linuxtools/</guid>
-      <description>Firstly: let me qualify &amp;ldquo;basic&amp;rdquo;. I&amp;rsquo;m using this term because the breadth of debugging tools on Linux is so large. &amp;ldquo;basic&amp;rdquo; does not mean that these tools are super simple to understand deeply or if you aren&amp;rsquo;t already an expert in them that you are somehow &amp;ldquo;noob&amp;rdquo;; that&amp;rsquo;s not the case at all.
-Secondly: there is no inventing being done here. I&amp;rsquo;m just surfacing information in this article which you can already find in the man pages.</description>
-      <content>&lt;p&gt;Firstly:  let me qualify &amp;ldquo;basic&amp;rdquo;. I&amp;rsquo;m using this term because the breadth of debugging tools on Linux is so large. &amp;ldquo;basic&amp;rdquo; does not mean that these tools are super simple to understand deeply or if you aren&amp;rsquo;t already an expert in them that you are somehow &amp;ldquo;noob&amp;rdquo;; that&amp;rsquo;s not the case at all.&lt;/p&gt;
+      <description>The scope of this article is to cover the best common-use debugging tools available on Linux systems.
+Firstly: let me qualify &amp;ldquo;basic&amp;rdquo;. I&amp;rsquo;m using this term because the breadth of debugging tools on Linux is so large. &amp;ldquo;basic&amp;rdquo; does not mean that these tools are super simple to understand deeply or if you aren&amp;rsquo;t already an expert in them that you are somehow &amp;ldquo;noob&amp;rdquo;; that&amp;rsquo;s not the case at all.</description>
+      <content>&lt;p&gt;The scope of this article is to cover the best common-use debugging tools available on Linux systems.&lt;/p&gt;
+&lt;p&gt;Firstly:  let me qualify &amp;ldquo;basic&amp;rdquo;. I&amp;rsquo;m using this term because the breadth of debugging tools on Linux is so large. &amp;ldquo;basic&amp;rdquo; does not mean that these tools are super simple to understand deeply or if you aren&amp;rsquo;t already an expert in them that you are somehow &amp;ldquo;noob&amp;rdquo;; that&amp;rsquo;s not the case at all.&lt;/p&gt;
 &lt;p&gt;Secondly: there is no inventing being done here. I&amp;rsquo;m just surfacing information in this article which you can already find in the &lt;code&gt;man&lt;/code&gt; pages. I would strongly recommend you check the relevant man page for the tool you find of interest in this article.&lt;/p&gt;
 &lt;p&gt;Thirdly: for the curious, these tools generally get their information from existing counters and statistics in &lt;code&gt;/proc/&lt;/code&gt; and &lt;code&gt;/sys/&lt;/code&gt;. In the man pages for these tools you can see a &lt;code&gt;FILES&lt;/code&gt; section which details the data source for the given tool.&lt;/p&gt;
 &lt;h2 id=&#34;crisis-tools&#34;&gt;&amp;ldquo;crisis tools&amp;rdquo;&lt;/h2&gt;
@@ -152,7 +153,7 @@ Secondly: there is no inventing being done here. I&amp;rsquo;m just surfacing in
 &lt;/tbody&gt;
 &lt;/table&gt;
 &lt;h2 id=&#34;top&#34;&gt;top&lt;/h2&gt;
-&lt;p&gt;When: A reasonable first place to look.&lt;/p&gt;
+&lt;p&gt;When: A reasonable first place to look for an issue.&lt;/p&gt;
 &lt;p&gt;This is a command-line utility in Linux that allows users to view the processes running on their system and monitor their resource usage in real-time. It can be used to identify performance bottlenecks, track the usage of system resources, and troubleshoot issues on a Linux system.&lt;/p&gt;
 &lt;p&gt;The output of top will include a list of processes running on the system, along with the following information for each process:&lt;/p&gt;
 &lt;ul&gt;

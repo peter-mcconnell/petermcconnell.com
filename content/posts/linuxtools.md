@@ -14,6 +14,8 @@ color = "" #color from the theme settings
 Toc = true
 +++
 
+The scope of this article is to cover the best common-use debugging tools available on Linux systems.
+
 Firstly:  let me qualify "basic". I'm using this term because the breadth of debugging tools on Linux is so large. "basic" does not mean that these tools are super simple to understand deeply or if you aren't already an expert in them that you are somehow "noob"; that's not the case at all.
 
 Secondly: there is no inventing being done here. I'm just surfacing information in this article which you can already find in the `man` pages. I would strongly recommend you check the relevant man page for the tool you find of interest in this article.
@@ -47,7 +49,7 @@ This section is taken from Brendan Gregg's book ['System Performance' (4.1.2)](h
 top
 ---
 
-When: A reasonable first place to look.
+When: A reasonable first place to look for an issue.
 
 This is a command-line utility in Linux that allows users to view the processes running on their system and monitor their resource usage in real-time. It can be used to identify performance bottlenecks, track the usage of system resources, and troubleshoot issues on a Linux system.
 
