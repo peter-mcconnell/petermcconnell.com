@@ -395,4 +395,6 @@ Systems Performance by Brendan Gregg is full of amazing material that also cover
 
 I'd also recommend checking out Branden Gregg's website - lots of solid content in there: https://www.brendangregg.com/
 
+In particular the USE method article should be of interest (https://www.brendangregg.com/usemethod.html)
+
 ![linux observability tools](https://www.brendangregg.com/Perf/linux_observability_tools.png "linux observability tools")
