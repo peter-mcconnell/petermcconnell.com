@@ -41,7 +41,7 @@ example program
 For the sake of this article we'll create a simple application to debug:
 
 
-```golang
+```go
 // main.go
 package main
 
