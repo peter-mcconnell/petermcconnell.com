@@ -25,7 +25,7 @@ body {
   -webkit-text-size-adjust: 100%;
 
   @media ($phone) {
-    font-size: 1rem;
+    font-size: 1.2rem;
   }
 }
 
@@ -299,6 +299,7 @@ mark {
   flex-direction: column;
   padding: 40px;
   max-width: 864px;
+  overflow: hidden;
   min-height: 100vh;
   border-right: 1px solid rgba(255, 255, 255, 0.1);
 
