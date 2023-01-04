@@ -2,6 +2,8 @@ baseURL = 'https://www.petermcconnell.com/'
 languageCode = 'en-us'
 title = 'Peter McConnell :: systems engineering manager'
 
+enableRobotsTXT = true
+
 # theme
 baseurl = "/"
 # Add it only if you keep the theme in the `themes` directory.

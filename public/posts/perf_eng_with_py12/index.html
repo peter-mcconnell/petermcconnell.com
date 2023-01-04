@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   
-    <title>Perf engineering with Python 3.12 :: Peter McConnell :: Ponderings from a Linux Systems engineer</title>
+    <title>Perf engineering with Python 3.12</title>
   
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -45,10 +45,12 @@
 
 <meta name="twitter:card" content="summary" />
 
+<meta name="twitter:title" content="Perf engineering with Python 3.12" />
+<meta name="twitter:description" content="Since Python 3.12, the interpreter can run in a special mode that allows Python functions to appear in the output of the perf profiler. When this mode is enabled, the interpreter will interpose a small piece of code compiled on the fly before the execution of every Python function and it will teach perf the relationship between this piece of code and the associated Python function using perf map files. We&#39;ll create a dummy application and use the new tools to solve a perf issue." />
   
-    <meta name="twitter:site" content="PeteMcConnell_" />
+<meta name="twitter:site" content="@PeteMcConnell_" />
   
-    <meta name="twitter:creator" content="PeteMcConnell_" />
+<meta name="twitter:creator" content="PeteMcConnell_" />
 
 
 
