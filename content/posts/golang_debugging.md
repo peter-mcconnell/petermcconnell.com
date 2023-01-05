@@ -14,13 +14,17 @@ color = "" #color from the theme settings
 Toc = true
 +++
 
-what do we want to achieve?
----------------------------
+_the 'code' for this article can be found here: https://github.com/peter-mcconnell/petermcconnell.com/blob/main/assets/dummy/godebug/main.go_
+
+debugging Golang - the context
+------------------------------
 
 This is the tool I reach for when a program isn't behaving how I expect it to and I want to dig into the internals / browse the state of the program at particular points so as to realise why my understanding of the program is wrong.
 
 what are the requirements?
 --------------------------
+
+The debugger of choice (for me) is `dlv` / `delve`. The reasons for this are at the end of the article.
 
 Install `delve`: https://github.com/go-delve/delve
 

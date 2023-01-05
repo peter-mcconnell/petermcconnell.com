@@ -7,13 +7,43 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; Peter McConnell 2023</copyright>
-    <lastBuildDate>Tue, 03 Jan 2023 12:33:02 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 05 Jan 2023 16:51:58 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>debugging</title>
       <link>https://www.petermcconnell.com/tags/debugging/</link>
-      <pubDate>Tue, 03 Jan 2023 12:33:02 +0000</pubDate>
+      <pubDate>Thu, 05 Jan 2023 16:51:58 +0000</pubDate>
       
       <guid>https://www.petermcconnell.com/tags/debugging/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>ipdb</title>
+      <link>https://www.petermcconnell.com/tags/ipdb/</link>
+      <pubDate>Thu, 05 Jan 2023 16:51:58 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/tags/ipdb/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>pdb</title>
+      <link>https://www.petermcconnell.com/tags/pdb/</link>
+      <pubDate>Thu, 05 Jan 2023 16:51:58 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/tags/pdb/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>Python</title>
+      <link>https://www.petermcconnell.com/tags/python/</link>
+      <pubDate>Thu, 05 Jan 2023 16:51:58 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/tags/python/</guid>
       <description></description>
       <content></content>
     </item>
@@ -144,16 +174,6 @@
       <pubDate>Fri, 30 Dec 2022 14:28:12 +0000</pubDate>
       
       <guid>https://www.petermcconnell.com/tags/top/</guid>
-      <description></description>
-      <content></content>
-    </item>
-    
-    <item>
-      <title>Python</title>
-      <link>https://www.petermcconnell.com/tags/python/</link>
-      <pubDate>Mon, 26 Dec 2022 22:54:29 +0000</pubDate>
-      
-      <guid>https://www.petermcconnell.com/tags/python/</guid>
       <description></description>
       <content></content>
     </item>

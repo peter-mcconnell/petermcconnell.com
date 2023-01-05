@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+    <title>Python debugging</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="When faced with a Python script how can you go about learning how it works / debugging issues? In this article I provide insight into my own flow which might help you wrangle that snake. This is a follow-up to my Golang debugging flow https://www.petermcconnell.com/posts/golang_debugging/" />
+<meta name="keywords" content="python, ipdb, pdb, debugging, software engineering" />
+
+
+<link rel="canonical" href="https://www.petermcconnell.com/posts/python_debugging/" />
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QJWXPMPB8F"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-QJWXPMPB8F');
+</script>
+
+
+
+
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="/style.css">
+
+
+
+
+
+
+
+  <link rel="shortcut icon" href="https://www.petermcconnell.com/img/theme-colors/pink.png">
+  <link rel="apple-touch-icon" href="https://www.petermcconnell.com/img/theme-colors/pink.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+<meta name="twitter:title" content="Python debugging" />
+<meta name="twitter:description" content="When faced with a Python script how can you go about learning how it works / debugging issues? In this article I provide insight into my own flow which might help you wrangle that snake. This is a follow-up to my Golang debugging flow https://www.petermcconnell.com/posts/golang_debugging/" />
+  
+<meta name="twitter:site" content="@PeteMcConnell_" />
+  
+<meta name="twitter:creator" content="PeteMcConnell_" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Python debugging">
+<meta property="og:description" content="When faced with a Python script how can you go about learning how it works / debugging issues? In this article I provide insight into my own flow which might help you wrangle that snake. This is a follow-up to my Golang debugging flow https://www.petermcconnell.com/posts/golang_debugging/" />
+<meta property="og:url" content="https://www.petermcconnell.com/posts/python_debugging/" />
+<meta property="og:site_name" content="Peter McConnell :: Ponderings from a Linux Systems engineer" />
+
+  
+  
+  <meta property="og:image" content="https://www.petermcconnell.com/">
+
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="627">
+
+
+  <meta property="article:published_time" content="2023-01-05 16:51:58 &#43;0000 UTC" />
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+<body class="pink">
+
+
+<div class="container headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/">
+  <div class="logo">
+    Peter McConnell
+  </div>
+</a>
+
+    </div>
+    
+      <ul class="menu menu--mobile">
+  <li class="menu__trigger">Menu&nbsp;▾</li>
+  <li>
+    <ul class="menu__dropdown">
+      
+        
+          <li><a href="/about">About</a></li>
+        
+      
+        
+          <li><a href="/showcase">Showcase</a></li>
+        
+      
+        
+          <li><a href="/skills">Skills</a></li>
+        
+      
+      
+        <hr />
+        
+          <li>
+            <a href="https://www.petermcconnell.com/">English</a>
+          </li>
+        
+          <li>
+            <a href="https://www.petermcconnell.com/pt/">Português</a>
+          </li>
+        
+          <li>
+            <a href="https://www.petermcconnell.com/es/">Española</a>
+          </li>
+        
+          <li>
+            <a href="https://www.petermcconnell.com/fr/">Français</a>
+          </li>
+        
+      
+    </ul>
+  </li>
+</ul>
+
+    
+    
+      <ul class="menu menu--desktop menu--language-selector">
+  <li class="menu__trigger">English&nbsp;▾</li>
+  <li>
+    <ul class="menu__dropdown">
+      
+        <li><a href="https://www.petermcconnell.com/">English</a></li>
+      
+        <li><a href="https://www.petermcconnell.com/pt/">Português</a></li>
+      
+        <li><a href="https://www.petermcconnell.com/es/">Española</a></li>
+      
+        <li><a href="https://www.petermcconnell.com/fr/">Français</a></li>
+      
+    </ul>
+  </li>
+</ul>
+
+    
+  </div>
+  
+    <nav class="navigation-menu">
+  <ul class="navigation-menu__inner menu--desktop">
+    
+      
+        
+          <li><a href="/about">About</a></li>
+        
+      
+        
+          <li><a href="/showcase">Showcase</a></li>
+        
+      
+        
+          <li><a href="/skills">Skills</a></li>
+        
+      
+      
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<article class="post">
+  <h1 class="post-title">
+    <a href="https://www.petermcconnell.com/posts/python_debugging/">Python debugging</a>
+  </h1>
+  <div class="post-meta">
+    
+      <time class="post-date">
+        2023-01-05 ::
+        
+      </time>
+    
+    
+      <span class="post-author">Peter McConnell</span>
+    
+    
+  </div>
+
+  
+    <span class="post-tags">
+      
+      #<a href="https://www.petermcconnell.com/tags/python/">python</a>&nbsp;
+      
+      #<a href="https://www.petermcconnell.com/tags/ipdb/">ipdb</a>&nbsp;
+      
+      #<a href="https://www.petermcconnell.com/tags/pdb/">pdb</a>&nbsp;
+      
+      #<a href="https://www.petermcconnell.com/tags/debugging/">debugging</a>&nbsp;
+      
+    </span>
+  
+  
+
+
+  
+    <div class="table-of-contents">
+      <h2>
+        Table of Contents
+      </h2>
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#debugging-python---the-context">debugging Python - the context</a></li>
+    <li><a href="#what-are-the-requirements">what are the requirements?</a></li>
+    <li><a href="#refining-scope">refining scope</a></li>
+    <li><a href="#example-application">example application</a></li>
+    <li><a href="#using-ipdb">using ipdb</a></li>
+    <li><a href="#debug-flow">debug flow</a></li>
+    <li><a href="#neovim">neovim</a></li>
+    <li><a href="#summary">summary</a></li>
+    <li><a href="#why-not-pdb">why not pdb?</a></li>
+  </ul>
+</nav>
+    </div>
+  
+
+  <div class="post-content"><div>
+        <p><em>the &lsquo;code&rsquo; for this article can be found here: <a href="https://github.com/peter-mcconnell/petermcconnell.com/blob/main/assets/dummy/pydebug/main.py">https://github.com/peter-mcconnell/petermcconnell.com/blob/main/assets/dummy/pydebug/main.py</a></em></p>
+<h2 id="debugging-python---the-context">debugging Python - the context<a href="#debugging-python---the-context" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>This is the flow I take when faced with a new Python codebase. I often find myself having to debug codebases I&rsquo;ve never seen before which has forced me to become very comfortable being lost in code and to develop some patterns that help me find my way. This is what I&rsquo;m sharing with you today.</p>
+<p>I should note that I live in terminals - constantly connecting to servers, containers, colleagues machines, my own homelab etc. To compound this fact my editor of choice also lives in the terminal (Neovim). For that reason <strong>this guide is TERMINAL based</strong> and as such does not include IDE-based debugging flows (which are solid from what I&rsquo;ve seen).</p>
+<h2 id="what-are-the-requirements">what are the requirements?<a href="#what-are-the-requirements" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>The debugger of choice (for me) is <code>ipdb</code>. The reasons for this are at the end of the article.</p>
+<p>Install <code>ipdb</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>pip3 install --user ipdb
+</span></span></code></pre></div><p>We&rsquo;ll also need to gather information from the <code>refining scope</code> section below.</p>
+<h2 id="refining-scope">refining scope<a href="#refining-scope" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>Often (my own usecase) my Python debugging story typically starts with: &ldquo;This app is broken. It&rsquo;s doing X&rdquo; which tells me very little about what&rsquo;s wrong and where to look. My first objective is to make the size of the problem statement as small / tight as possible. To do so, before I&rsquo;ve looked at any code I try to do the following:</p>
+<ul>
+<li>validate that it appears to be an issue with the code and categorise it
+<ul>
+<li>perf issue</li>
+<li>logic issue</li>
+<li>flakiness</li>
+<li>dependency issue</li>
+<li>etc</li>
+</ul>
+</li>
+<li>identify which version of that app I need to debug &amp; where I can get it</li>
+<li>identify which part of the codebase (file location, method, line)</li>
+<li>identify required inputs (method arguments, environment variables, third party sources etc)</li>
+<li>understand what has been tried already to fix the problem</li>
+<li>identify stakeholders, urgency etc &hellip;</li>
+</ul>
+<p>This serves a few purposes:</p>
+<ul>
+<li>ensure I can reproduce the bug</li>
+<li>reduce the scope of things that I need to look at</li>
+<li>help me understand the business logic / expected results</li>
+</ul>
+<p>At this point I should have the confidence to know that the problem requires debugging.</p>
+<h2 id="example-application">example application<a href="#example-application" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>To get started create the following file. This is the simplest possible example I could create so as to keep signal/noise ratio in favour of the actual debugging steps:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e">#!/usr/bin/env python</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># main.py</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">doubleit</span>(val):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> val <span style="color:#f92672">*</span> <span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;doubleit 2: </span><span style="color:#e6db74">%d</span><span style="color:#e6db74">&#34;</span>, doubleit(<span style="color:#ae81ff">2</span>))
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;doubleit 4: </span><span style="color:#e6db74">%d</span><span style="color:#e6db74">&#34;</span>, doubleit(<span style="color:#ae81ff">4</span>))
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;doubleit 8: </span><span style="color:#e6db74">%d</span><span style="color:#e6db74">&#34;</span>, doubleit(<span style="color:#ae81ff">8</span>))
+</span></span></code></pre></div><p>We&rsquo;ll use this simple example for our debugging.</p>
+<h2 id="using-ipdb">using ipdb<a href="#using-ipdb" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>From the information gathered earlier lets imagine the outputs were that the program above is spitting out the wrong values. We expect the <code>doubleit</code> lines to show their values being doubled but instead they seem to be trebled (yes, it&rsquo;s obvious why, but imagine this is a very large program and you don&rsquo;t know why the output is what it is).</p>
+<p>With that information to hand we can look for the <code>doubleit</code> method and add set some breakpoints so that we can explore the program as it&rsquo;s running to understand the state:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e">#!/usr/bin/env python</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># main.py</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">doubleit</span>(val):
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">import</span> ipdb       <span style="color:#75715e"># &lt; added this line</span>
+</span></span><span style="display:flex;"><span>    ipdb<span style="color:#f92672">.</span>set_trace()  <span style="color:#75715e"># &lt; added this line</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> val <span style="color:#f92672">*</span> <span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;doubleit 2: </span><span style="color:#e6db74">%d</span><span style="color:#e6db74">&#34;</span>, doubleit(<span style="color:#ae81ff">2</span>))
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;doubleit 4: </span><span style="color:#e6db74">%d</span><span style="color:#e6db74">&#34;</span>, doubleit(<span style="color:#ae81ff">4</span>))
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;doubleit 8: </span><span style="color:#e6db74">%d</span><span style="color:#e6db74">&#34;</span>, doubleit(<span style="color:#ae81ff">8</span>))
+</span></span></code></pre></div><p>We can continue to add <code>ipdb.set_trace()</code> points throughout our code. Generally speaking when I am running this for the first time I&rsquo;ll tend to just drop one or two points in the codebase that I know are going to be in the path, with the expectation that I&rsquo;ll manually step through the execution to learn how it flows. When we&rsquo;ve added all of the breakpoints that we need we can instruct the program to run with <code>python main.py</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ python main.py
+</span></span><span style="display:flex;"><span>&gt; /home/pete/go/src/github.com/peter-mcconnell/petermcconnell.com/assets/dummy/pydebug/main.py<span style="color:#f92672">(</span>6<span style="color:#f92672">)</span>doubleit<span style="color:#f92672">()</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">5</span>     ipdb.set_trace<span style="color:#f92672">()</span>
+</span></span><span style="display:flex;"><span>----&gt; <span style="color:#ae81ff">6</span>     <span style="color:#66d9ef">return</span> val * <span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">7</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>ipdb&gt;
+</span></span></code></pre></div><p>Now we&rsquo;ve ran our program with an attached debugger and it has paused execution at the breakpoint we set. We can run <code>args</code> to see which arguments where passed to the method:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>&gt; /home/pete/go/src/github.com/peter-mcconnell/petermcconnell.com/assets/dummy/pydebug/main.py<span style="color:#f92672">(</span>6<span style="color:#f92672">)</span>doubleit<span style="color:#f92672">()</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">5</span>     ipdb.set_trace<span style="color:#f92672">()</span>
+</span></span><span style="display:flex;"><span>----&gt; <span style="color:#ae81ff">6</span>     <span style="color:#66d9ef">return</span> val * <span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">7</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>ipdb&gt; args
+</span></span><span style="display:flex;"><span>val <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>
+</span></span></code></pre></div><p>So in this point in the program we&rsquo;re in the <code>doubleit</code> method when it was invoked with a <code>val</code> value of <code>2</code>. We can print this and other variables using <code>p</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ipdb&gt; p val
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">2</span>
+</span></span></code></pre></div><p>or just the variable name on its own:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ipdb&gt; val
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">2</span>
+</span></span></code></pre></div><p>We can even call methods from this point:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ipdb&gt; doubleit<span style="color:#f92672">(</span>6<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">18</span>
+</span></span></code></pre></div><p>To walk over the execution we can press <code>n</code> to go to the next point of execution:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ipdb&gt; doubleit<span style="color:#f92672">(</span>6<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">18</span>
+</span></span><span style="display:flex;"><span>ipdb&gt; n
+</span></span><span style="display:flex;"><span>--Return--
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">6</span>
+</span></span><span style="display:flex;"><span>&gt; /home/pete/go/src/github.com/peter-mcconnell/petermcconnell.com/assets/dummy/pydebug/main.py<span style="color:#f92672">(</span>6<span style="color:#f92672">)</span>doubleit<span style="color:#f92672">()</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">5</span>     ipdb.set_trace<span style="color:#f92672">()</span>
+</span></span><span style="display:flex;"><span>----&gt; <span style="color:#ae81ff">6</span>     <span style="color:#66d9ef">return</span> val * <span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">7</span>
+</span></span></code></pre></div><p>and view the backtrace with <code>bt</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ipdb&gt; bt
+</span></span><span style="display:flex;"><span>  /home/pete/go/src/github.com/peter-mcconnell/petermcconnell.com/assets/dummy/pydebug/main.py<span style="color:#f92672">(</span>9<span style="color:#f92672">)</span>&lt;module&gt;<span style="color:#f92672">()</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">8</span> <span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
+</span></span><span style="display:flex;"><span>----&gt; <span style="color:#ae81ff">9</span>     print<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;doubleit 2: %d&#34;</span>, doubleit<span style="color:#f92672">(</span>2<span style="color:#f92672">))</span>
+</span></span><span style="display:flex;"><span>     <span style="color:#ae81ff">10</span>     print<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;doubleit 4: %d&#34;</span>, doubleit<span style="color:#f92672">(</span>4<span style="color:#f92672">))</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">6</span>
+</span></span><span style="display:flex;"><span>&gt; /home/pete/go/src/github.com/peter-mcconnell/petermcconnell.com/assets/dummy/pydebug/main.py<span style="color:#f92672">(</span>6<span style="color:#f92672">)</span>doubleit<span style="color:#f92672">()</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">5</span>     ipdb.set_trace<span style="color:#f92672">()</span>
+</span></span><span style="display:flex;"><span>----&gt; <span style="color:#ae81ff">6</span>     <span style="color:#66d9ef">return</span> val * <span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">7</span>
+</span></span></code></pre></div><p>To view the code around the current point of execution just press <code>l</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ipdb&gt; l
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">1</span> <span style="color:#75715e">#!/usr/bin/env python</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">2</span> <span style="color:#75715e"># main.py</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">3</span> def doubleit<span style="color:#f92672">(</span>val<span style="color:#f92672">)</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">4</span>     import ipdb
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">5</span>     ipdb.set_trace<span style="color:#f92672">()</span>
+</span></span><span style="display:flex;"><span>----&gt; <span style="color:#ae81ff">6</span>     <span style="color:#66d9ef">return</span> val * <span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">7</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">8</span> <span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">9</span>     print<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;doubleit 2: %d&#34;</span>, doubleit<span style="color:#f92672">(</span>2<span style="color:#f92672">))</span>
+</span></span><span style="display:flex;"><span>     <span style="color:#ae81ff">10</span>     print<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;doubleit 4: %d&#34;</span>, doubleit<span style="color:#f92672">(</span>4<span style="color:#f92672">))</span>
+</span></span><span style="display:flex;"><span>     <span style="color:#ae81ff">11</span>     print<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;doubleit 8: %d&#34;</span>, doubleit<span style="color:#f92672">(</span>8<span style="color:#f92672">))</span>
+</span></span></code></pre></div><p>Which of course shows our very hard to find logic error, <code>* 3</code> instead of <code>* 2</code>.</p>
+<p>Note: you can also set breakpoints in the stdlib functions (paths will vary depending on your setup):</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ipdb&gt; b /home/pete/.local/lib/python3.10/site-packages/requests/api.py:14
+</span></span><span style="display:flex;"><span>Breakpoint <span style="color:#ae81ff">1</span> at /home/pete/.local/lib/python3.10/site-packages/requests/api.py:14
+</span></span></code></pre></div><h2 id="debug-flow">debug flow<a href="#debug-flow" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>Using the commands above I can begin my cyclic process of narrowing in on the fix:</p>
+<blockquote>
+<p>repro -&gt; explore -&gt; understand -&gt; tweak -&gt; repeat</p>
+</blockquote>
+<p>More often than not this means I only need to understand a very small part of the application and can ignore code that isn&rsquo;t relevant to the immediate issue.</p>
+<p>At a more detailed level this process looks like:</p>
+<ul>
+<li>(repro) write a test that triggers the bug in as simple terms as I can express</li>
+<li>(explore) set breakpoints</li>
+<li>(explore) run <code>pytest</code> with the <code>-s</code> flag so that I can interact with <code>ipdb</code></li>
+<li>(explore) use <code>args</code> to check the arguments for the method that I&rsquo;m in</li>
+<li>(explore) print surrounding variable values</li>
+<li>(explore) ensure the state of the program makes sense for my current breakpoint. If not, I need an earlier breakpoint. If so, continue with <code>n</code></li>
+<li>(explore) repeat these steps until I&rsquo;ve reached the point that the program is in a seemingly erroneous state
+<ul>
+<li>(understand) it&rsquo;s at this stage I&rsquo;ll take time to properly read the surrounding code and experiment with variable values to see if I can get the program to act in the expected manner</li>
+<li>(understand) depending on the category of bug I&rsquo;ll look for algorithmic complexity issues, stack overflow issues, parameter edgecases, logging quality, randomness factors etc. This is when the editor setup shines. see neovim section</li>
+<li>(tweak) I&rsquo;ll make minor adjustments to the code which I believe will nudge the program into the right place</li>
+</ul>
+</li>
+</ul>
+<p>Once I&rsquo;m happy that my small tweaks are having the desired effect I&rsquo;ll perform some tidy ups and look for opportunities to harden the code with type checking / improved logging / more tests.</p>
+<h2 id="neovim">neovim<a href="#neovim" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>This section describes my <code>neovim</code> configuration for Python debugging at a high level. In short my debugging / code exploration flow boils down to:</p>
+<ul>
+<li><code>telescope</code> <a href="https://github.com/nvim-telescope/telescope.nvim">https://github.com/nvim-telescope/telescope.nvim</a>
+<ul>
+<li>allows me to <code>ctrl + f</code> scan directories for files</li>
+<li>allows me to set up keybindings for scanning any common directories</li>
+</ul>
+</li>
+<li><code>coc</code> <a href="https://github.com/neoclide/coc.nvim">https://github.com/neoclide/coc.nvim</a>
+<ul>
+<li>code complete in all of the languages I need</li>
+<li>function descriptions</li>
+</ul>
+</li>
+<li><code>gd</code> - default vim keybinding for go-to-definition. Jumps me into a function that I&rsquo;m wanting to understand</li>
+<li><code>ctrl + o</code> / <code>ctrl + i</code> - default vim keybindings for go to last / next jump point. Really useful as I&rsquo;m scanning code - I can keep jumping through definitions with <code>gd</code> then <code>ctrl + o</code> my way back / <code>ctrl + i</code> my way back down as I&rsquo;m trying to build an understanding</li>
+</ul>
+<p>You can see my full Neovim config here: <a href="https://github.com/peter-mcconnell/.dotfiles/blob/master/config/nvim/init.vim">https://github.com/peter-mcconnell/.dotfiles/blob/master/config/nvim/init.vim</a></p>
+<h2 id="summary">summary<a href="#summary" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>The example above is extremely trivial - where <code>ipdb</code> and it&rsquo;s ilk shine are on complex usecases where you may not even know what methods are between the input and output, such as debugging the stdlib. Just this week I used <code>ipdb</code> to identify why a codebase long forgotten was throwing an obscure error for a given dataset. By using <code>ipdb</code> I reproduced the scenario and just before the point at which I knew it would error created a break point that allowed me to inspect program state and better understand the conditions leading to the error, resulting in a quick patch.</p>
+<h2 id="why-not-pdb">why not pdb?<a href="#why-not-pdb" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>Bells and whistles; I like that ipdb has better color support and tab completion. You could absolutely get the same results with <code>pdb</code>.</p>
+
+      </div></div>
+
+  
+    
+<div class="pagination">
+    <div class="pagination__title">
+        <span class="pagination__title-h">Read other posts</span>
+        <hr />
+    </div>
+    <div class="pagination__buttons">
+        
+        
+        <span class="button next">
+            <a href="https://www.petermcconnell.com/posts/golang_debugging/">
+                <span class="button__text">Golang debugging</span>
+                <span class="button__icon">→</span>
+            </a>
+        </span>
+        
+    </div>
+</div>
+
+  
+
+  
+    
+
+  
+</article>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    <div class="links">
+      <a href="https://twitter.com/PeteMcConnell_">twitter</a> |
+      <a href="https://github.com/peter-mcconnell/">github</a> |
+      <a href="https://www.linkedin.com/in/pemcconnell/">linkedin</a>
+      
+        <div class="copyright copyright--user">
+          <span>&copy; Peter McConnell 2023</span>
+      
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+
+
+
+
+<script type="text/javascript" src="/bundle.min.js"></script>
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>

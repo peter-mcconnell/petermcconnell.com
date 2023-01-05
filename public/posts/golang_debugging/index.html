@@ -204,7 +204,7 @@
       <span class="post-author">Peter McConnell</span>
     
     
-      <span class="post-reading-time">:: 5 min read (1041 words)</span>
+      <span class="post-reading-time">:: 6 min read (1071 words)</span>
     
   </div>
 
@@ -229,7 +229,7 @@
       </h2>
       <nav id="TableOfContents">
   <ul>
-    <li><a href="#what-do-we-want-to-achieve">what do we want to achieve?</a></li>
+    <li><a href="#debugging-golang---the-context">debugging Golang - the context</a></li>
     <li><a href="#what-are-the-requirements">what are the requirements?</a></li>
     <li><a href="#example-program">example program</a></li>
     <li><a href="#debug-it">debug it</a></li>
@@ -241,9 +241,11 @@
   
 
   <div class="post-content"><div>
-        <h2 id="what-do-we-want-to-achieve">what do we want to achieve?<a href="#what-do-we-want-to-achieve" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+        <p><em>the &lsquo;code&rsquo; for this article can be found here: <a href="https://github.com/peter-mcconnell/petermcconnell.com/blob/main/assets/dummy/godebug/main.go">https://github.com/peter-mcconnell/petermcconnell.com/blob/main/assets/dummy/godebug/main.go</a></em></p>
+<h2 id="debugging-golang---the-context">debugging Golang - the context<a href="#debugging-golang---the-context" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>This is the tool I reach for when a program isn&rsquo;t behaving how I expect it to and I want to dig into the internals / browse the state of the program at particular points so as to realise why my understanding of the program is wrong.</p>
 <h2 id="what-are-the-requirements">what are the requirements?<a href="#what-are-the-requirements" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>The debugger of choice (for me) is <code>dlv</code> / <code>delve</code>. The reasons for this are at the end of the article.</p>
 <p>Install <code>delve</code>: <a href="https://github.com/go-delve/delve">https://github.com/go-delve/delve</a></p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>git clone https://github.com/go-delve/delve
 </span></span><span style="display:flex;"><span>cd delve
@@ -418,6 +420,13 @@
         <hr />
     </div>
     <div class="pagination__buttons">
+        
+        <span class="button previous">
+            <a href="https://www.petermcconnell.com/posts/python_debugging/">
+                <span class="button__icon">←</span>
+                <span class="button__text">Python debugging</span>
+            </a>
+        </span>
         
         
         <span class="button next">

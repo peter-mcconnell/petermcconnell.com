@@ -14,12 +14,14 @@
       <pubDate>Tue, 03 Jan 2023 12:33:02 +0000</pubDate>
       
       <guid>https://www.petermcconnell.com/posts/golang_debugging/</guid>
-      <description>what do we want to achieve? This is the tool I reach for when a program isn&amp;rsquo;t behaving how I expect it to and I want to dig into the internals / browse the state of the program at particular points so as to realise why my understanding of the program is wrong.
-what are the requirements? Install delve: https://github.com/go-delve/delve
-git clone https://github.com/go-delve/delve cd delve go install github.com/go-delve/delve/cmd/dlv Have the following pieces of information:</description>
-      <content>&lt;h2 id=&#34;what-do-we-want-to-achieve&#34;&gt;what do we want to achieve?&lt;/h2&gt;
+      <description>the &amp;lsquo;code&amp;rsquo; for this article can be found here: https://github.com/peter-mcconnell/petermcconnell.com/blob/main/assets/dummy/godebug/main.go
+debugging Golang - the context This is the tool I reach for when a program isn&amp;rsquo;t behaving how I expect it to and I want to dig into the internals / browse the state of the program at particular points so as to realise why my understanding of the program is wrong.
+what are the requirements? The debugger of choice (for me) is dlv / delve.</description>
+      <content>&lt;p&gt;&lt;em&gt;the &amp;lsquo;code&amp;rsquo; for this article can be found here: &lt;a href=&#34;https://github.com/peter-mcconnell/petermcconnell.com/blob/main/assets/dummy/godebug/main.go&#34;&gt;https://github.com/peter-mcconnell/petermcconnell.com/blob/main/assets/dummy/godebug/main.go&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+&lt;h2 id=&#34;debugging-golang---the-context&#34;&gt;debugging Golang - the context&lt;/h2&gt;
 &lt;p&gt;This is the tool I reach for when a program isn&amp;rsquo;t behaving how I expect it to and I want to dig into the internals / browse the state of the program at particular points so as to realise why my understanding of the program is wrong.&lt;/p&gt;
 &lt;h2 id=&#34;what-are-the-requirements&#34;&gt;what are the requirements?&lt;/h2&gt;
+&lt;p&gt;The debugger of choice (for me) is &lt;code&gt;dlv&lt;/code&gt; / &lt;code&gt;delve&lt;/code&gt;. The reasons for this are at the end of the article.&lt;/p&gt;
 &lt;p&gt;Install &lt;code&gt;delve&lt;/code&gt;: &lt;a href=&#34;https://github.com/go-delve/delve&#34;&gt;https://github.com/go-delve/delve&lt;/a&gt;&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git clone https://github.com/go-delve/delve
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;cd delve
