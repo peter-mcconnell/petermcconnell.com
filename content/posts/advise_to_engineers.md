@@ -1,5 +1,5 @@
 +++
-title = "Advise for engineers wanting to 'make it'"
+title = "Advice for engineers wanting to 'make it'"
 date = "2023-01-10T08:41:50Z"
 author = ""
 authorTwitter = "PeteMcConnell_" #do not include @
@@ -13,7 +13,7 @@ hideComments = false
 color = "" #color from the theme settings
 +++
 
-The advise I wish I had been given
+The advice I wish I had been given
 -----------------------------------
 
 As someone with two decades of experience in the tech industry, I have been fortunate to have enjoyed success, but my path has been far from deliberate. In hindsight, there are some steps I could have taken to have increased my ability to be a better engineer and ultimately to have reached my goals sooner. If I could time travel, this is the advice I would give to my younger self:
