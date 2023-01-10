@@ -7,56 +7,7 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; Peter McConnell 2023</copyright>
-    <lastBuildDate>Tue, 10 Jan 2023 08:41:50 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/engineering/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Advice for engineers wanting to &#39;make it&#39;</title>
-      <link>https://www.petermcconnell.com/posts/advise_to_engineers/</link>
-      <pubDate>Tue, 10 Jan 2023 08:41:50 +0000</pubDate>
-      
-      <guid>https://www.petermcconnell.com/posts/advise_to_engineers/</guid>
-      <description>The advice I wish I had been given As someone with two decades of experience in the tech industry, I have been fortunate to have enjoyed success, but my path has been far from deliberate. In hindsight, there are some steps I could have taken to have increased my ability to be a better engineer and ultimately to have reached my goals sooner. If I could time travel, this is the advice I would give to my younger self:</description>
-      <content>&lt;h2 id=&#34;the-advice-i-wish-i-had-been-given&#34;&gt;The advice I wish I had been given&lt;/h2&gt;
-&lt;p&gt;As someone with two decades of experience in the tech industry, I have been fortunate to have enjoyed success, but my path has been far from deliberate. In hindsight, there are some steps I could have taken to have increased my ability to be a better engineer and ultimately to have reached my goals sooner. If I could time travel, this is the advice I would give to my younger self:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;Understand what you want and how to get it: Working in tech because it&amp;rsquo;s your hobby is great, but you should spend some time thinking about how you want to optimise your time. Consider what you want from your career as you (usually) only get one and time is short. Whether it&amp;rsquo;s an early retirement, mass influence on tech, or reaching millions of users, understanding what you want and using it as the guiding light for decision making is a much more efficient strategy than just going with the flow. And remember, &amp;ldquo;money&amp;rdquo; is a valid answer.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Set goals: Now that you know what you want, determine the incremental steps you need to take to get there. Consider who can help you achieve those goals and how you can position yourself to achieve them. Think about what you need to provide to ensure it&amp;rsquo;s a good deal for all parties involved.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;It&amp;rsquo;s a craft: So, build on it. That means deliberately doing the things you don&amp;rsquo;t enjoy too. If you don&amp;rsquo;t understand a part of the stack that affects your job, don&amp;rsquo;t ignore it. Force yourself to learn the hard things. Getting better and learning things you don&amp;rsquo;t want to learn is possibly the hardest, yet most important skill I can recommend developing. Being able to deeply understand the work you&amp;rsquo;re doing gives you the confidence to do so much more.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Be someone that&amp;rsquo;s easy to work with: You spend 40+ hours a week with your colleagues, so be someone they want to have around. Being kind, easy to work with, fun, dependable, diligent, a great communicator and having their backs are all extremely important for your career. Sadly, this is an area where some people lack. I&amp;rsquo;ve seen technically brilliant individuals held back due to issues with soft skills. I found Simon Sinek&amp;rsquo;s talk on Performance vs. Trust a good example of this: &lt;a href=&#34;https://www.youtube.com/watch?v=kJdXjtSnZTI&amp;amp;ab_channel=MikeKnight&#34;&gt;https://www.youtube.com/watch?v=kJdXjtSnZTI&amp;amp;ab_channel=MikeKnight&lt;/a&gt;.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;You&amp;rsquo;re a service: To state the obvious, an employment is a contract an employer creates in exchange for a service (that&amp;rsquo;s the work that you do). If you want to raise your price, it had better be a good deal for the employer. So, what are they getting? Consider this:&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Bob was hired at $100k per year. In a year, Bob developed four features. None of these features brought the business any value. Was that a good deal for the business?&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Jane was also hired at $100k per year. In a year, Jane developed a single feature that increased revenue by $300k. Was that a good deal for the business?&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;It&amp;rsquo;s obvious when in black and white but I know I&amp;rsquo;ve had times early in my career when I was accidentally coasting, not really thinking about how good of a deal I was for my employer. Try to ensure that you are working on a) increasing revenue, b) decreasing the cost of business, or c) acting as a catalyst for many others. Talk to your manager about wanting to optimize your effectiveness in these areas. Ensure that you can demonstrate this value on demand if required. Always try to remember that you&amp;rsquo;re being paid for a return of value and it is your duty to ensure you can maximise that value.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Graft: If your goal is work/life balance, this may not be relevant. However, the reality is that you often get out what you put in. You can have an entire career clocking in 40-hour weeks, but from what I&amp;rsquo;ve observed, everyone who gets ahead does so by digging in and putting in the extra work. Don&amp;rsquo;t burn yourself out, of course! Manage your time and take it easy when you can, but when the pressure is on for you or your team, be prepared to knuckle down and put in some overtime. This both solidifies your position as someone who can be depended on and also gives you more time in the saddle.&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;In summary, the steps outlined above can be distilled into a single plan:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Understand your goals and what you want to achieve&lt;/li&gt;
-&lt;li&gt;Set specific and measurable goals to get there&lt;/li&gt;
-&lt;li&gt;Continuously improve your craft and skills, even if it&amp;rsquo;s uncomfortable&lt;/li&gt;
-&lt;li&gt;Be a valuable team member and easy to work with&lt;/li&gt;
-&lt;li&gt;Clearly communicate and demonstrate your value to your employer&lt;/li&gt;
-&lt;li&gt;Be prepared to put in the extra work when necessary.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;By following these steps, you can increase your chances of success and reach your desired career outcomes, whether that&amp;rsquo;s financial stability, influence in the industry or a balance lifestyle. Remember that career paths are rarely straight and it&amp;rsquo;s not uncommon to change direction or re-evaluate goals, so be flexible and always keep learning.&lt;/p&gt;
-</content>
-    </item>
-    
+    <lastBuildDate>Fri, 30 Dec 2022 20:34:57 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/engineering/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>What is DevOps?</title>
       <link>https://www.petermcconnell.com/posts/whatisdevops/</link>

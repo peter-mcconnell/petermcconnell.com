@@ -9,21 +9,11 @@
     <copyright>&amp;copy; Peter McConnell 2023</copyright>
     <lastBuildDate>Tue, 10 Jan 2023 08:41:50 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>advise</title>
-      <link>https://www.petermcconnell.com/tags/advise/</link>
+      <title>career advice</title>
+      <link>https://www.petermcconnell.com/tags/career-advice/</link>
       <pubDate>Tue, 10 Jan 2023 08:41:50 +0000</pubDate>
       
-      <guid>https://www.petermcconnell.com/tags/advise/</guid>
-      <description></description>
-      <content></content>
-    </item>
-    
-    <item>
-      <title>engineering</title>
-      <link>https://www.petermcconnell.com/tags/engineering/</link>
-      <pubDate>Tue, 10 Jan 2023 08:41:50 +0000</pubDate>
-      
-      <guid>https://www.petermcconnell.com/tags/engineering/</guid>
+      <guid>https://www.petermcconnell.com/tags/career-advice/</guid>
       <description></description>
       <content></content>
     </item>
@@ -39,11 +29,11 @@
     </item>
     
     <item>
-      <title>software</title>
-      <link>https://www.petermcconnell.com/tags/software/</link>
+      <title>software engineering</title>
+      <link>https://www.petermcconnell.com/tags/software-engineering/</link>
       <pubDate>Tue, 10 Jan 2023 08:41:50 +0000</pubDate>
       
-      <guid>https://www.petermcconnell.com/tags/software/</guid>
+      <guid>https://www.petermcconnell.com/tags/software-engineering/</guid>
       <description></description>
       <content></content>
     </item>
@@ -114,6 +104,16 @@
       <pubDate>Fri, 30 Dec 2022 20:34:57 +0000</pubDate>
       
       <guid>https://www.petermcconnell.com/tags/devops/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>engineering</title>
+      <link>https://www.petermcconnell.com/tags/engineering/</link>
+      <pubDate>Fri, 30 Dec 2022 20:34:57 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/tags/engineering/</guid>
       <description></description>
       <content></content>
     </item>

@@ -4,8 +4,8 @@ date = "2023-01-10T08:41:50Z"
 author = ""
 authorTwitter = "PeteMcConnell_" #do not include @
 cover = "https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/sinek.png"
-tags = ["advise", "software", "engineering", "mentorship"]
-keywords = ["advise", "software", "engineering", "mentorship"]
+tags = ["career advice", "software engineering", "mentorship"]
+keywords = ["career", "advice", "software", "engineering", "mentorship"]
 description = ""
 showFullContent = false
 readingTime = false
@@ -34,7 +34,7 @@ As someone with two decades of experience in the tech industry, I have been fort
 
    It's obvious when in black and white but I know I've had times early in my career when I was accidentally coasting, not really thinking about how good of a deal I was for my employer. Try to ensure that you are working on a) increasing revenue, b) decreasing the cost of business, or c) acting as a catalyst for many others. Talk to your manager about wanting to optimize your effectiveness in these areas. Ensure that you can demonstrate this value on demand if required. Always try to remember that you're being paid for a return of value and it is your duty to ensure you can maximise that value.
 
-6. Graft: If your goal is work/life balance, this may not be relevant. However, the reality is that you often get out what you put in. You can have an entire career clocking in 40-hour weeks, but from what I've observed, everyone who gets ahead does so by digging in and putting in the extra work. Don't burn yourself out, of course! Manage your time and take it easy when you can, but when the pressure is on for you or your team, be prepared to knuckle down and put in some overtime. This both solidifies your position as someone who can be depended on and also gives you more time in the saddle.
+6. Overtime: If your goal is work/life balance, this may not be relevant. However, the reality is that you often get out what you put in. You can have an entire career clocking in 40-hour weeks, but from what I've observed, everyone who gets ahead does so by digging in and putting in the extra work. Don't burn yourself out, of course! Manage your time and take it easy when you can, but when the pressure is on for you or your team, be prepared to knuckle down and put in some overtime. This both solidifies your position as someone who can be depended on and also gives you more time in the saddle.
 
 In summary, the steps outlined above can be distilled into a single plan:
 
