@@ -204,7 +204,7 @@
       <span class="post-author">Peter McConnell</span>
     
     
-      <span class="post-reading-time">:: 8 min read (1598 words)</span>
+      <span class="post-reading-time">:: 8 min read (1597 words)</span>
     
   </div>
 
@@ -256,84 +256,84 @@ The Linux perf profiler is a very powerful tool that allows you to profile and o
 &quot;&quot;&quot;</p>
 <h2 id="writing-a-bad-program">writing a &ldquo;bad&rdquo; program<a href="#writing-a-bad-program" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>I&rsquo;m excited to try this, so lets get going. Firstly lets create a python script for us to profile. I&rsquo;m doing this before installing Python 3.12 as I want to create a FlameGraph of how this process looks in 3.10 verses 3.12. Here we have a script that attempts to perform lookups against a large list:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> time
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">run_dummy</span>(numbers):
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> findme <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">100000</span>):
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> findme <span style="color:#f92672">in</span> numbers:
-</span></span><span style="display:flex;"><span>            print(<span style="color:#e6db74">&#34;found&#34;</span>, findme)
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span>:
-</span></span><span style="display:flex;"><span>            print(<span style="color:#e6db74">&#34;missed&#34;</span>, findme)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># create a large sized input to show off inefficiency</span>
-</span></span><span style="display:flex;"><span>    numbers <span style="color:#f92672">=</span> [i <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">20000000</span>)]
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    start_time <span style="color:#f92672">=</span> time<span style="color:#f92672">.</span>time()  <span style="color:#75715e"># get the current time [start]</span>
-</span></span><span style="display:flex;"><span>    run_dummy(numbers)  <span style="color:#75715e"># run our inefficient method</span>
-</span></span><span style="display:flex;"><span>    end_time <span style="color:#f92672">=</span> time<span style="color:#f92672">.</span>time()  <span style="color:#75715e"># get the current time [end]</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    duration <span style="color:#f92672">=</span> end_time <span style="color:#f92672">-</span> start_time  <span style="color:#75715e"># Calculate the duration</span>
-</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Duration: </span><span style="color:#e6db74">{</span>duration<span style="color:#e6db74">}</span><span style="color:#e6db74"> seconds&#34;</span>)  <span style="color:#75715e"># Print the duration</span>
-</span></span></code></pre></div><p>Running this I get the following result:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>python3.10 assets/dummy/perf_py_proj/before.py
-</span></span><span style="display:flex;"><span>...
-</span></span><span style="display:flex;"><span>found <span style="color:#ae81ff">99992</span>
-</span></span><span style="display:flex;"><span>found <span style="color:#ae81ff">99993</span>
-</span></span><span style="display:flex;"><span>found <span style="color:#ae81ff">99994</span>
-</span></span><span style="display:flex;"><span>found <span style="color:#ae81ff">99995</span>
-</span></span><span style="display:flex;"><span>found <span style="color:#ae81ff">99996</span>
-</span></span><span style="display:flex;"><span>found <span style="color:#ae81ff">99997</span>
-</span></span><span style="display:flex;"><span>found <span style="color:#ae81ff">99998</span>
-</span></span><span style="display:flex;"><span>found <span style="color:#ae81ff">99999</span>
-</span></span><span style="display:flex;"><span>Duration: 36.06884431838989 seconds
-</span></span></code></pre></div><p>36 seconds is bad enough for us to pick up a reasonable amount of samples.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> time
+
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">run_dummy</span>(numbers):
+    <span style="color:#66d9ef">for</span> findme <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">100000</span>):
+        <span style="color:#66d9ef">if</span> findme <span style="color:#f92672">in</span> numbers:
+            print(<span style="color:#e6db74">&#34;found&#34;</span>, findme)
+        <span style="color:#66d9ef">else</span>:
+            print(<span style="color:#e6db74">&#34;missed&#34;</span>, findme)
+
+
+<span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
+    <span style="color:#75715e"># create a large sized input to show off inefficiency</span>
+    numbers <span style="color:#f92672">=</span> [i <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">20000000</span>)]
+
+    start_time <span style="color:#f92672">=</span> time<span style="color:#f92672">.</span>time()  <span style="color:#75715e"># get the current time [start]</span>
+    run_dummy(numbers)  <span style="color:#75715e"># run our inefficient method</span>
+    end_time <span style="color:#f92672">=</span> time<span style="color:#f92672">.</span>time()  <span style="color:#75715e"># get the current time [end]</span>
+
+    duration <span style="color:#f92672">=</span> end_time <span style="color:#f92672">-</span> start_time  <span style="color:#75715e"># Calculate the duration</span>
+    print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Duration: </span><span style="color:#e6db74">{</span>duration<span style="color:#e6db74">}</span><span style="color:#e6db74"> seconds&#34;</span>)  <span style="color:#75715e"># Print the duration</span>
+</code></pre></div><p>Running this I get the following result:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">python3.10 assets/dummy/perf_py_proj/before.py
+...
+found <span style="color:#ae81ff">99992</span>
+found <span style="color:#ae81ff">99993</span>
+found <span style="color:#ae81ff">99994</span>
+found <span style="color:#ae81ff">99995</span>
+found <span style="color:#ae81ff">99996</span>
+found <span style="color:#ae81ff">99997</span>
+found <span style="color:#ae81ff">99998</span>
+found <span style="color:#ae81ff">99999</span>
+Duration: 36.06884431838989 seconds
+</code></pre></div><p>36 seconds is bad enough for us to pick up a reasonable amount of samples.</p>
 <h2 id="flamegraphs">flamegraphs!<a href="#flamegraphs" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>Now we can create our <a href="https://github.com/brendangregg/FlameGraph">FlameGraph</a>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#75715e"># record profile to &#34;perf.data&#34; file (default output)</span>
-</span></span><span style="display:flex;"><span>perf record -F <span style="color:#ae81ff">99</span> -g -- python3.10 assets/dummy/perf_py_proj/before.py
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># read perf.data (created above) and display trace output</span>
-</span></span><span style="display:flex;"><span>perf script &gt; out.perf
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># fold stack samples into single lines</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># here I reference ~/FlameGraph/ - you can get this from https://github.com/brendangregg/FlameGraph</span>
-</span></span><span style="display:flex;"><span>~/FlameGraph/stackcollapse-perf.pl out.perf &gt; out.folded
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># generate flamegraph</span>
-</span></span><span style="display:flex;"><span>~/FlameGraph/flamegraph.pl out.folded &gt; ./assets/perf_example_python3.10.svg
-</span></span></code></pre></div><p>This gives us a nice SVG that visualises the traces:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#75715e"># record profile to &#34;perf.data&#34; file (default output)</span>
+perf record -F <span style="color:#ae81ff">99</span> -g -- python3.10 assets/dummy/perf_py_proj/before.py
+<span style="color:#75715e"># read perf.data (created above) and display trace output</span>
+perf script &gt; out.perf
+<span style="color:#75715e"># fold stack samples into single lines</span>
+<span style="color:#75715e"># here I reference ~/FlameGraph/ - you can get this from https://github.com/brendangregg/FlameGraph</span>
+~/FlameGraph/stackcollapse-perf.pl out.perf &gt; out.folded
+<span style="color:#75715e"># generate flamegraph</span>
+~/FlameGraph/flamegraph.pl out.folded &gt; ./assets/perf_example_python3.10.svg
+</code></pre></div><p>This gives us a nice SVG that visualises the traces:</p>
 <p><img src="https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_example_python3.10.svg" alt="python 3.10 perf flamegraph" title="python 3.10 perf flamegraph"></p>
 <p>This isn&rsquo;t useful &hellip; I can see most of the time was spent in &ldquo;new_keys_object.lto_priv.0&rdquo; but that is meaningless in the context of the code.</p>
 <h2 id="time-for-python-312">time for Python 3.12&hellip;<a href="#time-for-python-312" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>First I need to install it - the steps for this vary depending on OS - follow the build instructions here for your environment: <a href="https://github.com/python/cpython/tree/v3.12.0a3#build-instructions">https://github.com/python/cpython/tree/v3.12.0a3#build-instructions</a></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#75715e"># for me on ubuntu:22.04</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># ensure I have python3-dbg installed</span>
-</span></span><span style="display:flex;"><span>sudo apt-get install python3-dbg
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># build python</span>
-</span></span><span style="display:flex;"><span>export CFLAGS<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;-fno-omit-frame-pointer -mno-omit-leaf-frame-pointer&#34;</span>
-</span></span><span style="display:flex;"><span>./configure --enable-optimizations
-</span></span><span style="display:flex;"><span>make
-</span></span><span style="display:flex;"><span>make test
-</span></span><span style="display:flex;"><span>sudo make install
-</span></span><span style="display:flex;"><span>unset CFLAGS
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># after this I reset my systems python3 symlink to 3.10 as 3.12 isn&#39;t yet stable</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># for testing python3.12 I&#39;ll call &#34;python3.12&#34; instead of &#34;python3&#34;</span>
-</span></span><span style="display:flex;"><span>ln -sf /usr/local/bin/python3.10 /usr/local/bin/python3
-</span></span></code></pre></div><p>With that installed I first need to enable perf support. This is detailed in <a href="https://docs.python.org/3.12/howto/perf_profiling.html">https://docs.python.org/3.12/howto/perf_profiling.html</a> and there are three options: 1) an environment variable, 2) an -X option or 3) dynamically using <code>sys</code>. I&rsquo;ll go for the environment variable approach as I don&rsquo;t mind <em>everything</em> being profiled for a small script:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>export PYTHONPERFSUPPORT<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>
-</span></span></code></pre></div><p>Now we simply repeat the process above using the <code>python3.12</code> binary instead:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#75715e"># record profile to &#34;perf.data&#34; file (default output)</span>
-</span></span><span style="display:flex;"><span>perf record -F <span style="color:#ae81ff">99</span> -g -- python3.12 assets/dummy/perf_py_proj/before.py
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># read perf.data (created above) and display trace output</span>
-</span></span><span style="display:flex;"><span>perf script &gt; out.perf
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># fold stack samples into single lines</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># here I reference ~/FlameGraph/ - you can get this from https://github.com/brendangregg/FlameGraph</span>
-</span></span><span style="display:flex;"><span>~/FlameGraph/stackcollapse-perf.pl out.perf &gt; out.folded
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># generate flamegraph</span>
-</span></span><span style="display:flex;"><span>~/FlameGraph/flamegraph.pl out.folded &gt; ./assets/perf_example_python3.12.before.svg
-</span></span></code></pre></div><p>First we&rsquo;ll take a peek at the report with <code>perf report -g -i perf.data</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#75715e"># for me on ubuntu:22.04</span>
+<span style="color:#75715e"># ensure I have python3-dbg installed</span>
+sudo apt-get install python3-dbg
+
+<span style="color:#75715e"># build python</span>
+export CFLAGS<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;-fno-omit-frame-pointer -mno-omit-leaf-frame-pointer&#34;</span>
+./configure --enable-optimizations
+make
+make test
+sudo make install
+unset CFLAGS
+
+<span style="color:#75715e"># after this I reset my systems python3 symlink to 3.10 as 3.12 isn&#39;t yet stable</span>
+<span style="color:#75715e"># for testing python3.12 I&#39;ll call &#34;python3.12&#34; instead of &#34;python3&#34;</span>
+ln -sf /usr/local/bin/python3.10 /usr/local/bin/python3
+</code></pre></div><p>With that installed I first need to enable perf support. This is detailed in <a href="https://docs.python.org/3.12/howto/perf_profiling.html">https://docs.python.org/3.12/howto/perf_profiling.html</a> and there are three options: 1) an environment variable, 2) an -X option or 3) dynamically using <code>sys</code>. I&rsquo;ll go for the environment variable approach as I don&rsquo;t mind <em>everything</em> being profiled for a small script:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">export PYTHONPERFSUPPORT<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>
+</code></pre></div><p>Now we simply repeat the process above using the <code>python3.12</code> binary instead:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#75715e"># record profile to &#34;perf.data&#34; file (default output)</span>
+perf record -F <span style="color:#ae81ff">99</span> -g -- python3.12 assets/dummy/perf_py_proj/before.py
+<span style="color:#75715e"># read perf.data (created above) and display trace output</span>
+perf script &gt; out.perf
+<span style="color:#75715e"># fold stack samples into single lines</span>
+<span style="color:#75715e"># here I reference ~/FlameGraph/ - you can get this from https://github.com/brendangregg/FlameGraph</span>
+~/FlameGraph/stackcollapse-perf.pl out.perf &gt; out.folded
+<span style="color:#75715e"># generate flamegraph</span>
+~/FlameGraph/flamegraph.pl out.folded &gt; ./assets/perf_example_python3.12.before.svg
+</code></pre></div><p>First we&rsquo;ll take a peek at the report with <code>perf report -g -i perf.data</code></p>
 <p><img src="https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_report.png" alt="python 3.12 perf report output" title="python 3.12 perf report"></p>
 <p>Awesome! We can see our Python function names and script names!</p>
 <p>Now we can take a look at the updated SVG that visualises the traces with Python 3.12:</p>
@@ -342,63 +342,63 @@ The Linux perf profiler is a very powerful tool that allows you to profile and o
 <h2 id="investigation-time--the-fix">investigation time / the fix<a href="#investigation-time--the-fix" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>Now that we know where in our code the problem is, we can take a look at the source code in CPython to see why the <code>list_contains</code> method would be so slow: <a href="https://github.com/python/cpython/blob/199507b81a302ea19f93593965b1e5088195a6c5/Objects/listobject.c#L440">https://github.com/python/cpython/blob/199507b81a302ea19f93593965b1e5088195a6c5/Objects/listobject.c#L440</a></p>
 <p><em>note: you may not always have access to the source code - in circumstances such as this you can view the disassembly in perf report directly to get some idea of what&rsquo;s going on. I&rsquo;ll add a quick section at the end showing how this looks</em></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">// I found this by going to https://github.com/python/cpython/ and searching for &#34;list_contains&#34;
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">list_contains</span>(PyListObject <span style="color:#f92672">*</span>a, PyObject <span style="color:#f92672">*</span>el)
-</span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>    PyObject <span style="color:#f92672">*</span>item;
-</span></span><span style="display:flex;"><span>    Py_ssize_t i;
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> cmp;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>, cmp <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span> ; cmp <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">&amp;&amp;</span> i <span style="color:#f92672">&lt;</span> <span style="color:#a6e22e">Py_SIZE</span>(a); <span style="color:#f92672">++</span>i) {
-</span></span><span style="display:flex;"><span>        item <span style="color:#f92672">=</span> <span style="color:#a6e22e">PyList_GET_ITEM</span>(a, i);
-</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">Py_INCREF</span>(item);
-</span></span><span style="display:flex;"><span>        cmp <span style="color:#f92672">=</span> <span style="color:#a6e22e">PyObject_RichCompareBool</span>(item, el, Py_EQ);
-</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">Py_DECREF</span>(item);
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> cmp;
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><p>Nasty&hellip; looking at this code I can see that each time it is invoked it iterates over the array and performs a comparison against each item. That&rsquo;s far from ideal for our usecase, so lets go back to the Python code we wrote. Our Flamegraph shows us that the problem is in our <code>run_dummy</code> method:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">run_dummy</span>(numbers):
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> findme <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">100000</span>):
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> findme <span style="color:#f92672">in</span> numbers:  <span style="color:#75715e">#  &lt;- this is what triggers list_contains</span>
-</span></span><span style="display:flex;"><span>            print(<span style="color:#e6db74">&#34;found&#34;</span>, findme)
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span>:
-</span></span><span style="display:flex;"><span>            print(<span style="color:#e6db74">&#34;missed&#34;</span>, findme)
-</span></span></code></pre></div><p>We can&rsquo;t really change that line as it is doing what we want it to do - identifying if an integer is in <code>numbers</code>. Perhaps we can change the <code>numbers</code> data type to one better suited to lookups. In our existing code we have:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>    numbers <span style="color:#f92672">=</span> [i <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">20000000</span>)]
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    start_time <span style="color:#f92672">=</span> time<span style="color:#f92672">.</span>time()  <span style="color:#75715e"># get the current time [start]</span>
-</span></span><span style="display:flex;"><span>    run_dummy(numbers)  <span style="color:#75715e"># run our inefficient method</span>
-</span></span></code></pre></div><p>Here we used a LIST data type for our &ldquo;numbers&rdquo;, which under the hood (in CPython) is implemented as dynamically-sized arrays and as such are nowhere near as efficient (O(N)) as the likes of a Hashtable for looking up an item (which is O(1)). A SET on the other hand (another Python data type) is implemented as a Hashtable and would give us the fast lookup we&rsquo;re looking for. Lets change the data type in our Python code and see what the impact is:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>    <span style="color:#75715e"># we&#39;ll just change this line, casting numbers to a set before running run_dummy</span>
-</span></span><span style="display:flex;"><span>    run_dummy(set(numbers))  <span style="color:#75715e"># passing a set() for fast lookups</span>
-</span></span></code></pre></div><p>Now we can repeat the steps as above to generate our new flamegraph:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#75715e"># record profile to &#34;perf.data&#34; file (default output)</span>
-</span></span><span style="display:flex;"><span>perf record -F <span style="color:#ae81ff">99</span> -g -- python3.12 assets/dummy/perf_py_proj/after.py
-</span></span><span style="display:flex;"><span>...
-</span></span><span style="display:flex;"><span>found <span style="color:#ae81ff">99998</span>
-</span></span><span style="display:flex;"><span>found <span style="color:#ae81ff">99999</span>
-</span></span><span style="display:flex;"><span>Duration: 0.8350753784179688 seconds
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span> perf record: Woken up <span style="color:#ae81ff">1</span> times to write data <span style="color:#f92672">]</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span> perf record: Captured and wrote 0.039 MB perf.data <span style="color:#f92672">(</span><span style="color:#ae81ff">134</span> samples<span style="color:#f92672">)</span> <span style="color:#f92672">]</span>
-</span></span></code></pre></div><p>Already we can see that things have massively improved. Where previously this was taking 36 seconds to run it is now taking 0.8 seconds! Lets continue creating our flamegraph for the new improved code:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#75715e"># read perf.data (created above) and display trace output</span>
-</span></span><span style="display:flex;"><span>perf script &gt; out.perf
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># fold stack samples into single lines</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># here I reference ~/FlameGraph/ - you can get this from https://github.com/brendangregg/FlameGraph</span>
-</span></span><span style="display:flex;"><span>~/FlameGraph/stackcollapse-perf.pl out.perf &gt; out.folded
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># generate flamegraph</span>
-</span></span><span style="display:flex;"><span>~/FlameGraph/flamegraph.pl out.folded &gt; ./assets/perf_example_python3.12.after.svg
-</span></span></code></pre></div><p><img src="https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_example_python3.12.after.svg" alt="python 3.12 perf flamegraph improved" title="python 3.12 perf flamegraph improved"></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">// I found this by going to https://github.com/python/cpython/ and searching for &#34;list_contains&#34;
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span>
+<span style="color:#a6e22e">list_contains</span>(PyListObject <span style="color:#f92672">*</span>a, PyObject <span style="color:#f92672">*</span>el)
+{
+    PyObject <span style="color:#f92672">*</span>item;
+    Py_ssize_t i;
+    <span style="color:#66d9ef">int</span> cmp;
+
+    <span style="color:#66d9ef">for</span> (i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>, cmp <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span> ; cmp <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">&amp;&amp;</span> i <span style="color:#f92672">&lt;</span> Py_SIZE(a); <span style="color:#f92672">++</span>i) {
+        item <span style="color:#f92672">=</span> PyList_GET_ITEM(a, i);
+        Py_INCREF(item);
+        cmp <span style="color:#f92672">=</span> PyObject_RichCompareBool(item, el, Py_EQ);
+        Py_DECREF(item);
+    }
+    <span style="color:#66d9ef">return</span> cmp;
+}
+</code></pre></div><p>Nasty&hellip; looking at this code I can see that each time it is invoked it iterates over the array and performs a comparison against each item. That&rsquo;s far from ideal for our usecase, so lets go back to the Python code we wrote. Our Flamegraph shows us that the problem is in our <code>run_dummy</code> method:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">run_dummy</span>(numbers):
+    <span style="color:#66d9ef">for</span> findme <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">100000</span>):
+        <span style="color:#66d9ef">if</span> findme <span style="color:#f92672">in</span> numbers:  <span style="color:#75715e">#  &lt;- this is what triggers list_contains</span>
+            print(<span style="color:#e6db74">&#34;found&#34;</span>, findme)
+        <span style="color:#66d9ef">else</span>:
+            print(<span style="color:#e6db74">&#34;missed&#34;</span>, findme)
+</code></pre></div><p>We can&rsquo;t really change that line as it is doing what we want it to do - identifying if an integer is in <code>numbers</code>. Perhaps we can change the <code>numbers</code> data type to one better suited to lookups. In our existing code we have:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">    numbers <span style="color:#f92672">=</span> [i <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">20000000</span>)]
+
+    start_time <span style="color:#f92672">=</span> time<span style="color:#f92672">.</span>time()  <span style="color:#75715e"># get the current time [start]</span>
+    run_dummy(numbers)  <span style="color:#75715e"># run our inefficient method</span>
+</code></pre></div><p>Here we used a LIST data type for our &ldquo;numbers&rdquo;, which under the hood (in CPython) is implemented as dynamically-sized arrays and as such are nowhere near as efficient (O(N)) as the likes of a Hashtable for looking up an item (which is O(1)). A SET on the other hand (another Python data type) is implemented as a Hashtable and would give us the fast lookup we&rsquo;re looking for. Lets change the data type in our Python code and see what the impact is:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">    <span style="color:#75715e"># we&#39;ll just change this line, casting numbers to a set before running run_dummy</span>
+    run_dummy(set(numbers))  <span style="color:#75715e"># passing a set() for fast lookups</span>
+</code></pre></div><p>Now we can repeat the steps as above to generate our new flamegraph:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#75715e"># record profile to &#34;perf.data&#34; file (default output)</span>
+perf record -F <span style="color:#ae81ff">99</span> -g -- python3.12 assets/dummy/perf_py_proj/after.py
+...
+found <span style="color:#ae81ff">99998</span>
+found <span style="color:#ae81ff">99999</span>
+Duration: 0.8350753784179688 seconds
+<span style="color:#f92672">[</span> perf record: Woken up <span style="color:#ae81ff">1</span> times to write data <span style="color:#f92672">]</span>
+<span style="color:#f92672">[</span> perf record: Captured and wrote 0.039 MB perf.data <span style="color:#f92672">(</span><span style="color:#ae81ff">134</span> samples<span style="color:#f92672">)</span> <span style="color:#f92672">]</span>
+</code></pre></div><p>Already we can see that things have massively improved. Where previously this was taking 36 seconds to run it is now taking 0.8 seconds! Lets continue creating our flamegraph for the new improved code:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#75715e"># read perf.data (created above) and display trace output</span>
+perf script &gt; out.perf
+<span style="color:#75715e"># fold stack samples into single lines</span>
+<span style="color:#75715e"># here I reference ~/FlameGraph/ - you can get this from https://github.com/brendangregg/FlameGraph</span>
+~/FlameGraph/stackcollapse-perf.pl out.perf &gt; out.folded
+<span style="color:#75715e"># generate flamegraph</span>
+~/FlameGraph/flamegraph.pl out.folded &gt; ./assets/perf_example_python3.12.after.svg
+</code></pre></div><p><img src="https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_example_python3.12.after.svg" alt="python 3.12 perf flamegraph improved" title="python 3.12 perf flamegraph improved"></p>
 <p>This is a much healthier looking Flamegraph and our application is now much faster as a result. The perf profiling support in Python 3.12 brings a tremendously useful tool to software engineers that want to deliver fast programs and I&rsquo;m excited to see the impact this will have on the language.</p>
 <h2 id="bonus-round-what-to-do-when-you-cant-access-the-source-code">bonus round: what to do when you can&rsquo;t access the source code?<a href="#bonus-round-what-to-do-when-you-cant-access-the-source-code" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>Sometimes you don&rsquo;t have access to the underlying code which can make trying to understand what&rsquo;s going on much more difficult. Thankfully <code>perf report</code> allows us to view the dissassembled code which can help paint a picture of what the machine is actually doing. This is a reasonable first place to look - I tend to prefer the source code if I can get hold of it as it allows me to <code>git blame</code> / view the associated commits and PRs. To view this you can do the following:</p>
 <p>Open the perf report and select the line we&rsquo;re interested in:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#75715e"># this assumes we have already ran &#39;perf record&#39; to generate perf.data ...</span>
-</span></span><span style="display:flex;"><span>perf report -g -i perf.data
-</span></span></code></pre></div><p><img src="https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_report_dis.1.png" alt="perf report dissassembly" title="perf report dissassembly"></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#75715e"># this assumes we have already ran &#39;perf record&#39; to generate perf.data ...</span>
+perf report -g -i perf.data
+</code></pre></div><p><img src="https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_report_dis.1.png" alt="perf report dissassembly" title="perf report dissassembly"></p>
 <p>Press enter and choose the annotate option:</p>
 <p><img src="https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_report_dis.2.png" alt="perf report dissassembly" title="perf report dissassembly"></p>
 <p>Behold! Here we can see both the C code and the machine instructions. Super useful! You can compare the screenshot below against the code snippet we&rsquo;re interested in: <a href="https://github.com/python/cpython/blob/199507b81a302ea19f93593965b1e5088195a6c5/Objects/listobject.c#L440">https://github.com/python/cpython/blob/199507b81a302ea19f93593965b1e5088195a6c5/Objects/listobject.c#L440</a></p>

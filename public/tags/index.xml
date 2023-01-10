@@ -7,7 +7,47 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; Peter McConnell 2023</copyright>
-    <lastBuildDate>Thu, 05 Jan 2023 16:51:58 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 10 Jan 2023 08:41:50 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>advise</title>
+      <link>https://www.petermcconnell.com/tags/advise/</link>
+      <pubDate>Tue, 10 Jan 2023 08:41:50 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/tags/advise/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>engineering</title>
+      <link>https://www.petermcconnell.com/tags/engineering/</link>
+      <pubDate>Tue, 10 Jan 2023 08:41:50 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/tags/engineering/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>mentorship</title>
+      <link>https://www.petermcconnell.com/tags/mentorship/</link>
+      <pubDate>Tue, 10 Jan 2023 08:41:50 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/tags/mentorship/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>software</title>
+      <link>https://www.petermcconnell.com/tags/software/</link>
+      <pubDate>Tue, 10 Jan 2023 08:41:50 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/tags/software/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
     <item>
       <title>debugging</title>
       <link>https://www.petermcconnell.com/tags/debugging/</link>
@@ -74,16 +114,6 @@
       <pubDate>Fri, 30 Dec 2022 20:34:57 +0000</pubDate>
       
       <guid>https://www.petermcconnell.com/tags/devops/</guid>
-      <description></description>
-      <content></content>
-    </item>
-    
-    <item>
-      <title>engineering</title>
-      <link>https://www.petermcconnell.com/tags/engineering/</link>
-      <pubDate>Fri, 30 Dec 2022 20:34:57 +0000</pubDate>
-      
-      <guid>https://www.petermcconnell.com/tags/engineering/</guid>
       <description></description>
       <content></content>
     </item>

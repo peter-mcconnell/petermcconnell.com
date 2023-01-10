@@ -360,81 +360,81 @@
 <p>When: you think there&rsquo;s an issue with the CPU utilization.</p>
 <p><code>mpstat</code> is a command-line tool that is used to monitor the performance of a Linux system by displaying the CPU usage of each processor and the overall system.</p>
 <p>Imagine that you are the system administrator of a web server that is experiencing slow performance and perhaps even downtime. You check the web server logs but nothing obvious is standing out so you begin to suspect there&rsquo;s something else wrong with the system. One general check we can do is on the CPU cores - this is where <code>mpstat</code> comes in.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>mpstat -P ALL
-</span></span></code></pre></div><p>This will display the CPU usage statistics for all CPU cores on the system. The output will look something like this:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>Linux 4.9.0-8-amd64 <span style="color:#f92672">(</span>server.petermcconnell.com<span style="color:#f92672">)</span>  01/01/2023  _x86_64_    <span style="color:#f92672">(</span><span style="color:#ae81ff">2</span> CPU<span style="color:#f92672">)</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>02:34:56 AM  CPU    %usr   %nice    %sys %iowait    %irq   %soft  %steal  %guest  %gnice   %idle
-</span></span><span style="display:flex;"><span>02:34:56 AM  all    20.00    0.00    5.00    0.00    0.00    0.00    0.00    0.00    0.00   75.00
-</span></span><span style="display:flex;"><span>02:34:56 AM    <span style="color:#ae81ff">0</span>    22.50    0.00    6.25    0.00    0.00    0.00    0.00    0.00    0.00   71.25
-</span></span><span style="display:flex;"><span>02:34:56 AM    <span style="color:#ae81ff">1</span>     7.50    0.00    3.75    0.00    0.00    0.00    0.00    0.00    0.00   88.75
-</span></span></code></pre></div><p>The first line shows the Linux version, hostname, and CPU architecture. The second line displays the column headers, which show the various metrics that are being measured. The third line, labeled &ldquo;all,&rdquo; shows the overall CPU usage for all CPU cores combined. The fourth and fifth lines show the CPU usage for each individual CPU core.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">mpstat -P ALL
+</code></pre></div><p>This will display the CPU usage statistics for all CPU cores on the system. The output will look something like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">Linux 4.9.0-8-amd64 <span style="color:#f92672">(</span>server.petermcconnell.com<span style="color:#f92672">)</span>  01/01/2023  _x86_64_    <span style="color:#f92672">(</span><span style="color:#ae81ff">2</span> CPU<span style="color:#f92672">)</span>
+
+02:34:56 AM  CPU    %usr   %nice    %sys %iowait    %irq   %soft  %steal  %guest  %gnice   %idle
+02:34:56 AM  all    20.00    0.00    5.00    0.00    0.00    0.00    0.00    0.00    0.00   75.00
+02:34:56 AM    <span style="color:#ae81ff">0</span>    22.50    0.00    6.25    0.00    0.00    0.00    0.00    0.00    0.00   71.25
+02:34:56 AM    <span style="color:#ae81ff">1</span>     7.50    0.00    3.75    0.00    0.00    0.00    0.00    0.00    0.00   88.75
+</code></pre></div><p>The first line shows the Linux version, hostname, and CPU architecture. The second line displays the column headers, which show the various metrics that are being measured. The third line, labeled &ldquo;all,&rdquo; shows the overall CPU usage for all CPU cores combined. The fourth and fifth lines show the CPU usage for each individual CPU core.</p>
 <p>In this example, we can see that CPU 0 is running at a higher utilization than CPU 1. This could indicate that there is an issue with CPU 0 that is causing it to work harder than it should. To further investigate the issue we can opt to print these statistics every second by adding a &ldquo;1&rdquo; to the end of the command:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>mpstat -P ALL <span style="color:#ae81ff">1</span>
-</span></span></code></pre></div><p>This will print statistics from each core every second, showing the current CPU usage. By watching the output over time, we can see if there are any patterns or spikes in the usage of a particular CPU core.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">mpstat -P ALL <span style="color:#ae81ff">1</span>
+</code></pre></div><p>This will print statistics from each core every second, showing the current CPU usage. By watching the output over time, we can see if there are any patterns or spikes in the usage of a particular CPU core.</p>
 <p>If we notice that one of the CPU cores is consistently running at a higher utilization than the others, we can try to identify the cause of the problem. One way to do this is by using the <code>top</code> command to see which processes are using the most CPU resources. It could be that the program itself is misconfigured and not properly distributing load over the available cores.</p>
 <h2 id="iostat">iostat<a href="#iostat" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>When: you think there&rsquo;s an issue with IO.</p>
 <p>The <code>iostat</code> tool is a command-line utility in Linux that allows users to monitor input/output (I/O) statistics for devices, partitions, and network filesystems. It can be used to identify performance bottlenecks and track the usage of system resources by I/O operations.</p>
 <p>To use <code>iostat</code>, you need to specify the interval at which you want to collect data, as well as the devices or partitions you want to monitor. For example, the following command will display I/O statistics for all devices every 2 seconds, 5 times:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ iostat -p ALL <span style="color:#ae81ff">2</span> <span style="color:#ae81ff">5</span>
-</span></span><span style="display:flex;"><span>Linux 5.4.0-72-generic <span style="color:#f92672">(</span>myputer<span style="color:#f92672">)</span> 	30/12/22 	_x86_64_	<span style="color:#f92672">(</span><span style="color:#ae81ff">4</span> CPU<span style="color:#f92672">)</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>avg-cpu:  %user   %nice %system %iowait  %steal   %idle
-</span></span><span style="display:flex;"><span>           1.40   15.48    4.48    0.99    0.00   77.66
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>Device             tps    kB_read/s    kB_wrtn/s    kB_dscd/s    kB_read    kB_wrtn    kB_dscd
-</span></span><span style="display:flex;"><span>loop0             0.00         0.00         0.00         0.00          <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">0</span>
-</span></span><span style="display:flex;"><span>loop1             0.00         0.00         0.00         0.00          <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">0</span>
-</span></span><span style="display:flex;"><span>loop2             0.00         0.00         0.00         0.00          <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">0</span>
-</span></span><span style="display:flex;"><span>loop3             0.00         0.00         0.00         0.00          <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">0</span>
-</span></span><span style="display:flex;"><span>loop4             0.00         0.00         0.00         0.00          <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">0</span>
-</span></span><span style="display:flex;"><span>loop5             0.00         0.00         0.00         0.00          <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">0</span>
-</span></span><span style="display:flex;"><span>loop6             0.00         0.00         0.00         0.00          <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">0</span>
-</span></span><span style="display:flex;"><span>loop7             0.00         0.00         0.00         0.00          <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">0</span>
-</span></span><span style="display:flex;"><span>sda               4.83        79.27       106.76         0.00     <span style="color:#ae81ff">858983</span>    <span style="color:#ae81ff">1156820</span>          <span style="color:#ae81ff">0</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>... repeat
-</span></span></code></pre></div><p>You can also get more simple summaries - for example, CPU utilization report:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ iostat -c
-</span></span><span style="display:flex;"><span>Linux 5.4.0-72-generic <span style="color:#f92672">(</span>urputer<span style="color:#f92672">)</span> 	30/12/22 	_x86_64_	<span style="color:#f92672">(</span><span style="color:#ae81ff">4</span> CPU<span style="color:#f92672">)</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>avg-cpu:  %user   %nice %system %iowait  %steal   %idle
-</span></span><span style="display:flex;"><span>           1.36   15.09    4.37    0.95    0.00   78.22
-</span></span></code></pre></div><p>Or a device utilization report:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>iostat -d -h -p ALL
-</span></span><span style="display:flex;"><span>Linux 5.4.0-72-generic <span style="color:#f92672">(</span>xerxes<span style="color:#f92672">)</span> 	30/12/22 	_x86_64_	<span style="color:#f92672">(</span><span style="color:#ae81ff">4</span> CPU<span style="color:#f92672">)</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>      tps    kB_read/s    kB_wrtn/s    kB_dscd/s    kB_read    kB_wrtn    kB_dscd Device
-</span></span><span style="display:flex;"><span>     0.00         0.0k         0.0k         0.0k       0.0k       0.0k       0.0k loop0
-</span></span><span style="display:flex;"><span>     0.00         0.0k         0.0k         0.0k       0.0k       0.0k       0.0k loop1
-</span></span><span style="display:flex;"><span>     0.00         0.0k         0.0k         0.0k       0.0k       0.0k       0.0k loop2
-</span></span><span style="display:flex;"><span>     0.00         0.0k         0.0k         0.0k       0.0k       0.0k       0.0k loop3
-</span></span><span style="display:flex;"><span>     0.00         0.0k         0.0k         0.0k       0.0k       0.0k       0.0k loop4
-</span></span><span style="display:flex;"><span>     0.00         0.0k         0.0k         0.0k       0.0k       0.0k       0.0k loop5
-</span></span><span style="display:flex;"><span>     0.00         0.0k         0.0k         0.0k       0.0k       0.0k       0.0k loop6
-</span></span><span style="display:flex;"><span>     0.00         0.0k         0.0k         0.0k       0.0k       0.0k       0.0k loop7
-</span></span><span style="display:flex;"><span>     4.82        73.5k       103.6k         0.0k     841.2M       1.2G       0.0k sda
-</span></span><span style="display:flex;"><span>     0.01         0.3k         0.0k         0.0k       3.1M       0.5k       0.0k sda1
-</span></span><span style="display:flex;"><span>     0.00         0.0k         0.0k         0.0k       2.0k       0.0k       0.0k sda2
-</span></span><span style="display:flex;"><span>     4.71        73.1k       103.6k         0.0k     836.0M       1.2G       0.0k sda5
-</span></span></code></pre></div><p>We&rsquo;re seeing a lot of devices here which are showing to be inactive. We can easily hide those from view - rarely when debugging an issue do you want to see statistics for a device that isn&rsquo;t being used. To hide these, pass <code>-z</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>iostat -d -h -p ALL -z
-</span></span><span style="display:flex;"><span>Linux 5.4.0-72-generic <span style="color:#f92672">(</span>xerxes<span style="color:#f92672">)</span> 	30/12/22 	_x86_64_	<span style="color:#f92672">(</span><span style="color:#ae81ff">4</span> CPU<span style="color:#f92672">)</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>      tps    kB_read/s    kB_wrtn/s    kB_dscd/s    kB_read    kB_wrtn    kB_dscd Device
-</span></span><span style="display:flex;"><span>     4.84        72.1k       103.1k         0.0k     841.2M       1.2G       0.0k sda
-</span></span><span style="display:flex;"><span>     0.01         0.3k         0.0k         0.0k       3.1M       0.5k       0.0k sda1
-</span></span><span style="display:flex;"><span>     0.00         0.0k         0.0k         0.0k       2.0k       0.0k       0.0k sda2
-</span></span><span style="display:flex;"><span>     4.73        71.7k       103.1k         0.0k     836.0M       1.2G       0.0k sda5
-</span></span></code></pre></div><p>By analyzing this data, you can identify performance issues with your devices or partitions. For example, if the number of read or write operations is consistently high, it could indicate that the device or partition is heavily used and may be a bottleneck. Similarly, if the average time taken for each I/O operation is consistently high, it could indicate that the device or partition is struggling to keep up with demand.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ iostat -p ALL <span style="color:#ae81ff">2</span> <span style="color:#ae81ff">5</span>
+Linux 5.4.0-72-generic <span style="color:#f92672">(</span>myputer<span style="color:#f92672">)</span> 	30/12/22 	_x86_64_	<span style="color:#f92672">(</span><span style="color:#ae81ff">4</span> CPU<span style="color:#f92672">)</span>
+
+avg-cpu:  %user   %nice %system %iowait  %steal   %idle
+           1.40   15.48    4.48    0.99    0.00   77.66
+
+Device             tps    kB_read/s    kB_wrtn/s    kB_dscd/s    kB_read    kB_wrtn    kB_dscd
+loop0             0.00         0.00         0.00         0.00          <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">0</span>
+loop1             0.00         0.00         0.00         0.00          <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">0</span>
+loop2             0.00         0.00         0.00         0.00          <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">0</span>
+loop3             0.00         0.00         0.00         0.00          <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">0</span>
+loop4             0.00         0.00         0.00         0.00          <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">0</span>
+loop5             0.00         0.00         0.00         0.00          <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">0</span>
+loop6             0.00         0.00         0.00         0.00          <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">0</span>
+loop7             0.00         0.00         0.00         0.00          <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">0</span>
+sda               4.83        79.27       106.76         0.00     <span style="color:#ae81ff">858983</span>    <span style="color:#ae81ff">1156820</span>          <span style="color:#ae81ff">0</span>
+
+... repeat
+</code></pre></div><p>You can also get more simple summaries - for example, CPU utilization report:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ iostat -c
+Linux 5.4.0-72-generic <span style="color:#f92672">(</span>urputer<span style="color:#f92672">)</span> 	30/12/22 	_x86_64_	<span style="color:#f92672">(</span><span style="color:#ae81ff">4</span> CPU<span style="color:#f92672">)</span>
+
+avg-cpu:  %user   %nice %system %iowait  %steal   %idle
+           1.36   15.09    4.37    0.95    0.00   78.22
+</code></pre></div><p>Or a device utilization report:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">iostat -d -h -p ALL
+Linux 5.4.0-72-generic <span style="color:#f92672">(</span>xerxes<span style="color:#f92672">)</span> 	30/12/22 	_x86_64_	<span style="color:#f92672">(</span><span style="color:#ae81ff">4</span> CPU<span style="color:#f92672">)</span>
+
+      tps    kB_read/s    kB_wrtn/s    kB_dscd/s    kB_read    kB_wrtn    kB_dscd Device
+     0.00         0.0k         0.0k         0.0k       0.0k       0.0k       0.0k loop0
+     0.00         0.0k         0.0k         0.0k       0.0k       0.0k       0.0k loop1
+     0.00         0.0k         0.0k         0.0k       0.0k       0.0k       0.0k loop2
+     0.00         0.0k         0.0k         0.0k       0.0k       0.0k       0.0k loop3
+     0.00         0.0k         0.0k         0.0k       0.0k       0.0k       0.0k loop4
+     0.00         0.0k         0.0k         0.0k       0.0k       0.0k       0.0k loop5
+     0.00         0.0k         0.0k         0.0k       0.0k       0.0k       0.0k loop6
+     0.00         0.0k         0.0k         0.0k       0.0k       0.0k       0.0k loop7
+     4.82        73.5k       103.6k         0.0k     841.2M       1.2G       0.0k sda
+     0.01         0.3k         0.0k         0.0k       3.1M       0.5k       0.0k sda1
+     0.00         0.0k         0.0k         0.0k       2.0k       0.0k       0.0k sda2
+     4.71        73.1k       103.6k         0.0k     836.0M       1.2G       0.0k sda5
+</code></pre></div><p>We&rsquo;re seeing a lot of devices here which are showing to be inactive. We can easily hide those from view - rarely when debugging an issue do you want to see statistics for a device that isn&rsquo;t being used. To hide these, pass <code>-z</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">iostat -d -h -p ALL -z
+Linux 5.4.0-72-generic <span style="color:#f92672">(</span>xerxes<span style="color:#f92672">)</span> 	30/12/22 	_x86_64_	<span style="color:#f92672">(</span><span style="color:#ae81ff">4</span> CPU<span style="color:#f92672">)</span>
+
+      tps    kB_read/s    kB_wrtn/s    kB_dscd/s    kB_read    kB_wrtn    kB_dscd Device
+     4.84        72.1k       103.1k         0.0k     841.2M       1.2G       0.0k sda
+     0.01         0.3k         0.0k         0.0k       3.1M       0.5k       0.0k sda1
+     0.00         0.0k         0.0k         0.0k       2.0k       0.0k       0.0k sda2
+     4.73        71.7k       103.1k         0.0k     836.0M       1.2G       0.0k sda5
+</code></pre></div><p>By analyzing this data, you can identify performance issues with your devices or partitions. For example, if the number of read or write operations is consistently high, it could indicate that the device or partition is heavily used and may be a bottleneck. Similarly, if the average time taken for each I/O operation is consistently high, it could indicate that the device or partition is struggling to keep up with demand.</p>
 <p>A common problem that <code>iostat</code> can help identify is disk saturation, which occurs when a disk is being used to its maximum capacity and can&rsquo;t keep up with the demand for I/O operations. This can lead to slow performance and potential data loss. In <code>iostat</code> output this problem may manifest as a consistently high percentage of time the device is busy with I/O operations and a high average time taken for each I/O operation.</p>
 <h2 id="sar">sar<a href="#sar" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>When: general purpose. you think there&rsquo;s an issue with CPU, Memory, Network or Block devices. Can record findings to files on disk for comparisson later (which is the main selling point of <code>sar</code> over, say <code>vmstat</code>)</p>
 <p>The <code>sar</code> (System Activity Report) tool is a command-line utility in Linux that allows users to monitor various system performance metrics over time. It can be used to identify performance bottlenecks, track the usage of system resources, and troubleshoot issues on a Linux system.</p>
 <p>To use <code>sar</code>, you need to specify the interval at which you want to collect data and the system performance metrics you want to monitor. For example, the following command will display CPU utilization statistics every 2 seconds:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>sar <span style="color:#ae81ff">2</span>
-</span></span></code></pre></div><p>The output of sar will include various performance metrics, depending on the options you specify. Some of the metrics that sar can monitor include:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">sar <span style="color:#ae81ff">2</span>
+</code></pre></div><p>The output of sar will include various performance metrics, depending on the options you specify. Some of the metrics that sar can monitor include:</p>
 <ul>
 <li>CPU utilization</li>
 <li>Memory usage</li>
@@ -444,35 +444,35 @@
 </ul>
 <p>By analyzing this data, you can identify any performance issues with your system. For example, if the CPU utilization is consistently high, it could indicate that your system is struggling to keep up with demand and may be a bottleneck. Similarly, if the memory usage is consistently high, it could indicate that your system is running out of available memory.</p>
 <p><code>sar</code> stores its reports in <code>/var/log/sysstat/</code> by default and will look for files in this directory when you ask it for some reports. The file it looks for changes depending on the INTERVAL value passed to it. This can result in an error if a report isn&rsquo;t available from yesterday:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#75715e"># -B tells sar to create a report on paging statistics</span>
-</span></span><span style="display:flex;"><span>sar -B
-</span></span><span style="display:flex;"><span>Cannot open /var/log/sysstat/sa30: No such file or directory
-</span></span><span style="display:flex;"><span>Please check <span style="color:#66d9ef">if</span> data collecting is enabled
-</span></span></code></pre></div><p>You can specify <code>0</code> as the interval time which tells <code>sar</code> to use statistics for the time since the system was started:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>sar <span style="color:#ae81ff">0</span> -B
-</span></span><span style="display:flex;"><span>Linux 5.4.0-72-generic <span style="color:#f92672">(</span>herputer<span style="color:#f92672">)</span> 	30/12/22 	_x86_64_	<span style="color:#f92672">(</span><span style="color:#ae81ff">4</span> CPU<span style="color:#f92672">)</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>17:51:10     pgpgin/s pgpgout/s   fault/s  majflt/s  pgfree/s pgscank/s pgscand/s pgsteal/s    %vmeff
-</span></span><span style="display:flex;"><span>17:51:10        66.01     99.20   3074.99      0.38   1853.06      0.00      0.00      0.00      0.00
-</span></span></code></pre></div><p><code>sar</code> can also be used to report on I/O and transfer rate statistics:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>sar <span style="color:#ae81ff">0</span> -b
-</span></span><span style="display:flex;"><span>Linux 5.4.0-72-generic <span style="color:#f92672">(</span>hisputer<span style="color:#f92672">)</span> 	30/12/22 	_x86_64_	<span style="color:#f92672">(</span><span style="color:#ae81ff">4</span> CPU<span style="color:#f92672">)</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>17:53:49          tps      rtps      wtps      dtps   bread/s   bwrtn/s   bdscd/s
-</span></span><span style="display:flex;"><span>17:53:49         4.64      1.32      3.32      0.00    130.43    196.40      0.00
-</span></span></code></pre></div><p>&hellip; and block devices:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>sar <span style="color:#ae81ff">0</span> -d
-</span></span><span style="display:flex;"><span>Linux 5.4.0-72-generic <span style="color:#f92672">(</span>ourputer<span style="color:#f92672">)</span> 	30/12/22 	_x86_64_	<span style="color:#f92672">(</span><span style="color:#ae81ff">4</span> CPU<span style="color:#f92672">)</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>17:55:12          DEV       tps     rkB/s     wkB/s     dkB/s   areq-sz    aqu-sz     await     %util
-</span></span><span style="display:flex;"><span>17:55:12       dev8-0      4.63     64.81     97.66      0.00     35.13      0.05     11.69      2.11
-</span></span></code></pre></div><p>&hellip; and more. <code>sar</code> is a very powerful tool - please check out the man page for more info.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#75715e"># -B tells sar to create a report on paging statistics</span>
+sar -B
+Cannot open /var/log/sysstat/sa30: No such file or directory
+Please check <span style="color:#66d9ef">if</span> data collecting is enabled
+</code></pre></div><p>You can specify <code>0</code> as the interval time which tells <code>sar</code> to use statistics for the time since the system was started:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">sar <span style="color:#ae81ff">0</span> -B
+Linux 5.4.0-72-generic <span style="color:#f92672">(</span>herputer<span style="color:#f92672">)</span> 	30/12/22 	_x86_64_	<span style="color:#f92672">(</span><span style="color:#ae81ff">4</span> CPU<span style="color:#f92672">)</span>
+
+17:51:10     pgpgin/s pgpgout/s   fault/s  majflt/s  pgfree/s pgscank/s pgscand/s pgsteal/s    %vmeff
+17:51:10        66.01     99.20   3074.99      0.38   1853.06      0.00      0.00      0.00      0.00
+</code></pre></div><p><code>sar</code> can also be used to report on I/O and transfer rate statistics:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">sar <span style="color:#ae81ff">0</span> -b
+Linux 5.4.0-72-generic <span style="color:#f92672">(</span>hisputer<span style="color:#f92672">)</span> 	30/12/22 	_x86_64_	<span style="color:#f92672">(</span><span style="color:#ae81ff">4</span> CPU<span style="color:#f92672">)</span>
+
+17:53:49          tps      rtps      wtps      dtps   bread/s   bwrtn/s   bdscd/s
+17:53:49         4.64      1.32      3.32      0.00    130.43    196.40      0.00
+</code></pre></div><p>&hellip; and block devices:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">sar <span style="color:#ae81ff">0</span> -d
+Linux 5.4.0-72-generic <span style="color:#f92672">(</span>ourputer<span style="color:#f92672">)</span> 	30/12/22 	_x86_64_	<span style="color:#f92672">(</span><span style="color:#ae81ff">4</span> CPU<span style="color:#f92672">)</span>
+
+17:55:12          DEV       tps     rkB/s     wkB/s     dkB/s   areq-sz    aqu-sz     await     %util
+17:55:12       dev8-0      4.63     64.81     97.66      0.00     35.13      0.05     11.69      2.11
+</code></pre></div><p>&hellip; and more. <code>sar</code> is a very powerful tool - please check out the man page for more info.</p>
 <h2 id="vmstat">vmstat<a href="#vmstat" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>When: you think there&rsquo;s an issue with memory usage or I/O activity.</p>
 <p>The <code>vmstat</code> (Virtual Memory Statistics) tool is a command-line utility in Linux that allows users to monitor various system performance metrics, including memory usage and I/O activity. It can be used to identify performance bottlenecks, track the usage of system resources, and troubleshoot issues on a Linux system.</p>
 <p>To use <code>vmstat</code> you need to specify the interval at which you want to collect data. For example, the following command will display system performance statistics every 2 seconds:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>vmstat <span style="color:#ae81ff">2</span>
-</span></span></code></pre></div><p>The output of vmstat will include the following information:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">vmstat <span style="color:#ae81ff">2</span>
+</code></pre></div><p>The output of vmstat will include the following information:</p>
 <ul>
 <li>The number of processes in various states (e.g. running, waiting, blocked)</li>
 <li>The amount of memory being used, including the amount of available memory</li>
@@ -481,11 +481,11 @@
 </ul>
 <h2 id="free">free<a href="#free" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>When: you want to assess the state of memory on a machine.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>free -w -h
-</span></span><span style="display:flex;"><span>              total        used        free      shared     buffers       cache   available
-</span></span><span style="display:flex;"><span>Mem:           15Gi       1.1Gi        12Gi       224Mi        95Mi       1.4Gi        13Gi
-</span></span><span style="display:flex;"><span>Swap:         2.0Gi          0B       2.0Gi
-</span></span></code></pre></div><p>Here we see:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">free -w -h
+              total        used        free      shared     buffers       cache   available
+Mem:           15Gi       1.1Gi        12Gi       224Mi        95Mi       1.4Gi        13Gi
+Swap:         2.0Gi          0B       2.0Gi
+</code></pre></div><p>Here we see:</p>
 <ul>
 <li>The total amount of available and used memory</li>
 <li>The amount of used and available swap space (virtual memory on disk used to store data when the system&rsquo;s physical memory is full)</li>
@@ -495,13 +495,13 @@
 <p>When: you assume there&rsquo;s an issue with the block devices and want to first check everything is in place.</p>
 <p>The <code>lsblk</code> (List Block Devices) command is a command-line utility in Linux that allows users to view a list of block devices (e.g. hard drives, SSDs, USB drives) attached to their system. It can be used to view the available block devices, their mount points, and their partition layouts. You may want to use this tool to validate if block devices are available and mounted.</p>
 <p>To use <code>lsblk</code>, you simply need to enter the command followed by any desired options. The following command will display a list of all block devices on the system:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ lsblk -f
-</span></span><span style="display:flex;"><span>NAME   FSTYPE LABEL UUID                                 FSAVAIL FSUSE% MOUNTPOINT
-</span></span><span style="display:flex;"><span>sda
-</span></span><span style="display:flex;"><span>├─sda1 vfat         29C1-1F85                               511M     0% /boot/efi
-</span></span><span style="display:flex;"><span>├─sda2
-</span></span><span style="display:flex;"><span>└─sda5 ext4         e3a6ec94-05ab-4e15-a310-e5797a2c55e9    419G     3% /
-</span></span></code></pre></div><p>The output of lsblk will include the following information for each block device:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ lsblk -f
+NAME   FSTYPE LABEL UUID                                 FSAVAIL FSUSE% MOUNTPOINT
+sda
+├─sda1 vfat         29C1-1F85                               511M     0% /boot/efi
+├─sda2
+└─sda5 ext4         e3a6ec94-05ab-4e15-a310-e5797a2c55e9    419G     3% /
+</code></pre></div><p>The output of lsblk will include the following information for each block device:</p>
 <ul>
 <li>The device name (e.g. sda, sdb)</li>
 <li>The device type (e.g. disk, partition)</li>
@@ -513,10 +513,10 @@
 <p>When: you&rsquo;re aware of disk space issues and want to check the current availability.</p>
 <p>The <code>df</code> (Disk Free) command is a command-line utility in Linux that allows users to view the amount of available and used disk space on their system. It can be used to identify if a disk is approaching or at capacity.</p>
 <p>To use <code>df</code>, you simply need to enter the command followed by any desired options. The following command will display the total amount of available and used disk space on the system:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>df -h /
-</span></span><span style="display:flex;"><span>Filesystem      Size  Used Avail Use% Mounted on
-</span></span><span style="display:flex;"><span>/dev/sda5       457G   15G  420G   4% /
-</span></span></code></pre></div><p>The output of df will include the following information for each file system:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">df -h /
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda5       457G   15G  420G   4% /
+</code></pre></div><p>The output of df will include the following information for each file system:</p>
 <ul>
 <li>The file system name (e.g. /dev/sda1)</li>
 <li>The total size of the file system</li>
@@ -528,22 +528,22 @@
 <p>When: you are aware of a processing issue and want to understand which process it&rsquo;s coming from, or you want to drill into the process to understand why it&rsquo;s not performing to the expected standard.</p>
 <p>This tool allows users to monitor various performance metrics and events on their system. It can be used to identify performance bottlenecks, track the usage of system resources, and troubleshoot issues on a Linux system. Unlike the other tools in this article <code>perf</code> allows us to actually peek into the running program to see which parts of it are consuming cpu cycles. This is an incredibly valuable tool to have for those wanting to performance engineer on Linux and I have a practical example of this detailed in <a href="https://www.petermcconnell.com/posts/perf_eng_with_py12/">https://www.petermcconnell.com/posts/perf_eng_with_py12/</a>.</p>
 <p>To use <code>perf</code>, you need to specify the type of performance data you want to collect, as well as the specific events or metrics you want to monitor. To get general cpu profiling you can run:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>perf top -a
-</span></span></code></pre></div><p><img src="https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_top.jpg" alt="perf top example" title="perf top example"></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">perf top -a
+</code></pre></div><p><img src="https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_top.jpg" alt="perf top example" title="perf top example"></p>
 <p>Perf also allows you to gather performance statistics. For example, the following command will collect CPU performance data for the cpu-clock event:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>perf stat -e cpu-clock
-</span></span><span style="display:flex;"><span>^C
-</span></span><span style="display:flex;"><span> Performance counter stats <span style="color:#66d9ef">for</span> <span style="color:#e6db74">&#39;system wide&#39;</span>:
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>         11,633.97 msec cpu-clock                 <span style="color:#75715e">#    3.998 CPUs utilized</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>       2.909972618 seconds time elapsed
-</span></span></code></pre></div><p>The scope of what you can do with <code>perf</code> is huge - too large for this article, but I couldn&rsquo;t leave it off the list. Perhaps a <code>perf</code> deep dive article will come here soon &hellip;</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">perf stat -e cpu-clock
+^C
+ Performance counter stats <span style="color:#66d9ef">for</span> <span style="color:#e6db74">&#39;system wide&#39;</span>:
+
+         11,633.97 msec cpu-clock                 <span style="color:#75715e">#    3.998 CPUs utilized</span>
+
+       2.909972618 seconds time elapsed
+</code></pre></div><p>The scope of what you can do with <code>perf</code> is huge - too large for this article, but I couldn&rsquo;t leave it off the list. Perhaps a <code>perf</code> deep dive article will come here soon &hellip;</p>
 <h2 id="uptime">uptime<a href="#uptime" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>When: you want to get a quick understanding of system load over the past 1, 5, 15 minutes or want to see how long the machine has been up for.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>uptime
-</span></span><span style="display:flex;"><span>19:26:35 up  5:12,  <span style="color:#ae81ff">1</span> user,  load average: 0.33, 0.37, 0.37
-</span></span></code></pre></div><h2 id="further-reading">further reading<a href="#further-reading" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">uptime
+19:26:35 up  5:12,  <span style="color:#ae81ff">1</span> user,  load average: 0.33, 0.37, 0.37
+</code></pre></div><h2 id="further-reading">further reading<a href="#further-reading" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>The Linux Programming Interface book is a fantastic book to learn the Linux fundamentals. In particular it breaks down virtual memory into understandable chunks and also introduces some of the debugging tools mentioned in this article:</p>
 
 

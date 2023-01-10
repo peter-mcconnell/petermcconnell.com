@@ -23,8 +23,8 @@ debugging Python - the context This is the flow I take when faced with a new Pyt
 &lt;h2 id=&#34;what-are-the-requirements&#34;&gt;what are the requirements?&lt;/h2&gt;
 &lt;p&gt;The debugger of choice (for me) is &lt;code&gt;ipdb&lt;/code&gt;. The reasons for this are at the end of the article.&lt;/p&gt;
 &lt;p&gt;Install &lt;code&gt;ipdb&lt;/code&gt;:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;pip3 install --user ipdb
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We&amp;rsquo;ll also need to gather information from the &lt;code&gt;refining scope&lt;/code&gt; section below.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;pip3 install --user ipdb
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We&amp;rsquo;ll also need to gather information from the &lt;code&gt;refining scope&lt;/code&gt; section below.&lt;/p&gt;
 &lt;h2 id=&#34;refining-scope&#34;&gt;refining scope&lt;/h2&gt;
 &lt;p&gt;Often (my own usecase) my Python debugging story typically starts with: &amp;ldquo;This app is broken. It&amp;rsquo;s doing X&amp;rdquo; which tells me very little about what&amp;rsquo;s wrong and where to look. My first objective is to make the size of the problem statement as small / tight as possible. To do so, before I&amp;rsquo;ve looked at any code I try to do the following:&lt;/p&gt;
 &lt;ul&gt;
@@ -52,95 +52,95 @@ debugging Python - the context This is the flow I take when faced with a new Pyt
 &lt;p&gt;At this point I should have the confidence to know that the problem requires debugging.&lt;/p&gt;
 &lt;h2 id=&#34;example-application&#34;&gt;example application&lt;/h2&gt;
 &lt;p&gt;To get started create the following file. This is the simplest possible example I could create so as to keep signal/noise ratio in favour of the actual debugging steps:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#!/usr/bin/env python&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# main.py&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;doubleit&lt;/span&gt;(val):
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; val &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; __name__ &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;__main__&amp;#34;&lt;/span&gt;:
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 2: &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;%d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;, doubleit(&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;))
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 4: &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;%d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;, doubleit(&lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;))
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 8: &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;%d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;, doubleit(&lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt;))
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We&amp;rsquo;ll use this simple example for our debugging.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#!/usr/bin/env python&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# main.py&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;doubleit&lt;/span&gt;(val):
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; val &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; __name__ &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;__main__&amp;#34;&lt;/span&gt;:
+    print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 2: &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;%d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;, doubleit(&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;))
+    print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 4: &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;%d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;, doubleit(&lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;))
+    print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 8: &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;%d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;, doubleit(&lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt;))
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We&amp;rsquo;ll use this simple example for our debugging.&lt;/p&gt;
 &lt;h2 id=&#34;using-ipdb&#34;&gt;using ipdb&lt;/h2&gt;
 &lt;p&gt;From the information gathered earlier lets imagine the outputs were that the program above is spitting out the wrong values. We expect the &lt;code&gt;doubleit&lt;/code&gt; lines to show their values being doubled but instead they seem to be trebled (yes, it&amp;rsquo;s obvious why, but imagine this is a very large program and you don&amp;rsquo;t know why the output is what it is).&lt;/p&gt;
 &lt;p&gt;With that information to hand we can look for the &lt;code&gt;doubleit&lt;/code&gt; method and add set some breakpoints so that we can explore the program as it&amp;rsquo;s running to understand the state:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#!/usr/bin/env python&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# main.py&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;doubleit&lt;/span&gt;(val):
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; ipdb       &lt;span style=&#34;color:#75715e&#34;&gt;# &amp;lt; added this line&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    ipdb&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;set_trace()  &lt;span style=&#34;color:#75715e&#34;&gt;# &amp;lt; added this line&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; val &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; __name__ &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;__main__&amp;#34;&lt;/span&gt;:
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 2: &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;%d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;, doubleit(&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;))
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 4: &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;%d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;, doubleit(&lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;))
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 8: &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;%d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;, doubleit(&lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt;))
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can continue to add &lt;code&gt;ipdb.set_trace()&lt;/code&gt; points throughout our code. Generally speaking when I am running this for the first time I&amp;rsquo;ll tend to just drop one or two points in the codebase that I know are going to be in the path, with the expectation that I&amp;rsquo;ll manually step through the execution to learn how it flows. When we&amp;rsquo;ve added all of the breakpoints that we need we can instruct the program to run with &lt;code&gt;python main.py&lt;/code&gt;:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ python main.py
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;gt; /home/pete/go/src/github.com/peter-mcconnell/petermcconnell.com/assets/dummy/pydebug/main.py&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;6&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;doubleit&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;     ipdb.set_trace&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;----&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;     &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; val * &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#ae81ff&#34;&gt;7&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ipdb&amp;gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now we&amp;rsquo;ve ran our program with an attached debugger and it has paused execution at the breakpoint we set. We can run &lt;code&gt;args&lt;/code&gt; to see which arguments where passed to the method:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;gt; /home/pete/go/src/github.com/peter-mcconnell/petermcconnell.com/assets/dummy/pydebug/main.py&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;6&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;doubleit&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;     ipdb.set_trace&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;----&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;     &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; val * &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#ae81ff&#34;&gt;7&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ipdb&amp;gt; args
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;val &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;So in this point in the program we&amp;rsquo;re in the &lt;code&gt;doubleit&lt;/code&gt; method when it was invoked with a &lt;code&gt;val&lt;/code&gt; value of &lt;code&gt;2&lt;/code&gt;. We can print this and other variables using &lt;code&gt;p&lt;/code&gt;:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ipdb&amp;gt; p val
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;or just the variable name on its own:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ipdb&amp;gt; val
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can even call methods from this point:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ipdb&amp;gt; doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;6&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;18&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;To walk over the execution we can press &lt;code&gt;n&lt;/code&gt; to go to the next point of execution:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ipdb&amp;gt; doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;6&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;18&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ipdb&amp;gt; n
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;--Return--
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;gt; /home/pete/go/src/github.com/peter-mcconnell/petermcconnell.com/assets/dummy/pydebug/main.py&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;6&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;doubleit&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;     ipdb.set_trace&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;----&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;     &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; val * &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#ae81ff&#34;&gt;7&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and view the backtrace with &lt;code&gt;bt&lt;/code&gt;:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ipdb&amp;gt; bt
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  /home/pete/go/src/github.com/peter-mcconnell/petermcconnell.com/assets/dummy/pydebug/main.py&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;9&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;&amp;lt;module&amp;gt;&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; __name__ &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;__main__&amp;#34;&lt;/span&gt;:
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;----&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;9&lt;/span&gt;     print&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 2: %d&amp;#34;&lt;/span&gt;, doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;2&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;     print&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 4: %d&amp;#34;&lt;/span&gt;, doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;4&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;gt; /home/pete/go/src/github.com/peter-mcconnell/petermcconnell.com/assets/dummy/pydebug/main.py&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;6&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;doubleit&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;     ipdb.set_trace&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;----&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;     &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; val * &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#ae81ff&#34;&gt;7&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;To view the code around the current point of execution just press &lt;code&gt;l&lt;/code&gt;:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ipdb&amp;gt; l
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;#!/usr/bin/env python&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;# main.py&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt; def doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;val&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;:
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;     import ipdb
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;     ipdb.set_trace&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;----&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;     &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; val * &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#ae81ff&#34;&gt;7&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; __name__ &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;__main__&amp;#34;&lt;/span&gt;:
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#ae81ff&#34;&gt;9&lt;/span&gt;     print&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 2: %d&amp;#34;&lt;/span&gt;, doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;2&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;     print&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 4: %d&amp;#34;&lt;/span&gt;, doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;4&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     &lt;span style=&#34;color:#ae81ff&#34;&gt;11&lt;/span&gt;     print&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 8: %d&amp;#34;&lt;/span&gt;, doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;8&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Which of course shows our very hard to find logic error, &lt;code&gt;* 3&lt;/code&gt; instead of &lt;code&gt;* 2&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#!/usr/bin/env python&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# main.py&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;doubleit&lt;/span&gt;(val):
+    &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; ipdb       &lt;span style=&#34;color:#75715e&#34;&gt;# &amp;lt; added this line&lt;/span&gt;
+    ipdb&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;set_trace()  &lt;span style=&#34;color:#75715e&#34;&gt;# &amp;lt; added this line&lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; val &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; __name__ &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;__main__&amp;#34;&lt;/span&gt;:
+    print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 2: &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;%d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;, doubleit(&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;))
+    print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 4: &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;%d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;, doubleit(&lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;))
+    print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 8: &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;%d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;, doubleit(&lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt;))
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can continue to add &lt;code&gt;ipdb.set_trace()&lt;/code&gt; points throughout our code. Generally speaking when I am running this for the first time I&amp;rsquo;ll tend to just drop one or two points in the codebase that I know are going to be in the path, with the expectation that I&amp;rsquo;ll manually step through the execution to learn how it flows. When we&amp;rsquo;ve added all of the breakpoints that we need we can instruct the program to run with &lt;code&gt;python main.py&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ python main.py
+&amp;gt; /home/pete/go/src/github.com/peter-mcconnell/petermcconnell.com/assets/dummy/pydebug/main.py&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;6&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;doubleit&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt;
+      &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;     ipdb.set_trace&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt;
+----&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;     &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; val * &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;
+      &lt;span style=&#34;color:#ae81ff&#34;&gt;7&lt;/span&gt;
+
+ipdb&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now we&amp;rsquo;ve ran our program with an attached debugger and it has paused execution at the breakpoint we set. We can run &lt;code&gt;args&lt;/code&gt; to see which arguments where passed to the method:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&amp;gt; /home/pete/go/src/github.com/peter-mcconnell/petermcconnell.com/assets/dummy/pydebug/main.py&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;6&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;doubleit&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt;
+      &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;     ipdb.set_trace&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt;
+----&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;     &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; val * &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;
+      &lt;span style=&#34;color:#ae81ff&#34;&gt;7&lt;/span&gt;
+
+ipdb&amp;gt; args
+val &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;So in this point in the program we&amp;rsquo;re in the &lt;code&gt;doubleit&lt;/code&gt; method when it was invoked with a &lt;code&gt;val&lt;/code&gt; value of &lt;code&gt;2&lt;/code&gt;. We can print this and other variables using &lt;code&gt;p&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;ipdb&amp;gt; p val
+&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;or just the variable name on its own:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;ipdb&amp;gt; val
+&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can even call methods from this point:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;ipdb&amp;gt; doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;6&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+&lt;span style=&#34;color:#ae81ff&#34;&gt;18&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;To walk over the execution we can press &lt;code&gt;n&lt;/code&gt; to go to the next point of execution:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;ipdb&amp;gt; doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;6&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+&lt;span style=&#34;color:#ae81ff&#34;&gt;18&lt;/span&gt;
+ipdb&amp;gt; n
+--Return--
+&lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;
+&amp;gt; /home/pete/go/src/github.com/peter-mcconnell/petermcconnell.com/assets/dummy/pydebug/main.py&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;6&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;doubleit&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt;
+      &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;     ipdb.set_trace&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt;
+----&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;     &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; val * &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;
+      &lt;span style=&#34;color:#ae81ff&#34;&gt;7&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and view the backtrace with &lt;code&gt;bt&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;ipdb&amp;gt; bt
+  /home/pete/go/src/github.com/peter-mcconnell/petermcconnell.com/assets/dummy/pydebug/main.py&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;9&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;&amp;lt;module&amp;gt;&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt;
+      &lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; __name__ &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;__main__&amp;#34;&lt;/span&gt;:
+----&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;9&lt;/span&gt;     print&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 2: %d&amp;#34;&lt;/span&gt;, doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;2&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;
+     &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;     print&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 4: %d&amp;#34;&lt;/span&gt;, doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;4&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;
+
+&lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;
+&amp;gt; /home/pete/go/src/github.com/peter-mcconnell/petermcconnell.com/assets/dummy/pydebug/main.py&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;6&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;doubleit&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt;
+      &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;     ipdb.set_trace&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt;
+----&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;     &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; val * &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;
+      &lt;span style=&#34;color:#ae81ff&#34;&gt;7&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;To view the code around the current point of execution just press &lt;code&gt;l&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;ipdb&amp;gt; l
+      &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;#!/usr/bin/env python&lt;/span&gt;
+      &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;# main.py&lt;/span&gt;
+      &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt; def doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;val&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;:
+      &lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;     import ipdb
+      &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;     ipdb.set_trace&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt;
+----&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;     &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; val * &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;
+      &lt;span style=&#34;color:#ae81ff&#34;&gt;7&lt;/span&gt;
+      &lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; __name__ &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;__main__&amp;#34;&lt;/span&gt;:
+      &lt;span style=&#34;color:#ae81ff&#34;&gt;9&lt;/span&gt;     print&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 2: %d&amp;#34;&lt;/span&gt;, doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;2&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;
+     &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;     print&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 4: %d&amp;#34;&lt;/span&gt;, doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;4&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;
+     &lt;span style=&#34;color:#ae81ff&#34;&gt;11&lt;/span&gt;     print&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 8: %d&amp;#34;&lt;/span&gt;, doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;8&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Which of course shows our very hard to find logic error, &lt;code&gt;* 3&lt;/code&gt; instead of &lt;code&gt;* 2&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;Note: you can also set breakpoints in the stdlib functions (paths will vary depending on your setup):&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ipdb&amp;gt; b /home/pete/.local/lib/python3.10/site-packages/requests/api.py:14
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Breakpoint &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; at /home/pete/.local/lib/python3.10/site-packages/requests/api.py:14
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;debug-flow&#34;&gt;debug flow&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;ipdb&amp;gt; b /home/pete/.local/lib/python3.10/site-packages/requests/api.py:14
+Breakpoint &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; at /home/pete/.local/lib/python3.10/site-packages/requests/api.py:14
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;debug-flow&#34;&gt;debug flow&lt;/h2&gt;
 &lt;p&gt;Using the commands above I can begin my cyclic process of narrowing in on the fix:&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;repro -&amp;gt; explore -&amp;gt; understand -&amp;gt; tweak -&amp;gt; repeat&lt;/p&gt;
@@ -211,84 +211,84 @@ The Linux perf profiler is a very powerful tool that allows you to profile and o
 &amp;quot;&amp;quot;&amp;quot;&lt;/p&gt;
 &lt;h2 id=&#34;writing-a-bad-program&#34;&gt;writing a &amp;ldquo;bad&amp;rdquo; program&lt;/h2&gt;
 &lt;p&gt;I&amp;rsquo;m excited to try this, so lets get going. Firstly lets create a python script for us to profile. I&amp;rsquo;m doing this before installing Python 3.12 as I want to create a FlameGraph of how this process looks in 3.10 verses 3.12. Here we have a script that attempts to perform lookups against a large list:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; time
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;run_dummy&lt;/span&gt;(numbers):
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; findme &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; range(&lt;span style=&#34;color:#ae81ff&#34;&gt;100000&lt;/span&gt;):
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; findme &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; numbers:
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;found&amp;#34;&lt;/span&gt;, findme)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt;:
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;missed&amp;#34;&lt;/span&gt;, findme)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; __name__ &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;__main__&amp;#34;&lt;/span&gt;:
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# create a large sized input to show off inefficiency&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    numbers &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [i &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; i &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; range(&lt;span style=&#34;color:#ae81ff&#34;&gt;20000000&lt;/span&gt;)]
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    start_time &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; time&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;time()  &lt;span style=&#34;color:#75715e&#34;&gt;# get the current time [start]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    run_dummy(numbers)  &lt;span style=&#34;color:#75715e&#34;&gt;# run our inefficient method&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    end_time &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; time&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;time()  &lt;span style=&#34;color:#75715e&#34;&gt;# get the current time [end]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    duration &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; end_time &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; start_time  &lt;span style=&#34;color:#75715e&#34;&gt;# Calculate the duration&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    print(&lt;span style=&#34;color:#e6db74&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Duration: &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;duration&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; seconds&amp;#34;&lt;/span&gt;)  &lt;span style=&#34;color:#75715e&#34;&gt;# Print the duration&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Running this I get the following result:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;python3.10 assets/dummy/perf_py_proj/before.py
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;...
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;found &lt;span style=&#34;color:#ae81ff&#34;&gt;99992&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;found &lt;span style=&#34;color:#ae81ff&#34;&gt;99993&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;found &lt;span style=&#34;color:#ae81ff&#34;&gt;99994&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;found &lt;span style=&#34;color:#ae81ff&#34;&gt;99995&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;found &lt;span style=&#34;color:#ae81ff&#34;&gt;99996&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;found &lt;span style=&#34;color:#ae81ff&#34;&gt;99997&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;found &lt;span style=&#34;color:#ae81ff&#34;&gt;99998&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;found &lt;span style=&#34;color:#ae81ff&#34;&gt;99999&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Duration: 36.06884431838989 seconds
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;36 seconds is bad enough for us to pick up a reasonable amount of samples.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; time
+
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;run_dummy&lt;/span&gt;(numbers):
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; findme &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; range(&lt;span style=&#34;color:#ae81ff&#34;&gt;100000&lt;/span&gt;):
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; findme &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; numbers:
+            print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;found&amp;#34;&lt;/span&gt;, findme)
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt;:
+            print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;missed&amp;#34;&lt;/span&gt;, findme)
+
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; __name__ &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;__main__&amp;#34;&lt;/span&gt;:
+    &lt;span style=&#34;color:#75715e&#34;&gt;# create a large sized input to show off inefficiency&lt;/span&gt;
+    numbers &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [i &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; i &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; range(&lt;span style=&#34;color:#ae81ff&#34;&gt;20000000&lt;/span&gt;)]
+
+    start_time &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; time&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;time()  &lt;span style=&#34;color:#75715e&#34;&gt;# get the current time [start]&lt;/span&gt;
+    run_dummy(numbers)  &lt;span style=&#34;color:#75715e&#34;&gt;# run our inefficient method&lt;/span&gt;
+    end_time &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; time&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;time()  &lt;span style=&#34;color:#75715e&#34;&gt;# get the current time [end]&lt;/span&gt;
+
+    duration &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; end_time &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; start_time  &lt;span style=&#34;color:#75715e&#34;&gt;# Calculate the duration&lt;/span&gt;
+    print(&lt;span style=&#34;color:#e6db74&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Duration: &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;duration&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; seconds&amp;#34;&lt;/span&gt;)  &lt;span style=&#34;color:#75715e&#34;&gt;# Print the duration&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Running this I get the following result:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;python3.10 assets/dummy/perf_py_proj/before.py
+...
+found &lt;span style=&#34;color:#ae81ff&#34;&gt;99992&lt;/span&gt;
+found &lt;span style=&#34;color:#ae81ff&#34;&gt;99993&lt;/span&gt;
+found &lt;span style=&#34;color:#ae81ff&#34;&gt;99994&lt;/span&gt;
+found &lt;span style=&#34;color:#ae81ff&#34;&gt;99995&lt;/span&gt;
+found &lt;span style=&#34;color:#ae81ff&#34;&gt;99996&lt;/span&gt;
+found &lt;span style=&#34;color:#ae81ff&#34;&gt;99997&lt;/span&gt;
+found &lt;span style=&#34;color:#ae81ff&#34;&gt;99998&lt;/span&gt;
+found &lt;span style=&#34;color:#ae81ff&#34;&gt;99999&lt;/span&gt;
+Duration: 36.06884431838989 seconds
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;36 seconds is bad enough for us to pick up a reasonable amount of samples.&lt;/p&gt;
 &lt;h2 id=&#34;flamegraphs&#34;&gt;flamegraphs!&lt;/h2&gt;
 &lt;p&gt;Now we can create our &lt;a href=&#34;https://github.com/brendangregg/FlameGraph&#34;&gt;FlameGraph&lt;/a&gt;:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# record profile to &amp;#34;perf.data&amp;#34; file (default output)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;perf record -F &lt;span style=&#34;color:#ae81ff&#34;&gt;99&lt;/span&gt; -g -- python3.10 assets/dummy/perf_py_proj/before.py
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# read perf.data (created above) and display trace output&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;perf script &amp;gt; out.perf
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# fold stack samples into single lines&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# here I reference ~/FlameGraph/ - you can get this from https://github.com/brendangregg/FlameGraph&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;~/FlameGraph/stackcollapse-perf.pl out.perf &amp;gt; out.folded
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# generate flamegraph&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;~/FlameGraph/flamegraph.pl out.folded &amp;gt; ./assets/perf_example_python3.10.svg
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This gives us a nice SVG that visualises the traces:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# record profile to &amp;#34;perf.data&amp;#34; file (default output)&lt;/span&gt;
+perf record -F &lt;span style=&#34;color:#ae81ff&#34;&gt;99&lt;/span&gt; -g -- python3.10 assets/dummy/perf_py_proj/before.py
+&lt;span style=&#34;color:#75715e&#34;&gt;# read perf.data (created above) and display trace output&lt;/span&gt;
+perf script &amp;gt; out.perf
+&lt;span style=&#34;color:#75715e&#34;&gt;# fold stack samples into single lines&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# here I reference ~/FlameGraph/ - you can get this from https://github.com/brendangregg/FlameGraph&lt;/span&gt;
+~/FlameGraph/stackcollapse-perf.pl out.perf &amp;gt; out.folded
+&lt;span style=&#34;color:#75715e&#34;&gt;# generate flamegraph&lt;/span&gt;
+~/FlameGraph/flamegraph.pl out.folded &amp;gt; ./assets/perf_example_python3.10.svg
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This gives us a nice SVG that visualises the traces:&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_example_python3.10.svg&#34; alt=&#34;python 3.10 perf flamegraph&#34; title=&#34;python 3.10 perf flamegraph&#34;&gt;&lt;/p&gt;
 &lt;p&gt;This isn&amp;rsquo;t useful &amp;hellip; I can see most of the time was spent in &amp;ldquo;new_keys_object.lto_priv.0&amp;rdquo; but that is meaningless in the context of the code.&lt;/p&gt;
 &lt;h2 id=&#34;time-for-python-312&#34;&gt;time for Python 3.12&amp;hellip;&lt;/h2&gt;
 &lt;p&gt;First I need to install it - the steps for this vary depending on OS - follow the build instructions here for your environment: &lt;a href=&#34;https://github.com/python/cpython/tree/v3.12.0a3#build-instructions&#34;&gt;https://github.com/python/cpython/tree/v3.12.0a3#build-instructions&lt;/a&gt;&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# for me on ubuntu:22.04&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# ensure I have python3-dbg installed&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo apt-get install python3-dbg
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# build python&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;export CFLAGS&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;-fno-omit-frame-pointer -mno-omit-leaf-frame-pointer&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;./configure --enable-optimizations
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;make
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;make test
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo make install
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;unset CFLAGS
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# after this I reset my systems python3 symlink to 3.10 as 3.12 isn&amp;#39;t yet stable&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# for testing python3.12 I&amp;#39;ll call &amp;#34;python3.12&amp;#34; instead of &amp;#34;python3&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ln -sf /usr/local/bin/python3.10 /usr/local/bin/python3
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;With that installed I first need to enable perf support. This is detailed in &lt;a href=&#34;https://docs.python.org/3.12/howto/perf_profiling.html&#34;&gt;https://docs.python.org/3.12/howto/perf_profiling.html&lt;/a&gt; and there are three options: 1) an environment variable, 2) an -X option or 3) dynamically using &lt;code&gt;sys&lt;/code&gt;. I&amp;rsquo;ll go for the environment variable approach as I don&amp;rsquo;t mind &lt;em&gt;everything&lt;/em&gt; being profiled for a small script:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;export PYTHONPERFSUPPORT&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now we simply repeat the process above using the &lt;code&gt;python3.12&lt;/code&gt; binary instead:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# record profile to &amp;#34;perf.data&amp;#34; file (default output)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;perf record -F &lt;span style=&#34;color:#ae81ff&#34;&gt;99&lt;/span&gt; -g -- python3.12 assets/dummy/perf_py_proj/before.py
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# read perf.data (created above) and display trace output&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;perf script &amp;gt; out.perf
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# fold stack samples into single lines&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# here I reference ~/FlameGraph/ - you can get this from https://github.com/brendangregg/FlameGraph&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;~/FlameGraph/stackcollapse-perf.pl out.perf &amp;gt; out.folded
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# generate flamegraph&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;~/FlameGraph/flamegraph.pl out.folded &amp;gt; ./assets/perf_example_python3.12.before.svg
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;First we&amp;rsquo;ll take a peek at the report with &lt;code&gt;perf report -g -i perf.data&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# for me on ubuntu:22.04&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# ensure I have python3-dbg installed&lt;/span&gt;
+sudo apt-get install python3-dbg
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# build python&lt;/span&gt;
+export CFLAGS&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;-fno-omit-frame-pointer -mno-omit-leaf-frame-pointer&amp;#34;&lt;/span&gt;
+./configure --enable-optimizations
+make
+make test
+sudo make install
+unset CFLAGS
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# after this I reset my systems python3 symlink to 3.10 as 3.12 isn&amp;#39;t yet stable&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# for testing python3.12 I&amp;#39;ll call &amp;#34;python3.12&amp;#34; instead of &amp;#34;python3&amp;#34;&lt;/span&gt;
+ln -sf /usr/local/bin/python3.10 /usr/local/bin/python3
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;With that installed I first need to enable perf support. This is detailed in &lt;a href=&#34;https://docs.python.org/3.12/howto/perf_profiling.html&#34;&gt;https://docs.python.org/3.12/howto/perf_profiling.html&lt;/a&gt; and there are three options: 1) an environment variable, 2) an -X option or 3) dynamically using &lt;code&gt;sys&lt;/code&gt;. I&amp;rsquo;ll go for the environment variable approach as I don&amp;rsquo;t mind &lt;em&gt;everything&lt;/em&gt; being profiled for a small script:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;export PYTHONPERFSUPPORT&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now we simply repeat the process above using the &lt;code&gt;python3.12&lt;/code&gt; binary instead:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# record profile to &amp;#34;perf.data&amp;#34; file (default output)&lt;/span&gt;
+perf record -F &lt;span style=&#34;color:#ae81ff&#34;&gt;99&lt;/span&gt; -g -- python3.12 assets/dummy/perf_py_proj/before.py
+&lt;span style=&#34;color:#75715e&#34;&gt;# read perf.data (created above) and display trace output&lt;/span&gt;
+perf script &amp;gt; out.perf
+&lt;span style=&#34;color:#75715e&#34;&gt;# fold stack samples into single lines&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# here I reference ~/FlameGraph/ - you can get this from https://github.com/brendangregg/FlameGraph&lt;/span&gt;
+~/FlameGraph/stackcollapse-perf.pl out.perf &amp;gt; out.folded
+&lt;span style=&#34;color:#75715e&#34;&gt;# generate flamegraph&lt;/span&gt;
+~/FlameGraph/flamegraph.pl out.folded &amp;gt; ./assets/perf_example_python3.12.before.svg
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;First we&amp;rsquo;ll take a peek at the report with &lt;code&gt;perf report -g -i perf.data&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_report.png&#34; alt=&#34;python 3.12 perf report output&#34; title=&#34;python 3.12 perf report&#34;&gt;&lt;/p&gt;
 &lt;p&gt;Awesome! We can see our Python function names and script names!&lt;/p&gt;
 &lt;p&gt;Now we can take a look at the updated SVG that visualises the traces with Python 3.12:&lt;/p&gt;
@@ -297,63 +297,63 @@ The Linux perf profiler is a very powerful tool that allows you to profile and o
 &lt;h2 id=&#34;investigation-time--the-fix&#34;&gt;investigation time / the fix&lt;/h2&gt;
 &lt;p&gt;Now that we know where in our code the problem is, we can take a look at the source code in CPython to see why the &lt;code&gt;list_contains&lt;/code&gt; method would be so slow: &lt;a href=&#34;https://github.com/python/cpython/blob/199507b81a302ea19f93593965b1e5088195a6c5/Objects/listobject.c#L440&#34;&gt;https://github.com/python/cpython/blob/199507b81a302ea19f93593965b1e5088195a6c5/Objects/listobject.c#L440&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;em&gt;note: you may not always have access to the source code - in circumstances such as this you can view the disassembly in perf report directly to get some idea of what&amp;rsquo;s going on. I&amp;rsquo;ll add a quick section at the end showing how this looks&lt;/em&gt;&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// I found this by going to https://github.com/python/cpython/ and searching for &amp;#34;list_contains&amp;#34;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;static&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;list_contains&lt;/span&gt;(PyListObject &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;a, PyObject &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;el)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    PyObject &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;item;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Py_ssize_t i;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; cmp;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; (i &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, cmp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; ; cmp &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; i &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Py_SIZE&lt;/span&gt;(a); &lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt;i) {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        item &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;PyList_GET_ITEM&lt;/span&gt;(a, i);
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#a6e22e&#34;&gt;Py_INCREF&lt;/span&gt;(item);
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        cmp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;PyObject_RichCompareBool&lt;/span&gt;(item, el, Py_EQ);
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#a6e22e&#34;&gt;Py_DECREF&lt;/span&gt;(item);
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; cmp;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Nasty&amp;hellip; looking at this code I can see that each time it is invoked it iterates over the array and performs a comparison against each item. That&amp;rsquo;s far from ideal for our usecase, so lets go back to the Python code we wrote. Our Flamegraph shows us that the problem is in our &lt;code&gt;run_dummy&lt;/code&gt; method:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;run_dummy&lt;/span&gt;(numbers):
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; findme &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; range(&lt;span style=&#34;color:#ae81ff&#34;&gt;100000&lt;/span&gt;):
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; findme &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; numbers:  &lt;span style=&#34;color:#75715e&#34;&gt;#  &amp;lt;- this is what triggers list_contains&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;found&amp;#34;&lt;/span&gt;, findme)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt;:
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;missed&amp;#34;&lt;/span&gt;, findme)
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can&amp;rsquo;t really change that line as it is doing what we want it to do - identifying if an integer is in &lt;code&gt;numbers&lt;/code&gt;. Perhaps we can change the &lt;code&gt;numbers&lt;/code&gt; data type to one better suited to lookups. In our existing code we have:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    numbers &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [i &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; i &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; range(&lt;span style=&#34;color:#ae81ff&#34;&gt;20000000&lt;/span&gt;)]
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    start_time &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; time&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;time()  &lt;span style=&#34;color:#75715e&#34;&gt;# get the current time [start]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    run_dummy(numbers)  &lt;span style=&#34;color:#75715e&#34;&gt;# run our inefficient method&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Here we used a LIST data type for our &amp;ldquo;numbers&amp;rdquo;, which under the hood (in CPython) is implemented as dynamically-sized arrays and as such are nowhere near as efficient (O(N)) as the likes of a Hashtable for looking up an item (which is O(1)). A SET on the other hand (another Python data type) is implemented as a Hashtable and would give us the fast lookup we&amp;rsquo;re looking for. Lets change the data type in our Python code and see what the impact is:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# we&amp;#39;ll just change this line, casting numbers to a set before running run_dummy&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    run_dummy(set(numbers))  &lt;span style=&#34;color:#75715e&#34;&gt;# passing a set() for fast lookups&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now we can repeat the steps as above to generate our new flamegraph:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# record profile to &amp;#34;perf.data&amp;#34; file (default output)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;perf record -F &lt;span style=&#34;color:#ae81ff&#34;&gt;99&lt;/span&gt; -g -- python3.12 assets/dummy/perf_py_proj/after.py
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;...
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;found &lt;span style=&#34;color:#ae81ff&#34;&gt;99998&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;found &lt;span style=&#34;color:#ae81ff&#34;&gt;99999&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Duration: 0.8350753784179688 seconds
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt; perf record: Woken up &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; times to write data &lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt; perf record: Captured and wrote 0.039 MB perf.data &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;134&lt;/span&gt; samples&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Already we can see that things have massively improved. Where previously this was taking 36 seconds to run it is now taking 0.8 seconds! Lets continue creating our flamegraph for the new improved code:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# read perf.data (created above) and display trace output&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;perf script &amp;gt; out.perf
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# fold stack samples into single lines&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# here I reference ~/FlameGraph/ - you can get this from https://github.com/brendangregg/FlameGraph&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;~/FlameGraph/stackcollapse-perf.pl out.perf &amp;gt; out.folded
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# generate flamegraph&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;~/FlameGraph/flamegraph.pl out.folded &amp;gt; ./assets/perf_example_python3.12.after.svg
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_example_python3.12.after.svg&#34; alt=&#34;python 3.12 perf flamegraph improved&#34; title=&#34;python 3.12 perf flamegraph improved&#34;&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// I found this by going to https://github.com/python/cpython/ and searching for &amp;#34;list_contains&amp;#34;
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;static&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt;
+&lt;span style=&#34;color:#a6e22e&#34;&gt;list_contains&lt;/span&gt;(PyListObject &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;a, PyObject &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;el)
+{
+    PyObject &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;item;
+    Py_ssize_t i;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; cmp;
+
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; (i &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, cmp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; ; cmp &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; i &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; Py_SIZE(a); &lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt;i) {
+        item &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; PyList_GET_ITEM(a, i);
+        Py_INCREF(item);
+        cmp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; PyObject_RichCompareBool(item, el, Py_EQ);
+        Py_DECREF(item);
+    }
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; cmp;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Nasty&amp;hellip; looking at this code I can see that each time it is invoked it iterates over the array and performs a comparison against each item. That&amp;rsquo;s far from ideal for our usecase, so lets go back to the Python code we wrote. Our Flamegraph shows us that the problem is in our &lt;code&gt;run_dummy&lt;/code&gt; method:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;run_dummy&lt;/span&gt;(numbers):
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; findme &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; range(&lt;span style=&#34;color:#ae81ff&#34;&gt;100000&lt;/span&gt;):
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; findme &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; numbers:  &lt;span style=&#34;color:#75715e&#34;&gt;#  &amp;lt;- this is what triggers list_contains&lt;/span&gt;
+            print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;found&amp;#34;&lt;/span&gt;, findme)
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt;:
+            print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;missed&amp;#34;&lt;/span&gt;, findme)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can&amp;rsquo;t really change that line as it is doing what we want it to do - identifying if an integer is in &lt;code&gt;numbers&lt;/code&gt;. Perhaps we can change the &lt;code&gt;numbers&lt;/code&gt; data type to one better suited to lookups. In our existing code we have:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;    numbers &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [i &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; i &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; range(&lt;span style=&#34;color:#ae81ff&#34;&gt;20000000&lt;/span&gt;)]
+
+    start_time &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; time&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;time()  &lt;span style=&#34;color:#75715e&#34;&gt;# get the current time [start]&lt;/span&gt;
+    run_dummy(numbers)  &lt;span style=&#34;color:#75715e&#34;&gt;# run our inefficient method&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Here we used a LIST data type for our &amp;ldquo;numbers&amp;rdquo;, which under the hood (in CPython) is implemented as dynamically-sized arrays and as such are nowhere near as efficient (O(N)) as the likes of a Hashtable for looking up an item (which is O(1)). A SET on the other hand (another Python data type) is implemented as a Hashtable and would give us the fast lookup we&amp;rsquo;re looking for. Lets change the data type in our Python code and see what the impact is:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# we&amp;#39;ll just change this line, casting numbers to a set before running run_dummy&lt;/span&gt;
+    run_dummy(set(numbers))  &lt;span style=&#34;color:#75715e&#34;&gt;# passing a set() for fast lookups&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now we can repeat the steps as above to generate our new flamegraph:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# record profile to &amp;#34;perf.data&amp;#34; file (default output)&lt;/span&gt;
+perf record -F &lt;span style=&#34;color:#ae81ff&#34;&gt;99&lt;/span&gt; -g -- python3.12 assets/dummy/perf_py_proj/after.py
+...
+found &lt;span style=&#34;color:#ae81ff&#34;&gt;99998&lt;/span&gt;
+found &lt;span style=&#34;color:#ae81ff&#34;&gt;99999&lt;/span&gt;
+Duration: 0.8350753784179688 seconds
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt; perf record: Woken up &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; times to write data &lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt; perf record: Captured and wrote 0.039 MB perf.data &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;134&lt;/span&gt; samples&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Already we can see that things have massively improved. Where previously this was taking 36 seconds to run it is now taking 0.8 seconds! Lets continue creating our flamegraph for the new improved code:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# read perf.data (created above) and display trace output&lt;/span&gt;
+perf script &amp;gt; out.perf
+&lt;span style=&#34;color:#75715e&#34;&gt;# fold stack samples into single lines&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# here I reference ~/FlameGraph/ - you can get this from https://github.com/brendangregg/FlameGraph&lt;/span&gt;
+~/FlameGraph/stackcollapse-perf.pl out.perf &amp;gt; out.folded
+&lt;span style=&#34;color:#75715e&#34;&gt;# generate flamegraph&lt;/span&gt;
+~/FlameGraph/flamegraph.pl out.folded &amp;gt; ./assets/perf_example_python3.12.after.svg
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_example_python3.12.after.svg&#34; alt=&#34;python 3.12 perf flamegraph improved&#34; title=&#34;python 3.12 perf flamegraph improved&#34;&gt;&lt;/p&gt;
 &lt;p&gt;This is a much healthier looking Flamegraph and our application is now much faster as a result. The perf profiling support in Python 3.12 brings a tremendously useful tool to software engineers that want to deliver fast programs and I&amp;rsquo;m excited to see the impact this will have on the language.&lt;/p&gt;
 &lt;h2 id=&#34;bonus-round-what-to-do-when-you-cant-access-the-source-code&#34;&gt;bonus round: what to do when you can&amp;rsquo;t access the source code?&lt;/h2&gt;
 &lt;p&gt;Sometimes you don&amp;rsquo;t have access to the underlying code which can make trying to understand what&amp;rsquo;s going on much more difficult. Thankfully &lt;code&gt;perf report&lt;/code&gt; allows us to view the dissassembled code which can help paint a picture of what the machine is actually doing. This is a reasonable first place to look - I tend to prefer the source code if I can get hold of it as it allows me to &lt;code&gt;git blame&lt;/code&gt; / view the associated commits and PRs. To view this you can do the following:&lt;/p&gt;
 &lt;p&gt;Open the perf report and select the line we&amp;rsquo;re interested in:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# this assumes we have already ran &amp;#39;perf record&amp;#39; to generate perf.data ...&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;perf report -g -i perf.data
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_report_dis.1.png&#34; alt=&#34;perf report dissassembly&#34; title=&#34;perf report dissassembly&#34;&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# this assumes we have already ran &amp;#39;perf record&amp;#39; to generate perf.data ...&lt;/span&gt;
+perf report -g -i perf.data
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_report_dis.1.png&#34; alt=&#34;perf report dissassembly&#34; title=&#34;perf report dissassembly&#34;&gt;&lt;/p&gt;
 &lt;p&gt;Press enter and choose the annotate option:&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_report_dis.2.png&#34; alt=&#34;perf report dissassembly&#34; title=&#34;perf report dissassembly&#34;&gt;&lt;/p&gt;
 &lt;p&gt;Behold! Here we can see both the C code and the machine instructions. Super useful! You can compare the screenshot below against the code snippet we&amp;rsquo;re interested in: &lt;a href=&#34;https://github.com/python/cpython/blob/199507b81a302ea19f93593965b1e5088195a6c5/Objects/listobject.c#L440&#34;&gt;https://github.com/python/cpython/blob/199507b81a302ea19f93593965b1e5088195a6c5/Objects/listobject.c#L440&lt;/a&gt;&lt;/p&gt;

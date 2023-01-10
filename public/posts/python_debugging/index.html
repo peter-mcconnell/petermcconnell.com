@@ -251,8 +251,8 @@
 <h2 id="what-are-the-requirements">what are the requirements?<a href="#what-are-the-requirements" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>The debugger of choice (for me) is <code>ipdb</code>. The reasons for this are at the end of the article.</p>
 <p>Install <code>ipdb</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>pip3 install --user ipdb
-</span></span></code></pre></div><p>We&rsquo;ll also need to gather information from the <code>refining scope</code> section below.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">pip3 install --user ipdb
+</code></pre></div><p>We&rsquo;ll also need to gather information from the <code>refining scope</code> section below.</p>
 <h2 id="refining-scope">refining scope<a href="#refining-scope" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>Often (my own usecase) my Python debugging story typically starts with: &ldquo;This app is broken. It&rsquo;s doing X&rdquo; which tells me very little about what&rsquo;s wrong and where to look. My first objective is to make the size of the problem statement as small / tight as possible. To do so, before I&rsquo;ve looked at any code I try to do the following:</p>
 <ul>
@@ -280,95 +280,95 @@
 <p>At this point I should have the confidence to know that the problem requires debugging.</p>
 <h2 id="example-application">example application<a href="#example-application" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>To get started create the following file. This is the simplest possible example I could create so as to keep signal/noise ratio in favour of the actual debugging steps:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e">#!/usr/bin/env python</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># main.py</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">doubleit</span>(val):
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> val <span style="color:#f92672">*</span> <span style="color:#ae81ff">3</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
-</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;doubleit 2: </span><span style="color:#e6db74">%d</span><span style="color:#e6db74">&#34;</span>, doubleit(<span style="color:#ae81ff">2</span>))
-</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;doubleit 4: </span><span style="color:#e6db74">%d</span><span style="color:#e6db74">&#34;</span>, doubleit(<span style="color:#ae81ff">4</span>))
-</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;doubleit 8: </span><span style="color:#e6db74">%d</span><span style="color:#e6db74">&#34;</span>, doubleit(<span style="color:#ae81ff">8</span>))
-</span></span></code></pre></div><p>We&rsquo;ll use this simple example for our debugging.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#!/usr/bin/env python</span>
+<span style="color:#75715e"># main.py</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">doubleit</span>(val):
+    <span style="color:#66d9ef">return</span> val <span style="color:#f92672">*</span> <span style="color:#ae81ff">3</span>
+
+<span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
+    print(<span style="color:#e6db74">&#34;doubleit 2: </span><span style="color:#e6db74">%d</span><span style="color:#e6db74">&#34;</span>, doubleit(<span style="color:#ae81ff">2</span>))
+    print(<span style="color:#e6db74">&#34;doubleit 4: </span><span style="color:#e6db74">%d</span><span style="color:#e6db74">&#34;</span>, doubleit(<span style="color:#ae81ff">4</span>))
+    print(<span style="color:#e6db74">&#34;doubleit 8: </span><span style="color:#e6db74">%d</span><span style="color:#e6db74">&#34;</span>, doubleit(<span style="color:#ae81ff">8</span>))
+</code></pre></div><p>We&rsquo;ll use this simple example for our debugging.</p>
 <h2 id="using-ipdb">using ipdb<a href="#using-ipdb" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>From the information gathered earlier lets imagine the outputs were that the program above is spitting out the wrong values. We expect the <code>doubleit</code> lines to show their values being doubled but instead they seem to be trebled (yes, it&rsquo;s obvious why, but imagine this is a very large program and you don&rsquo;t know why the output is what it is).</p>
 <p>With that information to hand we can look for the <code>doubleit</code> method and add set some breakpoints so that we can explore the program as it&rsquo;s running to understand the state:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e">#!/usr/bin/env python</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># main.py</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">doubleit</span>(val):
-</span></span><span style="display:flex;"><span>    <span style="color:#f92672">import</span> ipdb       <span style="color:#75715e"># &lt; added this line</span>
-</span></span><span style="display:flex;"><span>    ipdb<span style="color:#f92672">.</span>set_trace()  <span style="color:#75715e"># &lt; added this line</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> val <span style="color:#f92672">*</span> <span style="color:#ae81ff">3</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
-</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;doubleit 2: </span><span style="color:#e6db74">%d</span><span style="color:#e6db74">&#34;</span>, doubleit(<span style="color:#ae81ff">2</span>))
-</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;doubleit 4: </span><span style="color:#e6db74">%d</span><span style="color:#e6db74">&#34;</span>, doubleit(<span style="color:#ae81ff">4</span>))
-</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;doubleit 8: </span><span style="color:#e6db74">%d</span><span style="color:#e6db74">&#34;</span>, doubleit(<span style="color:#ae81ff">8</span>))
-</span></span></code></pre></div><p>We can continue to add <code>ipdb.set_trace()</code> points throughout our code. Generally speaking when I am running this for the first time I&rsquo;ll tend to just drop one or two points in the codebase that I know are going to be in the path, with the expectation that I&rsquo;ll manually step through the execution to learn how it flows. When we&rsquo;ve added all of the breakpoints that we need we can instruct the program to run with <code>python main.py</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ python main.py
-</span></span><span style="display:flex;"><span>&gt; /home/pete/go/src/github.com/peter-mcconnell/petermcconnell.com/assets/dummy/pydebug/main.py<span style="color:#f92672">(</span>6<span style="color:#f92672">)</span>doubleit<span style="color:#f92672">()</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">5</span>     ipdb.set_trace<span style="color:#f92672">()</span>
-</span></span><span style="display:flex;"><span>----&gt; <span style="color:#ae81ff">6</span>     <span style="color:#66d9ef">return</span> val * <span style="color:#ae81ff">3</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">7</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>ipdb&gt;
-</span></span></code></pre></div><p>Now we&rsquo;ve ran our program with an attached debugger and it has paused execution at the breakpoint we set. We can run <code>args</code> to see which arguments where passed to the method:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>&gt; /home/pete/go/src/github.com/peter-mcconnell/petermcconnell.com/assets/dummy/pydebug/main.py<span style="color:#f92672">(</span>6<span style="color:#f92672">)</span>doubleit<span style="color:#f92672">()</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">5</span>     ipdb.set_trace<span style="color:#f92672">()</span>
-</span></span><span style="display:flex;"><span>----&gt; <span style="color:#ae81ff">6</span>     <span style="color:#66d9ef">return</span> val * <span style="color:#ae81ff">3</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">7</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>ipdb&gt; args
-</span></span><span style="display:flex;"><span>val <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>
-</span></span></code></pre></div><p>So in this point in the program we&rsquo;re in the <code>doubleit</code> method when it was invoked with a <code>val</code> value of <code>2</code>. We can print this and other variables using <code>p</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ipdb&gt; p val
-</span></span><span style="display:flex;"><span><span style="color:#ae81ff">2</span>
-</span></span></code></pre></div><p>or just the variable name on its own:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ipdb&gt; val
-</span></span><span style="display:flex;"><span><span style="color:#ae81ff">2</span>
-</span></span></code></pre></div><p>We can even call methods from this point:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ipdb&gt; doubleit<span style="color:#f92672">(</span>6<span style="color:#f92672">)</span>
-</span></span><span style="display:flex;"><span><span style="color:#ae81ff">18</span>
-</span></span></code></pre></div><p>To walk over the execution we can press <code>n</code> to go to the next point of execution:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ipdb&gt; doubleit<span style="color:#f92672">(</span>6<span style="color:#f92672">)</span>
-</span></span><span style="display:flex;"><span><span style="color:#ae81ff">18</span>
-</span></span><span style="display:flex;"><span>ipdb&gt; n
-</span></span><span style="display:flex;"><span>--Return--
-</span></span><span style="display:flex;"><span><span style="color:#ae81ff">6</span>
-</span></span><span style="display:flex;"><span>&gt; /home/pete/go/src/github.com/peter-mcconnell/petermcconnell.com/assets/dummy/pydebug/main.py<span style="color:#f92672">(</span>6<span style="color:#f92672">)</span>doubleit<span style="color:#f92672">()</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">5</span>     ipdb.set_trace<span style="color:#f92672">()</span>
-</span></span><span style="display:flex;"><span>----&gt; <span style="color:#ae81ff">6</span>     <span style="color:#66d9ef">return</span> val * <span style="color:#ae81ff">3</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">7</span>
-</span></span></code></pre></div><p>and view the backtrace with <code>bt</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ipdb&gt; bt
-</span></span><span style="display:flex;"><span>  /home/pete/go/src/github.com/peter-mcconnell/petermcconnell.com/assets/dummy/pydebug/main.py<span style="color:#f92672">(</span>9<span style="color:#f92672">)</span>&lt;module&gt;<span style="color:#f92672">()</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">8</span> <span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
-</span></span><span style="display:flex;"><span>----&gt; <span style="color:#ae81ff">9</span>     print<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;doubleit 2: %d&#34;</span>, doubleit<span style="color:#f92672">(</span>2<span style="color:#f92672">))</span>
-</span></span><span style="display:flex;"><span>     <span style="color:#ae81ff">10</span>     print<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;doubleit 4: %d&#34;</span>, doubleit<span style="color:#f92672">(</span>4<span style="color:#f92672">))</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#ae81ff">6</span>
-</span></span><span style="display:flex;"><span>&gt; /home/pete/go/src/github.com/peter-mcconnell/petermcconnell.com/assets/dummy/pydebug/main.py<span style="color:#f92672">(</span>6<span style="color:#f92672">)</span>doubleit<span style="color:#f92672">()</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">5</span>     ipdb.set_trace<span style="color:#f92672">()</span>
-</span></span><span style="display:flex;"><span>----&gt; <span style="color:#ae81ff">6</span>     <span style="color:#66d9ef">return</span> val * <span style="color:#ae81ff">3</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">7</span>
-</span></span></code></pre></div><p>To view the code around the current point of execution just press <code>l</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ipdb&gt; l
-</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">1</span> <span style="color:#75715e">#!/usr/bin/env python</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">2</span> <span style="color:#75715e"># main.py</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">3</span> def doubleit<span style="color:#f92672">(</span>val<span style="color:#f92672">)</span>:
-</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">4</span>     import ipdb
-</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">5</span>     ipdb.set_trace<span style="color:#f92672">()</span>
-</span></span><span style="display:flex;"><span>----&gt; <span style="color:#ae81ff">6</span>     <span style="color:#66d9ef">return</span> val * <span style="color:#ae81ff">3</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">7</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">8</span> <span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
-</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">9</span>     print<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;doubleit 2: %d&#34;</span>, doubleit<span style="color:#f92672">(</span>2<span style="color:#f92672">))</span>
-</span></span><span style="display:flex;"><span>     <span style="color:#ae81ff">10</span>     print<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;doubleit 4: %d&#34;</span>, doubleit<span style="color:#f92672">(</span>4<span style="color:#f92672">))</span>
-</span></span><span style="display:flex;"><span>     <span style="color:#ae81ff">11</span>     print<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;doubleit 8: %d&#34;</span>, doubleit<span style="color:#f92672">(</span>8<span style="color:#f92672">))</span>
-</span></span></code></pre></div><p>Which of course shows our very hard to find logic error, <code>* 3</code> instead of <code>* 2</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#!/usr/bin/env python</span>
+<span style="color:#75715e"># main.py</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">doubleit</span>(val):
+    <span style="color:#f92672">import</span> ipdb       <span style="color:#75715e"># &lt; added this line</span>
+    ipdb<span style="color:#f92672">.</span>set_trace()  <span style="color:#75715e"># &lt; added this line</span>
+    <span style="color:#66d9ef">return</span> val <span style="color:#f92672">*</span> <span style="color:#ae81ff">3</span>
+
+<span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
+    print(<span style="color:#e6db74">&#34;doubleit 2: </span><span style="color:#e6db74">%d</span><span style="color:#e6db74">&#34;</span>, doubleit(<span style="color:#ae81ff">2</span>))
+    print(<span style="color:#e6db74">&#34;doubleit 4: </span><span style="color:#e6db74">%d</span><span style="color:#e6db74">&#34;</span>, doubleit(<span style="color:#ae81ff">4</span>))
+    print(<span style="color:#e6db74">&#34;doubleit 8: </span><span style="color:#e6db74">%d</span><span style="color:#e6db74">&#34;</span>, doubleit(<span style="color:#ae81ff">8</span>))
+</code></pre></div><p>We can continue to add <code>ipdb.set_trace()</code> points throughout our code. Generally speaking when I am running this for the first time I&rsquo;ll tend to just drop one or two points in the codebase that I know are going to be in the path, with the expectation that I&rsquo;ll manually step through the execution to learn how it flows. When we&rsquo;ve added all of the breakpoints that we need we can instruct the program to run with <code>python main.py</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ python main.py
+&gt; /home/pete/go/src/github.com/peter-mcconnell/petermcconnell.com/assets/dummy/pydebug/main.py<span style="color:#f92672">(</span>6<span style="color:#f92672">)</span>doubleit<span style="color:#f92672">()</span>
+      <span style="color:#ae81ff">5</span>     ipdb.set_trace<span style="color:#f92672">()</span>
+----&gt; <span style="color:#ae81ff">6</span>     <span style="color:#66d9ef">return</span> val * <span style="color:#ae81ff">3</span>
+      <span style="color:#ae81ff">7</span>
+
+ipdb&gt;
+</code></pre></div><p>Now we&rsquo;ve ran our program with an attached debugger and it has paused execution at the breakpoint we set. We can run <code>args</code> to see which arguments where passed to the method:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">&gt; /home/pete/go/src/github.com/peter-mcconnell/petermcconnell.com/assets/dummy/pydebug/main.py<span style="color:#f92672">(</span>6<span style="color:#f92672">)</span>doubleit<span style="color:#f92672">()</span>
+      <span style="color:#ae81ff">5</span>     ipdb.set_trace<span style="color:#f92672">()</span>
+----&gt; <span style="color:#ae81ff">6</span>     <span style="color:#66d9ef">return</span> val * <span style="color:#ae81ff">3</span>
+      <span style="color:#ae81ff">7</span>
+
+ipdb&gt; args
+val <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>
+</code></pre></div><p>So in this point in the program we&rsquo;re in the <code>doubleit</code> method when it was invoked with a <code>val</code> value of <code>2</code>. We can print this and other variables using <code>p</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">ipdb&gt; p val
+<span style="color:#ae81ff">2</span>
+</code></pre></div><p>or just the variable name on its own:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">ipdb&gt; val
+<span style="color:#ae81ff">2</span>
+</code></pre></div><p>We can even call methods from this point:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">ipdb&gt; doubleit<span style="color:#f92672">(</span>6<span style="color:#f92672">)</span>
+<span style="color:#ae81ff">18</span>
+</code></pre></div><p>To walk over the execution we can press <code>n</code> to go to the next point of execution:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">ipdb&gt; doubleit<span style="color:#f92672">(</span>6<span style="color:#f92672">)</span>
+<span style="color:#ae81ff">18</span>
+ipdb&gt; n
+--Return--
+<span style="color:#ae81ff">6</span>
+&gt; /home/pete/go/src/github.com/peter-mcconnell/petermcconnell.com/assets/dummy/pydebug/main.py<span style="color:#f92672">(</span>6<span style="color:#f92672">)</span>doubleit<span style="color:#f92672">()</span>
+      <span style="color:#ae81ff">5</span>     ipdb.set_trace<span style="color:#f92672">()</span>
+----&gt; <span style="color:#ae81ff">6</span>     <span style="color:#66d9ef">return</span> val * <span style="color:#ae81ff">3</span>
+      <span style="color:#ae81ff">7</span>
+</code></pre></div><p>and view the backtrace with <code>bt</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">ipdb&gt; bt
+  /home/pete/go/src/github.com/peter-mcconnell/petermcconnell.com/assets/dummy/pydebug/main.py<span style="color:#f92672">(</span>9<span style="color:#f92672">)</span>&lt;module&gt;<span style="color:#f92672">()</span>
+      <span style="color:#ae81ff">8</span> <span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
+----&gt; <span style="color:#ae81ff">9</span>     print<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;doubleit 2: %d&#34;</span>, doubleit<span style="color:#f92672">(</span>2<span style="color:#f92672">))</span>
+     <span style="color:#ae81ff">10</span>     print<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;doubleit 4: %d&#34;</span>, doubleit<span style="color:#f92672">(</span>4<span style="color:#f92672">))</span>
+
+<span style="color:#ae81ff">6</span>
+&gt; /home/pete/go/src/github.com/peter-mcconnell/petermcconnell.com/assets/dummy/pydebug/main.py<span style="color:#f92672">(</span>6<span style="color:#f92672">)</span>doubleit<span style="color:#f92672">()</span>
+      <span style="color:#ae81ff">5</span>     ipdb.set_trace<span style="color:#f92672">()</span>
+----&gt; <span style="color:#ae81ff">6</span>     <span style="color:#66d9ef">return</span> val * <span style="color:#ae81ff">3</span>
+      <span style="color:#ae81ff">7</span>
+</code></pre></div><p>To view the code around the current point of execution just press <code>l</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">ipdb&gt; l
+      <span style="color:#ae81ff">1</span> <span style="color:#75715e">#!/usr/bin/env python</span>
+      <span style="color:#ae81ff">2</span> <span style="color:#75715e"># main.py</span>
+      <span style="color:#ae81ff">3</span> def doubleit<span style="color:#f92672">(</span>val<span style="color:#f92672">)</span>:
+      <span style="color:#ae81ff">4</span>     import ipdb
+      <span style="color:#ae81ff">5</span>     ipdb.set_trace<span style="color:#f92672">()</span>
+----&gt; <span style="color:#ae81ff">6</span>     <span style="color:#66d9ef">return</span> val * <span style="color:#ae81ff">3</span>
+      <span style="color:#ae81ff">7</span>
+      <span style="color:#ae81ff">8</span> <span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
+      <span style="color:#ae81ff">9</span>     print<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;doubleit 2: %d&#34;</span>, doubleit<span style="color:#f92672">(</span>2<span style="color:#f92672">))</span>
+     <span style="color:#ae81ff">10</span>     print<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;doubleit 4: %d&#34;</span>, doubleit<span style="color:#f92672">(</span>4<span style="color:#f92672">))</span>
+     <span style="color:#ae81ff">11</span>     print<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;doubleit 8: %d&#34;</span>, doubleit<span style="color:#f92672">(</span>8<span style="color:#f92672">))</span>
+</code></pre></div><p>Which of course shows our very hard to find logic error, <code>* 3</code> instead of <code>* 2</code>.</p>
 <p>Note: you can also set breakpoints in the stdlib functions (paths will vary depending on your setup):</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ipdb&gt; b /home/pete/.local/lib/python3.10/site-packages/requests/api.py:14
-</span></span><span style="display:flex;"><span>Breakpoint <span style="color:#ae81ff">1</span> at /home/pete/.local/lib/python3.10/site-packages/requests/api.py:14
-</span></span></code></pre></div><h2 id="debug-flow">debug flow<a href="#debug-flow" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">ipdb&gt; b /home/pete/.local/lib/python3.10/site-packages/requests/api.py:14
+Breakpoint <span style="color:#ae81ff">1</span> at /home/pete/.local/lib/python3.10/site-packages/requests/api.py:14
+</code></pre></div><h2 id="debug-flow">debug flow<a href="#debug-flow" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>Using the commands above I can begin my cyclic process of narrowing in on the fix:</p>
 <blockquote>
 <p>repro -&gt; explore -&gt; understand -&gt; tweak -&gt; repeat</p>
@@ -425,6 +425,13 @@
         <hr />
     </div>
     <div class="pagination__buttons">
+        
+        <span class="button previous">
+            <a href="https://www.petermcconnell.com/posts/advise_to_engineers/">
+                <span class="button__icon">←</span>
+                <span class="button__text">Advise for engineers wanting to &#39;make it&#39;</span>
+            </a>
+        </span>
         
         
         <span class="button next">
