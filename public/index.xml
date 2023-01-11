@@ -1176,6 +1176,8 @@ be it as an IC, a manager, or a group lead.&lt;/p&gt;
 &lt;li&gt;Linux&lt;/li&gt;
 &lt;li&gt;Python&lt;/li&gt;
 &lt;li&gt;Golang&lt;/li&gt;
+&lt;li&gt;C&lt;/li&gt;
+&lt;li&gt;C++&lt;/li&gt;
 &lt;li&gt;Bash&lt;/li&gt;
 &lt;li&gt;Docker&lt;/li&gt;
 &lt;li&gt;Kubernetes&lt;/li&gt;
@@ -1193,39 +1195,26 @@ shake the rust off or learn something new in a week or two.&lt;/p&gt;
       
       <guid>https://www.petermcconnell.com/showcase/</guid>
       <description>I&amp;rsquo;ve been around the tech scene for two decades and in that time have delivered much that I&amp;rsquo;m proud of. The following lists a few key highlights:
- helped take two companies to acquisition have worked on web products for Google, Virgin, Red Bull, Disney &amp;amp; YouTube [ Python. PHP. During my time as a lead at https://www.rehabagency.ai/work ] helped many companies implement devops properly, enabling teams to take full control of their workflows developed a custom query language (TQL - an opencypher variant) which went to market [ Java.</description>
+ have worked on web products for Google, Virgin, Red Bull, Disney &amp;amp; YouTube [ Python. PHP. During my time as a lead at https://www.rehabagency.ai/work ] shipping apps that seen millions of users in their first week of deployment, featuring on the google.com homepage (under the search bar) developed a custom query language, TQL (an OpenCypher variant), and a custom underlying database (hybrid of graph and relational) which resulted in the acquisition of the company [ Java.</description>
       <content>&lt;p&gt;I&amp;rsquo;ve been around the tech scene for two decades and in that time have
 delivered much that I&amp;rsquo;m proud of. The following lists a few key highlights:&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;helped take two companies to acquisition&lt;/li&gt;
-&lt;li&gt;have worked on web products for Google, Virgin, Red Bull, Disney &amp;amp; YouTube
-[ Python. PHP. During my time as a lead at https://www.rehabagency.ai/work ]&lt;/li&gt;
-&lt;li&gt;helped many companies implement devops properly, enabling teams to take full control of their workflows&lt;/li&gt;
-&lt;li&gt;developed a custom query language (TQL - an opencypher variant) which went to market
-[ Java. Golang. ANTLR ]&lt;/li&gt;
-&lt;li&gt;added support into the Terraform AWS provider for shipping your own keys to ACM
-[ Golang ]&lt;/li&gt;
-&lt;li&gt;developed an orchestration framework for researchers in AI to schedule workloads
-[ Python. Terraform. AWS. On-prem (Nvidia DGX&amp;rsquo;s). Qemu. Libvirt ]&lt;/li&gt;
-&lt;li&gt;customised redhat&amp;rsquo;s clair product so that it could use internal sources for its vulnerability databases
-[ Golang ]&lt;/li&gt;
-&lt;li&gt;developed a compliance tool which detects packages for Python, Ruby, R, APT, Yum, APK and assesses their licenses
-[ Shell ]&lt;/li&gt;
-&lt;li&gt;developed a chatbot which used a large car forum database, bayes theorum and more regular expressions than you can shake a stick at to allow users to talk to cars. in 3 weeks!
-[ PHP, Postgres ]&lt;/li&gt;
-&lt;li&gt;built a security tool &amp;ldquo;amald&amp;rdquo; which alerts on the event that an endpoint is without authentication. decreased companies time-to-detection for auth misconfigurations
-[ Golang ]&lt;/li&gt;
-&lt;li&gt;developed an image delivery service for a very large org (30k+ engineers)
-[ AWS, Python, Bash/Shell, OpenStack ]&lt;/li&gt;
-&lt;li&gt;design and build out of various deployment infrastructure
-[ Kubernetes. Mesos. Marathon. Docker-compose. ]&lt;/li&gt;
-&lt;li&gt;developed a Jira plugin which extended JQL (jira query language) to allow grouping by &amp;ldquo;roles&amp;rdquo;
-[ Java ]&lt;/li&gt;
-&lt;li&gt;competed in various hackathons and code jams
-[ Hacktoberfest, Ludum Dare, Google CTF ]&lt;/li&gt;
+&lt;li&gt;have worked on web products for Google, Virgin, Red Bull, Disney &amp;amp; YouTube &lt;code&gt;[ Python. PHP. During my time as a lead at https://www.rehabagency.ai/work ]&lt;/code&gt; shipping apps that seen millions of users in their first week of deployment, featuring on the google.com homepage (under the search bar)&lt;/li&gt;
+&lt;li&gt;developed a custom query language, TQL (an OpenCypher variant), and a custom underlying database (hybrid of graph and relational) which resulted in the acquisition of the company &lt;code&gt;[ Java. Golang. ANTLR. Titan. Neo4J ]&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;lead development for a graph orchestration framework used to execute AI workloads (primarily Computer Vision &amp;amp; Genomics). We built the company and sold it in less than a year. &lt;code&gt;[ C++. Python ]&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;added support into the Terraform AWS provider for shipping keys to ACM &lt;code&gt;[ Golang ]&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;developed an orchestration framework for researchers in AI to schedule workloads &lt;code&gt;[ Python. Terraform. AWS. On-prem (Nvidia DGX&#39;s). QEMU. Libvirt ]&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;customised redhat&amp;rsquo;s Clair product so that it could use internal sources for its vulnerability databases &lt;code&gt;[ Golang ]&lt;/code&gt; allowing a large bank to use it in airgapped environments.&lt;/li&gt;
+&lt;li&gt;developed a compliance tool which detects packages for Python, Ruby, R, APT, Yum, APK and assesses their licenses &lt;code&gt;[ Shell ]&lt;/code&gt;. This replaced the need for BlackDuck saving the company &lt;em&gt;a lot&lt;/em&gt; of money.&lt;/li&gt;
+&lt;li&gt;developed a chatbot which used a large car forum database, bayes theorum and more regular expressions than you can shake a stick at to allow users to talk to cars. in 3 weeks! &lt;code&gt;[ PHP, Postgres ]&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;built a security tool &amp;ldquo;amald&amp;rdquo; which alerts on the event that an endpoint is without authentication. decreased companies time-to-detection for auth misconfigurations &lt;code&gt;[ Golang ]&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;developed an image delivery service for a very large org (30k+ engineers) which hardened VM images for AWS and a private cloud &lt;code&gt;[ AWS. Python. Bash/Shell. OpenStack ]&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;design and build out of various deployment infrastructure &lt;code&gt;[ Kubernetes. Mesos. Marathon. Docker-compose. ]&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;developed a Jira plugin which extended JQL (jira query language) to allow grouping by &amp;ldquo;roles&amp;rdquo; &lt;code&gt;[ Java ]&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;competed in various hackathons and code jams &lt;code&gt;[ Hacktoberfest. Ludum Dare. Google CTF ]&lt;/code&gt;&lt;/li&gt;
 &lt;li&gt;mentored many amazing engineers over the years from Junior to Staff&lt;/li&gt;
-&lt;li&gt;spoken at various conferences in the UK, Ireland, Australia and the U.S on docker, prometheus, bash, terraform, aws etc&lt;/li&gt;
-&lt;li&gt;co-founded an award winning web design company (31interactive)&lt;/li&gt;
+&lt;li&gt;spoken at various conferences in the UK, Ireland, Australia and the U.S on docker, prometheus, bash, terraform, aws, automation, python, golang etc&lt;/li&gt;
+&lt;li&gt;in my early web years I co-founded an award winning web development company (31interactive)&lt;/li&gt;
 &lt;/ul&gt;
 </content>
     </item>

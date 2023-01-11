@@ -17,6 +17,8 @@ Usually never far from:
 - Linux
 - Python
 - Golang
+- C
+- C++
 - Bash
 - Docker
 - Kubernetes
