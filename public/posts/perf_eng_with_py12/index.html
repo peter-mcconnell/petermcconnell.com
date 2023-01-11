@@ -204,7 +204,7 @@
       <span class="post-author">Peter McConnell</span>
     
     
-      <span class="post-reading-time">:: 8 min read (1597 words)</span>
+      <span class="post-reading-time">:: 8 min read (1595 words)</span>
     
   </div>
 
@@ -253,11 +253,11 @@ seconds. We&rsquo;ll introduce the Linux tool <code>perf</code> and also <code>F
 at some disassembly and go bug hunting. You can view the code for this article
 here: <a href="https://github.com/peter-mcconnell/petermcconnell.com/tree/main/assets/dummy/perf_py_proj">https://github.com/peter-mcconnell/petermcconnell.com/tree/main/assets/dummy/perf_py_proj</a></p>
 <p>Take a second to go check out <a href="https://docs.python.org/3.12/howto/perf_profiling.html">https://docs.python.org/3.12/howto/perf_profiling.html</a> and indeed the changelog at <a href="https://www.python.org/downloads/release/python-3120a3/">https://www.python.org/downloads/release/python-3120a3/</a>. The important part (for this post) from these links is:</p>
-<p>&quot;&quot;&quot;
-The Linux perf profiler is a very powerful tool that allows you to profile and obtain information about the performance of your application. perf also has a very vibrant ecosystem of tools that aid with the analysis of the data that it produces.</p>
+<blockquote>
+<p>The Linux perf profiler is a very powerful tool that allows you to profile and obtain information about the performance of your application. perf also has a very vibrant ecosystem of tools that aid with the analysis of the data that it produces.</p>
 <p>The main problem with using the perf profiler with Python applications is that perf only allows to get information about native symbols, this is, the names of the functions and procedures written in C. This means that the names and file names of the Python functions in your code will not appear in the output of the perf.</p>
-<p>Since Python 3.12, the interpreter can run in a special mode that allows Python functions to appear in the output of the perf profiler. When this mode is enabled, the interpreter will interpose a small piece of code compiled on the fly before the execution of every Python function and it will teach perf the relationship between this piece of code and the associated Python function using perf map files.
-&quot;&quot;&quot;</p>
+<p>Since Python 3.12, the interpreter can run in a special mode that allows Python functions to appear in the output of the perf profiler. When this mode is enabled, the interpreter will interpose a small piece of code compiled on the fly before the execution of every Python function and it will teach perf the relationship between this piece of code and the associated Python function using perf map files.</p>
+</blockquote>
 <h2 id="writing-a-bad-program">writing a &ldquo;bad&rdquo; program<a href="#writing-a-bad-program" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>I&rsquo;m excited to try this, so lets get going. Firstly lets create a python script for us to profile. I&rsquo;m doing this before installing Python 3.12 as I want to create a FlameGraph of how this process looks in 3.10 verses 3.12. Here we have a script that attempts to perform lookups against a large list:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> time
