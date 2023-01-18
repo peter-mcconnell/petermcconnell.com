@@ -1,0 +1,401 @@
++++
+title = "Linux networking: Network Namespaces, Docker and DNS"
+date = "2023-01-18T19:48:46Z"
+author = "Peter McConnell"
+authorTwitter = "PeteMcConnell_" #do not include @
+cover = "https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/networking.png"
+tags = ["linux", "networking", "namespaces", "docker"]
+keywords = ["linux", "networking", "namespaces", "docker", "compose", "bridge", "dns"]
+description = ""
+showFullContent = false
+readingTime = true
+hideComments = false
+color = "" #color from the theme settings
+ToC = true
++++
+
+Ever wondered how `docker compose` lets you communicate with other services? This article takes a high level look at network namespaces, Dockers internal DNS and Docker bridge.
+
+Network namespaces are a powerful feature in Linux that allows for the isolation of network stacks, creating multiple virtual networks on a single host. This concept is particularly useful for scenarios such as containerization, where each container needs its own independent network stack. In this article we'll take a look at how `docker` / `docker compose` utilize this technology to grant containers network isolation and also take a look at how docker handles cross-container networking.
+
+## simple docker run
+
+To see network namespaces in action, we'll run a simple container (without the `--network=host` flag):
+
+```sh
+# run nginx in detached mode on host port 8080
+docker run --name dummynginx -p 8080:80 -d nginx
+```
+
+If we ran this with `--network=host` it would share the network namespace of the host and therefore would not have it's own network namespace.
+
+Now we can check to see if we any network namespaces were created for this container:
+
+```sh
+$ sudo lsns -t net | grep nginx
+[sudo] password for pete: 
+        NS TYPE NPROCS   PID USER     NETNSID NSFS                           COMMAND
+...
+4026533009 net      17 52981 root           0 /run/docker/netns/3161e4b47f76 nginx: master process nginx -g daemon off;
+```
+
+In the output above we can see a network namespace was created for a docker `nsfs` with the command `nginx`. This seems like a likely culprit. We could confirm this by checking for the `nsfs` in `docker inspect <container id>`.
+
+Each container runs in its own network namespace, which means it has its own set of network interfaces, IP addresses, and routing tables. This isolation allows each container to have its own network configuration, without interfering with the host's network or other containers. You can view these resources from the network namespace by using the `ip` command with `nsenter`.
+
+In addition, the isolation also allows you to use the same port on the host for different services running in different containers. This is useful when you want to run multiple instances of the same service on a single host, each with its own IP address and port.
+
+Also, this isolation helps in providing security boundaries between different containers, as they can't see or interact with each other's network stack unless explicitly configured to do so.
+
+## docker compose
+
+Let's remove that container and see how things look with `docker compose` which can allow multiple containers to communicate with eachother:
+
+```sh
+# remove the old nginx container
+docker rm -f dummynginx
+```
+
+Now we'll create a simple `docker-compose.yaml`:
+
+```yaml
+---
+version: '3.1'
+services:
+  nginx_a:
+    image: 'nginx:latest'
+    ports:
+      - '8080:80'
+  nginx_b:
+    image: 'nginx:latest'
+```
+
+With this file stored as `docker-compose.yaml` we'll spin it up then check `lsns`:
+
+```sh
+$ docker compose up -d
+[+] Running 3/3
+ ⠿  Network linuxnetworks_default      Created  0.0s
+ ⠿ Container linuxnetworks-nginx_b-1   Started  0.3s
+ ⠿ Container linuxnetworks-nginx_a-1   Started  0.6s
+$ sudo lsns -t net | grep nginx
+[sudo] password for pete: 
+        NS TYPE NPROCS   PID USER     NETNSID NSFS                           COMMAND
+...
+4026533008 net      17 57327 root           0 /run/docker/netns/20790e4f73be nginx: master process nginx -g daemon off;
+4026533108 net      17 57501 root           1 /run/docker/netns/11b21af68bd5 nginx: master process nginx -g daemon off;
+```
+
+Two network namespaces; one for each container. It's worth noting if we had replicas in each service, each container within that service would get their own network namespace. So how does `docker compose` allow `nginx_a` to speak to `nginx_b` given each container has it's own network namespace?
+
+Firstly lets clarify the mystery we're trying to solve:
+
+```sh
+docker compose exec nginx_a curl nginx_b
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>Welcome to nginx!</h1>
+<p>If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.</p>
+
+<p>For online documentation and support please refer to
+<a href="http://nginx.org/">nginx.org</a>.<br/>
+Commercial support is available at
+<a href="http://nginx.com/">nginx.com</a>.</p>
+
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html>
+```
+
+We connected to the `nginx_a` container, then `curl`ed `nginx_b`. How does it work? We'll dig in over the next few sections to understand how that works.
+
+### a quick note on the 'links:' property
+
+`docker compose` supports a `links:` property. This _is not_ required to allow services to speak to each other. It's main purpose is to allow you to create aliases or to use hostname resolution, linking between containers in different docker compose files.
+
+more info: https://docs.docker.com/compose/compose-file/#links
+
+### dockers internal DNS server
+
+Docker runs its own internal DNS server at `127.0.0.11`. How do we know this? We can see it:
+
+```sh
+docker compose exec -ti nginx_a bash
+root@b315617ce0dd:/# cat /etc/resolv.conf 
+nameserver 127.0.0.11
+options ndots:0
+root@b315617ce0dd:/# 
+```
+
+We can query this from `nginx_a` by installing `dnsutils` and using `nslookup` or `dig`:
+
+```sh
+docker compose exec -ti nginx_a bash
+root@b315617ce0dd:/# apt update && apt install dnsutils
+root@b315617ce0dd:/# nslookup nginx_b 127.0.0.11
+Server:         127.0.0.11
+Address:        127.0.0.11#53
+
+Non-authoritative answer:
+Name:   nginx_b
+Address: 172.21.0.2
+
+root@b315617ce0dd:/#
+```
+
+Just to be sure that IP is correct we can validate the IP for `nginx_b` with `docker inspect`:
+
+```sh
+docker inspect $(docker ps -f 'Name=nginx_b' -q) -f '{{.NetworkSettings.Networks.linuxnetworks_default.IPAddress}}'
+172.21.0.2
+```
+
+Looks good.
+
+When a container is created and connected to a network, Docker automatically creates a DNS record for that container, using the container name as the hostname and the IP address of the container as the record's value. This enables other containers on the same network to access each other by name, rather than needing to know the IP address of the target container.
+
+### virtual network interfaces
+
+When we ran `docker compose` it created a virtual network interface inside each containers network namespace. To look at the resources in a network namespace we first need to know where the `nsfs` is. Looking at the example output above from `lsns` above we seen this line:
+
+```sh
+4026533008 net      17 57327 root           0 /run/docker/netns/20790e4f73be nginx: master process nginx -g daemon off;
+```
+
+You'll see in the `nsfs` column we have: `/run/docker/netns/20790e4f73be`. With this we can enter the namespace and run some commands from that namespace.
+
+You can also get this from `docker` itself. Running `docker ps` you can get the CONTAINER ID:
+```sh
+docker ps
+CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS          PORTS                                   NAMES
+b315617ce0dd   nginx:latest   "/docker-entrypoint.…"   16 minutes ago   Up 16 minutes   0.0.0.0:8080->80/tcp, :::8080->80/tcp   linuxnetworks-nginx_a-1
+da9caf14c90c   nginx:latest   "/docker-entrypoint.…"   16 minutes ago   Up 16 minutes   80/tcp                                  linuxnetworks-nginx_b-1
+```
+
+Then you can run `inspect` to see the network settings:
+
+```sh
+docker inspect b315617ce0dd -f '{{.NetworkSettings.SandboxKey}}'
+/var/run/docker/netns/11b21af68bd5
+```
+
+Or the terribly ugly:
+
+```sh
+docker inspect $(docker ps -q -f 'Name=nginx_a') -f '{{.NetworkSettings.SandboxKey}}'
+```
+
+Armed with the `nsfs` path we can enter the namespace and run commands. Lets take a quick look at what interfaces are available in this namespace:
+
+```sh
+sudo nsenter --net=/run/docker/netns/11b21af68bd5 ip link
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+47: eth0@if48: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default 
+    link/ether 02:42:ac:15:00:03 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+```
+
+Cool! We're finally peaking behind the curtain.
+
+### exploring the namespace
+
+Now that we have the ability to run commands from the namespace we can request some more information about this interface with `ip addr show`:
+
+```sh
+sudo nsenter --net=/run/docker/netns/11b21af68bd5 ip addr show eth0
+47: eth0@if48: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default 
+    link/ether 02:42:ac:15:00:03 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+    inet 172.21.0.3/16 brd 172.21.255.255 scope global eth0
+       valid_lft forever preferred_lft forever
+```
+ 
+We can also get the route table information with `ip route show`:
+
+```sh
+sudo nsenter --net=/run/docker/netns/11b21af68bd5 ip route show
+default via 172.21.0.1 dev eth0 
+172.21.0.0/16 dev eth0 proto kernel scope link src 172.21.0.3
+```
+
+And we can even run good old faithful `netstat` to check out which ports we're listening on:
+
+```sh
+sudo nsenter --net=/run/docker/netns/11b21af68bd5 netstat -tulnp
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name    
+tcp        0      0 127.0.0.11:32889        0.0.0.0:*               LISTEN      16568/dockerd       
+tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN      57501/nginx: master 
+tcp6       0      0 :::80                   :::*                    LISTEN      57501/nginx: master 
+udp        0      0 127.0.0.11:51543        0.0.0.0:*                           16568/dockerd
+```
+
+### docker bridge
+
+Using the `ip route` command above we seen:
+
+```sh
+sudo nsenter --net=/run/docker/netns/11b21af68bd5 ip route show
+default via 172.21.0.1 dev eth0 
+172.21.0.0/16 dev eth0 proto kernel scope link src 172.21.0.3
+```
+
+So what is `172.21.0.1`? That is the default gateway, the docker bridge. How can we know? Well, firstly we can list `docker` networks with:
+
+```sh
+$ docker network ls
+NETWORK ID     NAME                    DRIVER    SCOPE
+a52a287eb9f2   bridge                  bridge    local
+8f5afced6d3f   host                    host      local
+19508f629e30   none                    null      local
+```
+
+And then we can `inspect` the networks, like so:
+
+```sh
+$ docker network inspect bridge
+[
+    {
+        "Name": "bridge",
+        "Id": "a52a287eb9f2af463e14ac4a97583b96a9dc66e28b5ac67967321386834e4e24",
+        "Created": "2023-01-18T20:00:03.09775174Z",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": [
+                {
+                    "Subnet": "172.17.0.0/16",
+                    "Gateway": "172.17.0.1"
+                }
+            ]
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Containers": {},
+        "Options": {
+            "com.docker.network.bridge.default_bridge": "true",
+            "com.docker.network.bridge.enable_icc": "true",
+            "com.docker.network.bridge.enable_ip_masquerade": "true",
+            "com.docker.network.bridge.host_binding_ipv4": "0.0.0.0",
+            "com.docker.network.bridge.name": "docker0",
+            "com.docker.network.driver.mtu": "1500"
+        },
+        "Labels": {}
+    }
+]
+```
+
+We can see the Gateway for `bridge` is set to `172.17.0.1`.
+
+The Docker bridge default gateway is responsible for connecting containers running in separate network namespaces, using the IP addresses and MAC addresses of the containers connected to it to forward packets to the correct container. When a packet is received by the bridge, it checks the destination IP address of the packet and compares it to the IP addresses of the connected containers. If a match is found, the packet is then forwarded to the corresponding container using the container's MAC address. Additionally, the bridge also uses network address translation (NAT) to rewrite the source IP address of the packet to that of the bridge, allowing the containers to communicate with external networks.
+
+### so ... how does nginx_a speak to nginx_b? (recap)
+
+The request starts from `nginx_a` with `curl nginx_a`. `nginx_a` is resolved by Dockers internal DNS to `172.21.0.2` which is within the range of the `nginx_a` default gateway, the docker bridge. The Docker Bridge acts as a gateway rewrites the source IP of the packet to the NAT to allow for return traffic using NAT, then forwards the request onto the desired destination at `172.21.0.2`. The request then works its way back to the real source, via the default gateway once more.
+
+### network_mode
+
+`docker compose` supports another interesting property that we'll take a quick look at: `network_mode:`. With this setting we can tell services to share the same network resources. As we're using `nginx` in both services currently they will both try to bind on port `:80` which will cause problems if they are sharing the same resources so for `nginx_b` we'll create a unique nginx config file `netsvc.conf`:
+
+```txt
+server {
+    listen       8080;
+    server_name  localhost;
+    location / {
+        root   /usr/share/nginx/html;
+        index  index.html index.htm;
+    }
+}
+```
+
+This is as simple an nginx config as you can get. Notably we're telling it to listen on `8080` instead of the default `80` so that they can run in the same network namespace without colliding.
+
+Now we'll create an updated `docker-compose-netsvc.yaml` file:
+
+```yaml
+---
+version: '3.1'
+services:
+  nginx_a:
+    image: 'nginx:latest'
+    ports:
+      - '8080:80'
+  nginx_b:
+    image: 'nginx:latest'
+    volumes:
+      - ./netsvc.conf:/etc/nginx/conf.d/default.conf:ro
+    network_mode: "service:nginx_a"
+```
+
+With this file in place we'll run our new compose:
+
+```sh
+docker compose -f docker-compose-netsvc.yaml up -d
+[+] Running 2/2
+ ⠿ Container linuxnetworks-nginx_a-1  Started  0.4s
+ ⠿ Container linuxnetworks-nginx_b-1  Started  0.6s
+```
+
+Running `lsns` this time we can see that we only have one network namespace (compared to two that we seen with the original `docker-compose.yaml` file):
+
+```sh
+sudo lsns -t net | grep nginx
+4026533007 net      34 148278 root           0 /run/docker/netns/1e55105e0804 nginx: master process nginx -g daemon off;
+```
+
+We do still have two containers of course:
+
+```sh
+docker compose ps
+NAME                      IMAGE               COMMAND                  SERVICE             CREATED             STATUS              PORTS
+linuxnetworks-nginx_a-1   nginx:latest        "/docker-entrypoint.…"   nginx_a             5 minutes ago       Up 5 minutes        0.0.0.0:8080->80/tcp, :::8080->80/tcp
+linuxnetworks-nginx_b-1   nginx:latest        "/docker-entrypoint.…"   nginx_b             5 minutes ago       Up 5 minutes        
+```
+
+Note: `nginx_b` has no information in the `PORTS` column. Also - our `nginx_b` custom port, `8080`, is now visible in the `PORTS` column of the `nginx_a` row. It might look weird but this makes sense - `nginx_b` is literally using the `nginx_a` network.
+
+This begins to look even more weird if try to `docker inspect` the `nginx_b` network settings:
+
+```sh
+$ docker inspect $(docker ps -f 'Name=nginx_b' -q) -f '{{.NetworkSettings.Networks.linuxnetworks_default.IPAddress}}'
+<no value>
+
+$ docker inspect $(docker ps -f 'Name=nginx_b' -q) -f '{{.NetworkSettings.SandboxKey}}'
+
+```
+
+We can check the `nginx_a` network settings and see that all looks good there:
+
+```sh
+$ docker inspect $(docker ps -f 'Name=nginx_a' -q) -f '{{.NetworkSettings.Networks.linuxnetworks_default.IPAddress}}'
+172.22.0.2
+$ docker inspect $(docker ps -f 'Name=nginx_a' -q) -f '{{.NetworkSettings.SandboxKey}}'
+/var/run/docker/netns/1e55105e0804
+
+sudo nsenter --net=/var/run/docker/netns/1e55105e0804 ip link
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+80: eth0@if81: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default 
+    link/ether 02:42:ac:16:00:02 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+```
+
+You can imagine, say, running a VPN as a service and then forcing all other services to use that network namespace and resources. Super cool.
+
+I hope this article has taught you a little about network namespaces and Dockers networking. Happy Hacking o/

@@ -1,0 +1,12 @@
+---
+version: '3.1'
+services:
+  nginx_a:
+    image: 'nginx:latest'
+    ports:
+      - '8080:80'
+  nginx_b:
+    image: 'nginx:latest'
+    volumes:
+      - './netsvc.conf:/etc/nginx/conf.d/default.conf:ro'
+    network_mode: "service:nginx_a"

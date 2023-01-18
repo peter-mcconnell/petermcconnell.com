@@ -7,7 +7,47 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; Peter McConnell 2023</copyright>
-    <lastBuildDate>Tue, 10 Jan 2023 08:41:50 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 18 Jan 2023 19:48:46 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>docker</title>
+      <link>https://www.petermcconnell.com/tags/docker/</link>
+      <pubDate>Wed, 18 Jan 2023 19:48:46 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/tags/docker/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>linux</title>
+      <link>https://www.petermcconnell.com/tags/linux/</link>
+      <pubDate>Wed, 18 Jan 2023 19:48:46 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/tags/linux/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>namespaces</title>
+      <link>https://www.petermcconnell.com/tags/namespaces/</link>
+      <pubDate>Wed, 18 Jan 2023 19:48:46 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/tags/namespaces/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>networking</title>
+      <link>https://www.petermcconnell.com/tags/networking/</link>
+      <pubDate>Wed, 18 Jan 2023 19:48:46 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/tags/networking/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
     <item>
       <title>career advice</title>
       <link>https://www.petermcconnell.com/tags/career-advice/</link>
@@ -144,16 +184,6 @@
       <pubDate>Fri, 30 Dec 2022 14:28:12 +0000</pubDate>
       
       <guid>https://www.petermcconnell.com/tags/iostat/</guid>
-      <description></description>
-      <content></content>
-    </item>
-    
-    <item>
-      <title>linux</title>
-      <link>https://www.petermcconnell.com/tags/linux/</link>
-      <pubDate>Fri, 30 Dec 2022 14:28:12 +0000</pubDate>
-      
-      <guid>https://www.petermcconnell.com/tags/linux/</guid>
       <description></description>
       <content></content>
     </item>

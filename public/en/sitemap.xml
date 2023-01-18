@@ -2,17 +2,43 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://www.petermcconnell.com/posts/advise_to_engineers/</loc>
-    <lastmod>2023-01-10T08:41:50+00:00</lastmod>
+    <loc>https://www.petermcconnell.com/tags/docker/</loc>
+    <lastmod>2023-01-18T19:48:46+00:00</lastmod>
   </url><url>
-    <loc>https://www.petermcconnell.com/tags/career-advice/</loc>
-    <lastmod>2023-01-10T08:41:50+00:00</lastmod>
+    <loc>https://www.petermcconnell.com/tags/linux/</loc>
+    <lastmod>2023-01-18T19:48:46+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="es"
+                href="https://www.petermcconnell.com/es/tags/linux/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="fr"
+                href="https://www.petermcconnell.com/fr/tags/linux/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="pt"
+                href="https://www.petermcconnell.com/pt/tags/linux/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://www.petermcconnell.com/tags/linux/"
+                />
   </url><url>
-    <loc>https://www.petermcconnell.com/tags/mentorship/</loc>
-    <lastmod>2023-01-10T08:41:50+00:00</lastmod>
+    <loc>https://www.petermcconnell.com/posts/linux_networking/</loc>
+    <lastmod>2023-01-18T19:48:46+00:00</lastmod>
+  </url><url>
+    <loc>https://www.petermcconnell.com/tags/namespaces/</loc>
+    <lastmod>2023-01-18T19:48:46+00:00</lastmod>
+  </url><url>
+    <loc>https://www.petermcconnell.com/tags/networking/</loc>
+    <lastmod>2023-01-18T19:48:46+00:00</lastmod>
   </url><url>
     <loc>https://www.petermcconnell.com/</loc>
-    <lastmod>2023-01-10T08:41:50+00:00</lastmod>
+    <lastmod>2023-01-18T19:48:46+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="pt"
@@ -35,7 +61,7 @@
                 />
   </url><url>
     <loc>https://www.petermcconnell.com/posts/</loc>
-    <lastmod>2023-01-10T08:41:50+00:00</lastmod>
+    <lastmod>2023-01-18T19:48:46+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="es"
@@ -57,11 +83,8 @@
                 href="https://www.petermcconnell.com/posts/"
                 />
   </url><url>
-    <loc>https://www.petermcconnell.com/tags/software-engineering/</loc>
-    <lastmod>2023-01-10T08:41:50+00:00</lastmod>
-  </url><url>
     <loc>https://www.petermcconnell.com/tags/</loc>
-    <lastmod>2023-01-10T08:41:50+00:00</lastmod>
+    <lastmod>2023-01-18T19:48:46+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="es"
@@ -82,6 +105,18 @@
                 hreflang="en"
                 href="https://www.petermcconnell.com/tags/"
                 />
+  </url><url>
+    <loc>https://www.petermcconnell.com/posts/advise_to_engineers/</loc>
+    <lastmod>2023-01-10T08:41:50+00:00</lastmod>
+  </url><url>
+    <loc>https://www.petermcconnell.com/tags/career-advice/</loc>
+    <lastmod>2023-01-10T08:41:50+00:00</lastmod>
+  </url><url>
+    <loc>https://www.petermcconnell.com/tags/mentorship/</loc>
+    <lastmod>2023-01-10T08:41:50+00:00</lastmod>
+  </url><url>
+    <loc>https://www.petermcconnell.com/tags/software-engineering/</loc>
+    <lastmod>2023-01-10T08:41:50+00:00</lastmod>
   </url><url>
     <loc>https://www.petermcconnell.com/tags/debugging/</loc>
     <lastmod>2023-01-05T16:51:58+00:00</lastmod>
@@ -147,29 +182,6 @@
   </url><url>
     <loc>https://www.petermcconnell.com/tags/iostat/</loc>
     <lastmod>2022-12-30T14:28:12+00:00</lastmod>
-  </url><url>
-    <loc>https://www.petermcconnell.com/tags/linux/</loc>
-    <lastmod>2022-12-30T14:28:12+00:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="es"
-                href="https://www.petermcconnell.com/es/tags/linux/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="fr"
-                href="https://www.petermcconnell.com/fr/tags/linux/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="pt"
-                href="https://www.petermcconnell.com/pt/tags/linux/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://www.petermcconnell.com/tags/linux/"
-                />
   </url><url>
     <loc>https://www.petermcconnell.com/tags/lsblk/</loc>
     <lastmod>2022-12-30T14:28:12+00:00</lastmod>
