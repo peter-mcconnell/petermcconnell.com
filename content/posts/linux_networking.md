@@ -1,5 +1,5 @@
 +++
-title = "Linux networking: Network Namespaces, Docker and DNS"
+title = "Docker networking: Network Namespaces, Docker Bridge and DNS"
 date = "2023-01-18T19:48:46Z"
 author = "Peter McConnell"
 authorTwitter = "PeteMcConnell_" #do not include @
@@ -14,7 +14,7 @@ color = "" #color from the theme settings
 ToC = true
 +++
 
-Ever wondered how `docker compose` lets you communicate with other services? This article takes a high level look at network namespaces, Dockers internal DNS and Docker bridge.
+Ever wondered how `docker compose` lets you communicate between services? This article takes a high level look at network namespaces, Dockers internal DNS and Docker bridge.
 
 Network namespaces are a powerful feature in Linux that allows for the isolation of network stacks, creating multiple virtual networks on a single host. This concept is particularly useful for scenarios such as containerization, where each container needs its own independent network stack. In this article we'll take a look at how `docker` / `docker compose` utilize this technology to grant containers network isolation and also take a look at how docker handles cross-container networking.
 
@@ -117,7 +117,7 @@ Commercial support is available at
 </html>
 ```
 
-We connected to the `nginx_a` container, then `curl`ed `nginx_b`. How does it work? We'll dig in over the next few sections to understand how that works.
+We connected to the `nginx_a` container, then curl'ed `nginx_b`. How does it work? We'll dig in over the next few sections to understand how Docker makes this possible.
 
 ### a quick note on the 'links:' property
 
@@ -308,15 +308,15 @@ The Docker bridge default gateway is responsible for connecting containers runni
 
 ### so ... how does nginx_a speak to nginx_b? (recap)
 
-The request starts from `nginx_a` with `curl nginx_a`. `nginx_a` is resolved by Dockers internal DNS to `172.21.0.2` which is within the range of the `nginx_a` default gateway, the docker bridge. The Docker Bridge acts as a gateway rewrites the source IP of the packet to the NAT to allow for return traffic using NAT, then forwards the request onto the desired destination at `172.21.0.2`. The request then works its way back to the real source, via the default gateway once more.
+The request starts from `nginx_a` with `curl nginx_a`. `nginx_a` is configured to resolve DNS with Dockers internal DNS, as defined in its `/etc/resolv.conf` file. Dockers Internal DNS resolves `nginx_b` to `172.21.0.2` which is within the range of the default gateway in, the docker bridge, as defined in this containers route table. The Docker Bridge acts as a gateway and rewrites the source IP of the packet to the NAT to allow for return traffic using NAT, then forwards the request onto the desired destination at `172.21.0.2`. The request then works its way back to the real source, via the default gateway once more.
 
 ### network_mode
 
-`docker compose` supports another interesting property that we'll take a quick look at: `network_mode:`. With this setting we can tell services to share the same network resources. As we're using `nginx` in both services currently they will both try to bind on port `:80` which will cause problems if they are sharing the same resources so for `nginx_b` we'll create a unique nginx config file `netsvc.conf`:
+`docker compose` supports another interesting property that we'll take a quick look at: `network_mode:`. With this setting we can tell services to share the same network resources. As we're using `nginx` in both services currently they will both try to bind on port `80` which will cause problems if they are sharing the same resources so for `nginx_b` we'll create a unique nginx config file `netsvc.conf`:
 
 ```txt
 server {
-    listen       8080;
+    listen       9080;
     server_name  localhost;
     location / {
         root   /usr/share/nginx/html;
@@ -325,7 +325,7 @@ server {
 }
 ```
 
-This is as simple an nginx config as you can get. Notably we're telling it to listen on `8080` instead of the default `80` so that they can run in the same network namespace without colliding.
+This is as simple an nginx config as you can get. Notably we're telling it to listen on `9080` instead of the default `80` so that they can run in the same network namespace without colliding.
 
 Now we'll create an updated `docker-compose-netsvc.yaml` file:
 
@@ -337,6 +337,7 @@ services:
     image: 'nginx:latest'
     ports:
       - '8080:80'
+      - '9080:9080'
   nginx_b:
     image: 'nginx:latest'
     volumes:
@@ -344,7 +345,7 @@ services:
     network_mode: "service:nginx_a"
 ```
 
-With this file in place we'll run our new compose:
+See how we put our port-mapping for `nginx_b` (to `:9080`) in `nginx_a`? With this file in place we'll run our new compose:
 
 ```sh
 docker compose -f docker-compose-netsvc.yaml up -d
@@ -365,13 +366,11 @@ We do still have two containers of course:
 ```sh
 docker compose ps
 NAME                      IMAGE               COMMAND                  SERVICE             CREATED             STATUS              PORTS
-linuxnetworks-nginx_a-1   nginx:latest        "/docker-entrypoint.…"   nginx_a             5 minutes ago       Up 5 minutes        0.0.0.0:8080->80/tcp, :::8080->80/tcp
+linuxnetworks-nginx_a-1   nginx:latest        "/docker-entrypoint.…"   nginx_a             5 minutes ago       Up 5 minutes        0.0.0.0:8080->80/tcp, :::8080->80/tcp, 0.0.0.0:9080->9080/tcp, :::9080->9080/tcp
 linuxnetworks-nginx_b-1   nginx:latest        "/docker-entrypoint.…"   nginx_b             5 minutes ago       Up 5 minutes        
 ```
 
-Note: `nginx_b` has no information in the `PORTS` column. Also - our `nginx_b` custom port, `8080`, is now visible in the `PORTS` column of the `nginx_a` row. It might look weird but this makes sense - `nginx_b` is literally using the `nginx_a` network.
-
-This begins to look even more weird if try to `docker inspect` the `nginx_b` network settings:
+We can see from `docker inspect` the `nginx_b` container has no visible network settings:
 
 ```sh
 $ docker inspect $(docker ps -f 'Name=nginx_b' -q) -f '{{.NetworkSettings.Networks.linuxnetworks_default.IPAddress}}'

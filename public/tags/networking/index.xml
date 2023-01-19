@@ -9,14 +9,14 @@
     <copyright>&amp;copy; Peter McConnell 2023</copyright>
     <lastBuildDate>Wed, 18 Jan 2023 19:48:46 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/networking/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Linux networking: Network Namespaces, Docker and DNS</title>
+      <title>Docker networking: Network Namespaces, Docker Bridge and DNS</title>
       <link>https://www.petermcconnell.com/posts/linux_networking/</link>
       <pubDate>Wed, 18 Jan 2023 19:48:46 +0000</pubDate>
       
       <guid>https://www.petermcconnell.com/posts/linux_networking/</guid>
-      <description>Ever wondered how docker compose lets you communicate with other services? This article takes a high level look at network namespaces, Dockers internal DNS and Docker bridge.
+      <description>Ever wondered how docker compose lets you communicate between services? This article takes a high level look at network namespaces, Dockers internal DNS and Docker bridge.
 Network namespaces are a powerful feature in Linux that allows for the isolation of network stacks, creating multiple virtual networks on a single host. This concept is particularly useful for scenarios such as containerization, where each container needs its own independent network stack. In this article we&amp;rsquo;ll take a look at how docker / docker compose utilize this technology to grant containers network isolation and also take a look at how docker handles cross-container networking.</description>
-      <content>&lt;p&gt;Ever wondered how &lt;code&gt;docker compose&lt;/code&gt; lets you communicate with other services? This article takes a high level look at network namespaces, Dockers internal DNS and Docker bridge.&lt;/p&gt;
+      <content>&lt;p&gt;Ever wondered how &lt;code&gt;docker compose&lt;/code&gt; lets you communicate between services? This article takes a high level look at network namespaces, Dockers internal DNS and Docker bridge.&lt;/p&gt;
 &lt;p&gt;Network namespaces are a powerful feature in Linux that allows for the isolation of network stacks, creating multiple virtual networks on a single host. This concept is particularly useful for scenarios such as containerization, where each container needs its own independent network stack. In this article we&amp;rsquo;ll take a look at how &lt;code&gt;docker&lt;/code&gt; / &lt;code&gt;docker compose&lt;/code&gt; utilize this technology to grant containers network isolation and also take a look at how docker handles cross-container networking.&lt;/p&gt;
 &lt;h2 id=&#34;simple-docker-run&#34;&gt;simple docker run&lt;/h2&gt;
 &lt;p&gt;To see network namespaces in action, we&amp;rsquo;ll run a simple container (without the &lt;code&gt;--network=host&lt;/code&gt; flag):&lt;/p&gt;
@@ -85,7 +85,7 @@ Commercial support is available at
 &amp;lt;p&amp;gt;&amp;lt;em&amp;gt;Thank you &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; using nginx.&amp;lt;/em&amp;gt;&amp;lt;/p&amp;gt;
 &amp;lt;/body&amp;gt;
 &amp;lt;/html&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We connected to the &lt;code&gt;nginx_a&lt;/code&gt; container, then &lt;code&gt;curl&lt;/code&gt;ed &lt;code&gt;nginx_b&lt;/code&gt;. How does it work? We&amp;rsquo;ll dig in over the next few sections to understand how that works.&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We connected to the &lt;code&gt;nginx_a&lt;/code&gt; container, then curl&amp;rsquo;ed &lt;code&gt;nginx_b&lt;/code&gt;. How does it work? We&amp;rsquo;ll dig in over the next few sections to understand how Docker makes this possible.&lt;/p&gt;
 &lt;h3 id=&#34;a-quick-note-on-the-links-property&#34;&gt;a quick note on the &amp;lsquo;links:&amp;rsquo; property&lt;/h3&gt;
 &lt;p&gt;&lt;code&gt;docker compose&lt;/code&gt; supports a &lt;code&gt;links:&lt;/code&gt; property. This &lt;em&gt;is not&lt;/em&gt; required to allow services to speak to each other. It&amp;rsquo;s main purpose is to allow you to create aliases or to use hostname resolution, linking between containers in different docker compose files.&lt;/p&gt;
 &lt;p&gt;more info: &lt;a href=&#34;https://docs.docker.com/compose/compose-file/#links&#34;&gt;https://docs.docker.com/compose/compose-file/#links&lt;/a&gt;&lt;/p&gt;
@@ -206,18 +206,18 @@ a52a287eb9f2   bridge                  bridge    local
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can see the Gateway for &lt;code&gt;bridge&lt;/code&gt; is set to &lt;code&gt;172.17.0.1&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;The Docker bridge default gateway is responsible for connecting containers running in separate network namespaces, using the IP addresses and MAC addresses of the containers connected to it to forward packets to the correct container. When a packet is received by the bridge, it checks the destination IP address of the packet and compares it to the IP addresses of the connected containers. If a match is found, the packet is then forwarded to the corresponding container using the container&amp;rsquo;s MAC address. Additionally, the bridge also uses network address translation (NAT) to rewrite the source IP address of the packet to that of the bridge, allowing the containers to communicate with external networks.&lt;/p&gt;
 &lt;h3 id=&#34;so--how-does-nginx_a-speak-to-nginx_b-recap&#34;&gt;so &amp;hellip; how does nginx_a speak to nginx_b? (recap)&lt;/h3&gt;
-&lt;p&gt;The request starts from &lt;code&gt;nginx_a&lt;/code&gt; with &lt;code&gt;curl nginx_a&lt;/code&gt;. &lt;code&gt;nginx_a&lt;/code&gt; is resolved by Dockers internal DNS to &lt;code&gt;172.21.0.2&lt;/code&gt; which is within the range of the &lt;code&gt;nginx_a&lt;/code&gt; default gateway, the docker bridge. The Docker Bridge acts as a gateway rewrites the source IP of the packet to the NAT to allow for return traffic using NAT, then forwards the request onto the desired destination at &lt;code&gt;172.21.0.2&lt;/code&gt;. The request then works its way back to the real source, via the default gateway once more.&lt;/p&gt;
+&lt;p&gt;The request starts from &lt;code&gt;nginx_a&lt;/code&gt; with &lt;code&gt;curl nginx_a&lt;/code&gt;. &lt;code&gt;nginx_a&lt;/code&gt; is configured to resolve DNS with Dockers internal DNS, as defined in its &lt;code&gt;/etc/resolv.conf&lt;/code&gt; file. Dockers Internal DNS resolves &lt;code&gt;nginx_b&lt;/code&gt; to &lt;code&gt;172.21.0.2&lt;/code&gt; which is within the range of the default gateway in, the docker bridge, as defined in this containers route table. The Docker Bridge acts as a gateway and rewrites the source IP of the packet to the NAT to allow for return traffic using NAT, then forwards the request onto the desired destination at &lt;code&gt;172.21.0.2&lt;/code&gt;. The request then works its way back to the real source, via the default gateway once more.&lt;/p&gt;
 &lt;h3 id=&#34;network_mode&#34;&gt;network_mode&lt;/h3&gt;
-&lt;p&gt;&lt;code&gt;docker compose&lt;/code&gt; supports another interesting property that we&amp;rsquo;ll take a quick look at: &lt;code&gt;network_mode:&lt;/code&gt;. With this setting we can tell services to share the same network resources. As we&amp;rsquo;re using &lt;code&gt;nginx&lt;/code&gt; in both services currently they will both try to bind on port &lt;code&gt;:80&lt;/code&gt; which will cause problems if they are sharing the same resources so for &lt;code&gt;nginx_b&lt;/code&gt; we&amp;rsquo;ll create a unique nginx config file &lt;code&gt;netsvc.conf&lt;/code&gt;:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;docker compose&lt;/code&gt; supports another interesting property that we&amp;rsquo;ll take a quick look at: &lt;code&gt;network_mode:&lt;/code&gt;. With this setting we can tell services to share the same network resources. As we&amp;rsquo;re using &lt;code&gt;nginx&lt;/code&gt; in both services currently they will both try to bind on port &lt;code&gt;80&lt;/code&gt; which will cause problems if they are sharing the same resources so for &lt;code&gt;nginx_b&lt;/code&gt; we&amp;rsquo;ll create a unique nginx config file &lt;code&gt;netsvc.conf&lt;/code&gt;:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-txt&#34; data-lang=&#34;txt&#34;&gt;server {
-    listen       8080;
+    listen       9080;
     server_name  localhost;
     location / {
         root   /usr/share/nginx/html;
         index  index.html index.htm;
     }
 }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This is as simple an nginx config as you can get. Notably we&amp;rsquo;re telling it to listen on &lt;code&gt;8080&lt;/code&gt; instead of the default &lt;code&gt;80&lt;/code&gt; so that they can run in the same network namespace without colliding.&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This is as simple an nginx config as you can get. Notably we&amp;rsquo;re telling it to listen on &lt;code&gt;9080&lt;/code&gt; instead of the default &lt;code&gt;80&lt;/code&gt; so that they can run in the same network namespace without colliding.&lt;/p&gt;
 &lt;p&gt;Now we&amp;rsquo;ll create an updated &lt;code&gt;docker-compose-netsvc.yaml&lt;/code&gt; file:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;---
 &lt;span style=&#34;color:#f92672&#34;&gt;version&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;3.1&amp;#39;&lt;/span&gt;
@@ -226,12 +226,13 @@ a52a287eb9f2   bridge                  bridge    local
     &lt;span style=&#34;color:#f92672&#34;&gt;image&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;nginx:latest&amp;#39;&lt;/span&gt;
     &lt;span style=&#34;color:#f92672&#34;&gt;ports&lt;/span&gt;:
       - &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;8080:80&amp;#39;&lt;/span&gt;
+      - &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;9080:9080&amp;#39;&lt;/span&gt;
   &lt;span style=&#34;color:#f92672&#34;&gt;nginx_b&lt;/span&gt;:
     &lt;span style=&#34;color:#f92672&#34;&gt;image&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;nginx:latest&amp;#39;&lt;/span&gt;
     &lt;span style=&#34;color:#f92672&#34;&gt;volumes&lt;/span&gt;:
       - &lt;span style=&#34;color:#ae81ff&#34;&gt;./netsvc.conf:/etc/nginx/conf.d/default.conf:ro&lt;/span&gt;
     &lt;span style=&#34;color:#f92672&#34;&gt;network_mode&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;service:nginx_a&amp;#34;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;With this file in place we&amp;rsquo;ll run our new compose:&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;See how we put our port-mapping for &lt;code&gt;nginx_b&lt;/code&gt; (to &lt;code&gt;:9080&lt;/code&gt;) in &lt;code&gt;nginx_a&lt;/code&gt;? With this file in place we&amp;rsquo;ll run our new compose:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;docker compose -f docker-compose-netsvc.yaml up -d
 &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;+&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; Running 2/2
  ⠿ Container linuxnetworks-nginx_a-1  Started  0.4s
@@ -242,10 +243,9 @@ a52a287eb9f2   bridge                  bridge    local
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We do still have two containers of course:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;docker compose ps
 NAME                      IMAGE               COMMAND                  SERVICE             CREATED             STATUS              PORTS
-linuxnetworks-nginx_a-1   nginx:latest        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/docker-entrypoint.…&amp;#34;&lt;/span&gt;   nginx_a             &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt; minutes ago       Up &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt; minutes        0.0.0.0:8080-&amp;gt;80/tcp, :::8080-&amp;gt;80/tcp
+linuxnetworks-nginx_a-1   nginx:latest        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/docker-entrypoint.…&amp;#34;&lt;/span&gt;   nginx_a             &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt; minutes ago       Up &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt; minutes        0.0.0.0:8080-&amp;gt;80/tcp, :::8080-&amp;gt;80/tcp, 0.0.0.0:9080-&amp;gt;9080/tcp, :::9080-&amp;gt;9080/tcp
 linuxnetworks-nginx_b-1   nginx:latest        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/docker-entrypoint.…&amp;#34;&lt;/span&gt;   nginx_b             &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt; minutes ago       Up &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt; minutes        
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Note: &lt;code&gt;nginx_b&lt;/code&gt; has no information in the &lt;code&gt;PORTS&lt;/code&gt; column. Also - our &lt;code&gt;nginx_b&lt;/code&gt; custom port, &lt;code&gt;8080&lt;/code&gt;, is now visible in the &lt;code&gt;PORTS&lt;/code&gt; column of the &lt;code&gt;nginx_a&lt;/code&gt; row. It might look weird but this makes sense - &lt;code&gt;nginx_b&lt;/code&gt; is literally using the &lt;code&gt;nginx_a&lt;/code&gt; network.&lt;/p&gt;
-&lt;p&gt;This begins to look even more weird if try to &lt;code&gt;docker inspect&lt;/code&gt; the &lt;code&gt;nginx_b&lt;/code&gt; network settings:&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can see from &lt;code&gt;docker inspect&lt;/code&gt; the &lt;code&gt;nginx_b&lt;/code&gt; container has no visible network settings:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ docker inspect &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;docker ps -f &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Name=nginx_b&amp;#39;&lt;/span&gt; -q&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt; -f &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;{{.NetworkSettings.Networks.linuxnetworks_default.IPAddress}}&amp;#39;&lt;/span&gt;
 &amp;lt;no value&amp;gt;
 
