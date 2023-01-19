@@ -7,7 +7,181 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; Peter McConnell 2023</copyright>
-    <lastBuildDate>Wed, 18 Jan 2023 19:48:46 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/docker/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 19 Jan 2023 12:05:02 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/docker/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Docker Overlayfs: How filesystems work in Docker</title>
+      <link>https://www.petermcconnell.com/posts/docker-overlayfs/</link>
+      <pubDate>Thu, 19 Jan 2023 12:05:02 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/posts/docker-overlayfs/</guid>
+      <description>This is a brief follow up to my article on Docker networking: Network Namespaces, Docker Bridge and DNS
+Docker uses OverlayFS to manage the file system of its containers. When a container is run, Docker creates a new layer for the container&amp;rsquo;s file system on top of the base image. This allows the container to have its own file system that is isolated from the host system and other containers.</description>
+      <content>&lt;p&gt;This is a brief follow up to my article on &lt;a href=&#34;https://www.petermcconnell.com/posts/linux_networking/&#34;&gt;Docker networking: Network Namespaces, Docker Bridge and DNS&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Docker uses OverlayFS to manage the file system of its containers. When a container is run, Docker creates a new layer for the container&amp;rsquo;s file system on top of the base image. This allows the container to have its own file system that is isolated from the host system and other containers.&lt;/p&gt;
+&lt;p&gt;Running the &lt;code&gt;ubuntu:22.04&lt;/code&gt; image we can see the root file system differs from the host where I&amp;rsquo;m running it. Below you can see there is a file in root called &lt;code&gt;/.dockerenv&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ docker run --rm -ti ubuntu:22.04 bash
+root@541cc3b62543:/# ls -al /
+total &lt;span style=&#34;color:#ae81ff&#34;&gt;56&lt;/span&gt;
+drwxr-xr-x   &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;4096&lt;/span&gt; Jan &lt;span style=&#34;color:#ae81ff&#34;&gt;19&lt;/span&gt; 11:51 .
+drwxr-xr-x   &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;4096&lt;/span&gt; Jan &lt;span style=&#34;color:#ae81ff&#34;&gt;19&lt;/span&gt; 11:51 ..
+-rwxr-xr-x   &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root    &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; Jan &lt;span style=&#34;color:#ae81ff&#34;&gt;19&lt;/span&gt; 11:51 .dockerenv
+lrwxrwxrwx   &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root    &lt;span style=&#34;color:#ae81ff&#34;&gt;7&lt;/span&gt; Nov &lt;span style=&#34;color:#ae81ff&#34;&gt;30&lt;/span&gt; 02:04 bin -&amp;gt; usr/bin
+drwxr-xr-x   &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;4096&lt;/span&gt; Apr &lt;span style=&#34;color:#ae81ff&#34;&gt;18&lt;/span&gt;  &lt;span style=&#34;color:#ae81ff&#34;&gt;2022&lt;/span&gt; boot
+drwxr-xr-x   &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt; root root  &lt;span style=&#34;color:#ae81ff&#34;&gt;360&lt;/span&gt; Jan &lt;span style=&#34;color:#ae81ff&#34;&gt;19&lt;/span&gt; 11:51 dev
+drwxr-xr-x   &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;4096&lt;/span&gt; Jan &lt;span style=&#34;color:#ae81ff&#34;&gt;19&lt;/span&gt; 11:51 etc
+drwxr-xr-x   &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;4096&lt;/span&gt; Apr &lt;span style=&#34;color:#ae81ff&#34;&gt;18&lt;/span&gt;  &lt;span style=&#34;color:#ae81ff&#34;&gt;2022&lt;/span&gt; home
+lrwxrwxrwx   &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root    &lt;span style=&#34;color:#ae81ff&#34;&gt;7&lt;/span&gt; Nov &lt;span style=&#34;color:#ae81ff&#34;&gt;30&lt;/span&gt; 02:04 lib -&amp;gt; usr/lib
+lrwxrwxrwx   &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root    &lt;span style=&#34;color:#ae81ff&#34;&gt;9&lt;/span&gt; Nov &lt;span style=&#34;color:#ae81ff&#34;&gt;30&lt;/span&gt; 02:04 lib32 -&amp;gt; usr/lib32
+lrwxrwxrwx   &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root    &lt;span style=&#34;color:#ae81ff&#34;&gt;9&lt;/span&gt; Nov &lt;span style=&#34;color:#ae81ff&#34;&gt;30&lt;/span&gt; 02:04 lib64 -&amp;gt; usr/lib64
+lrwxrwxrwx   &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root   &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt; Nov &lt;span style=&#34;color:#ae81ff&#34;&gt;30&lt;/span&gt; 02:04 libx32 -&amp;gt; usr/libx32
+drwxr-xr-x   &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;4096&lt;/span&gt; Nov &lt;span style=&#34;color:#ae81ff&#34;&gt;30&lt;/span&gt; 02:04 media
+drwxr-xr-x   &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;4096&lt;/span&gt; Nov &lt;span style=&#34;color:#ae81ff&#34;&gt;30&lt;/span&gt; 02:04 mnt
+drwxr-xr-x   &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;4096&lt;/span&gt; Nov &lt;span style=&#34;color:#ae81ff&#34;&gt;30&lt;/span&gt; 02:04 opt
+dr-xr-xr-x &lt;span style=&#34;color:#ae81ff&#34;&gt;491&lt;/span&gt; root root    &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; Jan &lt;span style=&#34;color:#ae81ff&#34;&gt;19&lt;/span&gt; 11:51 proc
+drwx------   &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;4096&lt;/span&gt; Nov &lt;span style=&#34;color:#ae81ff&#34;&gt;30&lt;/span&gt; 02:07 root
+drwxr-xr-x   &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;4096&lt;/span&gt; Nov &lt;span style=&#34;color:#ae81ff&#34;&gt;30&lt;/span&gt; 02:07 run
+lrwxrwxrwx   &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root    &lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt; Nov &lt;span style=&#34;color:#ae81ff&#34;&gt;30&lt;/span&gt; 02:04 sbin -&amp;gt; usr/sbin
+drwxr-xr-x   &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;4096&lt;/span&gt; Nov &lt;span style=&#34;color:#ae81ff&#34;&gt;30&lt;/span&gt; 02:04 srv
+dr-xr-xr-x  &lt;span style=&#34;color:#ae81ff&#34;&gt;13&lt;/span&gt; root root    &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; Jan &lt;span style=&#34;color:#ae81ff&#34;&gt;19&lt;/span&gt; 11:51 sys
+drwxrwxrwt   &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;4096&lt;/span&gt; Nov &lt;span style=&#34;color:#ae81ff&#34;&gt;30&lt;/span&gt; 02:07 tmp
+drwxr-xr-x  &lt;span style=&#34;color:#ae81ff&#34;&gt;14&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;4096&lt;/span&gt; Nov &lt;span style=&#34;color:#ae81ff&#34;&gt;30&lt;/span&gt; 02:04 usr
+drwxr-xr-x  &lt;span style=&#34;color:#ae81ff&#34;&gt;11&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;4096&lt;/span&gt; Nov &lt;span style=&#34;color:#ae81ff&#34;&gt;30&lt;/span&gt; 02:07 var
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Which does not exist at root on the host running the container:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;root@541cc3b62543:/# 
+root@541cc3b62543:/# exit
+exit
+$ stat /.dockerenv
+stat: cannot statx &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;/.dockerenv&amp;#39;&lt;/span&gt;: No such file or directory
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;So &amp;hellip; &lt;em&gt;where&lt;/em&gt; does it exist? To inspect the layers of a running container, you can use the &amp;ldquo;docker inspect&amp;rdquo; command followed by the container ID or name. This will return a JSON object containing information about the container, including its layers. To view this we&amp;rsquo;ll re-run our &lt;code&gt;ubuntu:22.04&lt;/code&gt; container, grab the ID and inspect it:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ docker run --rm -d -ti ubuntu:22.04 bash
+6a9014d7ebfddb3a107b29aca3764f24e51f64fda1e8b8cec135c18923daefeb
+&lt;span style=&#34;color:#75715e&#34;&gt;# lower directory&lt;/span&gt;
+$ docker inspect 6a9014d7ebfddb3a107b29aca3764f24e51f64fda1e8b8cec135c18923daefeb -f &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;{{.GraphDriver.Data.LowerDir}}&amp;#39;&lt;/span&gt;
+/dockerstore/overlay2/268eb11c54948d6293aa3947b7a2c83b1395b18509518e26487f0e79997f787a-init/diff:/dockerstore/overlay2/bb9057b4f1980fe004301f181c3313c15c2a75b7c7b7c5a6fe80159d2275f0d3/diff
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# upper directory&lt;/span&gt;
+$ docker inspect 6a9014d7ebfddb3a107b29aca3764f24e51f64fda1e8b8cec135c18923daefeb -f &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;{{.GraphDriver.Data.UpperDir}}&amp;#39;&lt;/span&gt;
+/dockerstore/overlay2/268eb11c54948d6293aa3947b7a2c83b1395b18509518e26487f0e79997f787a/diff
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# merged directory&lt;/span&gt;
+$ docker inspect 6a9014d7ebfddb3a107b29aca3764f24e51f64fda1e8b8cec135c18923daefeb -f &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;{{.GraphDriver.Data.MergedDir}}&amp;#39;&lt;/span&gt;
+/dockerstore/overlay2/268eb11c54948d6293aa3947b7a2c83b1395b18509518e26487f0e79997f787a/merged
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;I&amp;rsquo;ll keep this container running and we&amp;rsquo;ll dig into these contents shortly.&lt;/p&gt;
+&lt;p&gt;When a container is run, its layers are stored in the host system&amp;rsquo;s file system, typically in the &lt;code&gt;/var/lib/docker/overlay2&lt;/code&gt; directory. You can see mine is in &lt;code&gt;/dockerstore/&lt;/code&gt; as I have manually set &lt;code&gt;data-root&lt;/code&gt; in &lt;code&gt;/etc/docker/daemon.json&lt;/code&gt; for the host that I&amp;rsquo;m testing this on. Each layer is represented by a directory that contains the files and directories that make up that layer. The topmost layer is the one that the container is currently using, and the lower layers are the ones that are inherited from the base image.&lt;/p&gt;
+&lt;p&gt;The advantages of using layers in Docker include:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Smaller image size, since multiple containers can share a common base image&lt;/li&gt;
+&lt;li&gt;Faster container startup time, since only the changes made to the container are stored in new layers&lt;/li&gt;
+&lt;li&gt;Easier to manage and update containers, since changes can be made to a container&amp;rsquo;s layer without affecting the base image&lt;/li&gt;
+&lt;li&gt;Greater security, since each container&amp;rsquo;s file system is isolated from other containers and the host system.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Please keep in mind that the information is general and may vary depending on specific scenarios.&lt;/p&gt;
+&lt;p&gt;Now lets take a deeper look at the filesystem for our running container.&lt;/p&gt;
+&lt;h2 id=&#34;lowerdir&#34;&gt;LowerDir&lt;/h2&gt;
+&lt;p&gt;This value is unique in the outputs above in that it&amp;rsquo;s actually two paths, separated by a colon:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ docker inspect 6a9014d7ebfddb3a107b29aca3764f24e51f64fda1e8b8cec135c18923daefeb -f &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;{{.GraphDriver.Data.LowerDir}}&amp;#39;&lt;/span&gt;
+/dockerstore/overlay2/268eb11c54948d6293aa3947b7a2c83b1395b18509518e26487f0e79997f787a-init/diff:/dockerstore/overlay2/bb9057b4f1980fe004301f181c3313c15c2a75b7c7b7c5a6fe80159d2275f0d3/diff
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The first part (left side of &lt;code&gt;:&lt;/code&gt;) is the path to the init layer of the container. this is the layer that contains the initial filesystem of the container, which is based on the base image. We can take a look at the contents of that layer with &lt;code&gt;ls&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;sudo ls /dockerstore/overlay2/268eb11c54948d6293aa3947b7a2c83b1395b18509518e26487f0e79997f787a-init/diff
+dev  etc
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The second part (right side of &lt;code&gt;:&lt;/code&gt;) is the path to the layer of the container that includes changes from the rest of the Dockerfile. Again we can take a look:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;sudo ls /dockerstore/overlay2/bb9057b4f1980fe004301f181c3313c15c2a75b7c7b7c5a6fe80159d2275f0d3/diff
+bin  boot  dev	etc  home  lib	lib32  lib64  libx32  media  mnt  opt  proc  root  run	sbin  srv  sys	tmp  usr  var
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;To better visualise this, lets create our own Dockerfile:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-dockerfile&#34; data-lang=&#34;dockerfile&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; ubuntu:22.04&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;RUN&lt;/span&gt; mkdir -p /testinglowerdir/ &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; echo -n &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;hellothere&amp;#34;&lt;/span&gt; &amp;gt; /testinglowerdir/foo&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now, given what we learned above, when we run this container the first part of &lt;code&gt;LowerDir&lt;/code&gt; should contain &lt;em&gt;all&lt;/em&gt; the contents for &lt;code&gt;ubuntu:22.04&lt;/code&gt; and the second part of &lt;code&gt;LowerDir&lt;/code&gt; should contain only &lt;code&gt;/testinglowerdir/&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ docker build -t&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;test .
+Sending build context to Docker daemon  2.048kB
+Step 1/2 : FROM ubuntu:22.04
+ ---&amp;gt; 6b7dfa7e8fdb
+Step 2/2 : RUN mkdir -p /testinglowerdir/ &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; echo -n &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;hellothere&amp;#34;&lt;/span&gt; &amp;gt; /testinglowerdir/foo
+ ---&amp;gt; Running in e71a7cd5541c
+Removing intermediate container e71a7cd5541c
+ ---&amp;gt; df924945a2b0
+Successfully built df924945a2b0
+Successfully tagged test:latest
+$ docker run --rm -d -ti test bash
+9c9fe0bcd283bc0c9649b77246115e3a09e8885efd53f0e9de09de537bea9188
+$ docker inspect 9c9fe0bcd283bc0c9649b77246115e3a09e8885efd53f0e9de09de537bea9188 -f &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;{{.GraphDriver.Data.LowerDir}}&amp;#39;&lt;/span&gt;
+/dockerstore/overlay2/5501fd185b14a60317f3e0db485bb8f8c5cf41b7cb1ed0688526ba918938b7bf-init/diff:/dockerstore/overlay2/4d49e9a62bad55c3761ab08ded87f56010b28a40f264896c01e5c1c653b826a8/diff:/dockerstore/overlay2/bb9057b4f1980fe004301f181c3313c15c2a75b7c7b7c5a6fe80159d2275f0d3/diff
+$ &lt;span style=&#34;color:#75715e&#34;&gt;# show directory contents for second part of LowerDir&lt;/span&gt;
+$ sudo ls /dockerstore/overlay2/4d49e9a62bad55c3761ab08ded87f56010b28a40f264896c01e5c1c653b826a8/diff
+testinglowerdir
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;upperdir&#34;&gt;UpperDir&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ docker inspect 6a9014d7ebfddb3a107b29aca3764f24e51f64fda1e8b8cec135c18923daefeb -f &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;{{.GraphDriver.Data.UpperDir}}&amp;#39;&lt;/span&gt;
+/dockerstore/overlay2/268eb11c54948d6293aa3947b7a2c83b1395b18509518e26487f0e79997f787a/diff
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The UpperDir contains changes that we&amp;rsquo;ve made at runtime. To see this in action we can exec into our container and create a simple directory with a file in the root directory:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;docker exec -ti 6a9 bash
+root@6a9014d7ebfd:/# mkdir /tutorial
+root@6a9014d7ebfd:/# echo &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;iseeyou&amp;#39;&lt;/span&gt; &amp;gt; /tutorial/ohai
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can now see this in our UpperDir directory:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ sudo ls /dockerstore/overlay2/268eb11c54948d6293aa3947b7a2c83b1395b18509518e26487f0e79997f787a/diff/
+root  tutorial
+$ sudo cat /dockerstore/overlay2/268eb11c54948d6293aa3947b7a2c83b1395b18509518e26487f0e79997f787a/diff/tutorial/ohai
+iseeyou
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Want to quickly see what files are being created by a running container? This is something the &lt;code&gt;UpperDir&lt;/code&gt; can tell you.&lt;/p&gt;
+&lt;h2 id=&#34;mergeddir&#34;&gt;MergedDir&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ docker inspect 6a9014d7ebfddb3a107b29aca3764f24e51f64fda1e8b8cec135c18923daefeb -f &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;{{.GraphDriver.Data.MergedDir}}&amp;#39;&lt;/span&gt;
+/dockerstore/overlay2/268eb11c54948d6293aa3947b7a2c83b1395b18509518e26487f0e79997f787a/merged
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;I&amp;rsquo;m sure you&amp;rsquo;ve guessed what this one is&amp;hellip; This is the merged structure:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ sudo ls /dockerstore/overlay2/268eb11c54948d6293aa3947b7a2c83b1395b18509518e26487f0e79997f787a/merged
+bin  boot  dev	etc  home  lib	lib32  lib64  libx32  media  mnt  opt  proc  root  run	sbin  srv  sys	tmp  tutorial  usr  var
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Here you can see all of the directories from the LowerDir and UpperDir together. We can chroot into this directory to &amp;ldquo;see what docker sees&amp;rdquo;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;sudo chroot /dockerstore/overlay2/268eb11c54948d6293aa3947b7a2c83b1395b18509518e26487f0e79997f787a/merged /bin/bash
+root@pete:/# ls -al
+total &lt;span style=&#34;color:#ae81ff&#34;&gt;72&lt;/span&gt;
+drwxr-xr-x  &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;4096&lt;/span&gt; Jan &lt;span style=&#34;color:#ae81ff&#34;&gt;19&lt;/span&gt; 12:21 .
+drwxr-xr-x  &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;4096&lt;/span&gt; Jan &lt;span style=&#34;color:#ae81ff&#34;&gt;19&lt;/span&gt; 12:21 ..
+-rwxr-xr-x  &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root    &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; Jan &lt;span style=&#34;color:#ae81ff&#34;&gt;19&lt;/span&gt; 11:56 .dockerenv
+lrwxrwxrwx  &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root    &lt;span style=&#34;color:#ae81ff&#34;&gt;7&lt;/span&gt; Nov &lt;span style=&#34;color:#ae81ff&#34;&gt;30&lt;/span&gt; 02:04 bin -&amp;gt; usr/bin
+drwxr-xr-x  &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;4096&lt;/span&gt; Apr &lt;span style=&#34;color:#ae81ff&#34;&gt;18&lt;/span&gt;  &lt;span style=&#34;color:#ae81ff&#34;&gt;2022&lt;/span&gt; boot
+drwxr-xr-x  &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;4096&lt;/span&gt; Jan &lt;span style=&#34;color:#ae81ff&#34;&gt;19&lt;/span&gt; 11:56 dev
+drwxr-xr-x  &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;4096&lt;/span&gt; Jan &lt;span style=&#34;color:#ae81ff&#34;&gt;19&lt;/span&gt; 11:56 etc
+drwxr-xr-x  &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;4096&lt;/span&gt; Apr &lt;span style=&#34;color:#ae81ff&#34;&gt;18&lt;/span&gt;  &lt;span style=&#34;color:#ae81ff&#34;&gt;2022&lt;/span&gt; home
+lrwxrwxrwx  &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root    &lt;span style=&#34;color:#ae81ff&#34;&gt;7&lt;/span&gt; Nov &lt;span style=&#34;color:#ae81ff&#34;&gt;30&lt;/span&gt; 02:04 lib -&amp;gt; usr/lib
+lrwxrwxrwx  &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root    &lt;span style=&#34;color:#ae81ff&#34;&gt;9&lt;/span&gt; Nov &lt;span style=&#34;color:#ae81ff&#34;&gt;30&lt;/span&gt; 02:04 lib32 -&amp;gt; usr/lib32
+lrwxrwxrwx  &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root    &lt;span style=&#34;color:#ae81ff&#34;&gt;9&lt;/span&gt; Nov &lt;span style=&#34;color:#ae81ff&#34;&gt;30&lt;/span&gt; 02:04 lib64 -&amp;gt; usr/lib64
+lrwxrwxrwx  &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root   &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt; Nov &lt;span style=&#34;color:#ae81ff&#34;&gt;30&lt;/span&gt; 02:04 libx32 -&amp;gt; usr/libx32
+drwxr-xr-x  &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;4096&lt;/span&gt; Nov &lt;span style=&#34;color:#ae81ff&#34;&gt;30&lt;/span&gt; 02:04 media
+drwxr-xr-x  &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;4096&lt;/span&gt; Nov &lt;span style=&#34;color:#ae81ff&#34;&gt;30&lt;/span&gt; 02:04 mnt
+drwxr-xr-x  &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;4096&lt;/span&gt; Nov &lt;span style=&#34;color:#ae81ff&#34;&gt;30&lt;/span&gt; 02:04 opt
+drwxr-xr-x  &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;4096&lt;/span&gt; Apr &lt;span style=&#34;color:#ae81ff&#34;&gt;18&lt;/span&gt;  &lt;span style=&#34;color:#ae81ff&#34;&gt;2022&lt;/span&gt; proc
+drwx------  &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;4096&lt;/span&gt; Jan &lt;span style=&#34;color:#ae81ff&#34;&gt;19&lt;/span&gt; 12:16 root
+drwxr-xr-x  &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;4096&lt;/span&gt; Nov &lt;span style=&#34;color:#ae81ff&#34;&gt;30&lt;/span&gt; 02:07 run
+lrwxrwxrwx  &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root    &lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt; Nov &lt;span style=&#34;color:#ae81ff&#34;&gt;30&lt;/span&gt; 02:04 sbin -&amp;gt; usr/sbin
+drwxr-xr-x  &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;4096&lt;/span&gt; Nov &lt;span style=&#34;color:#ae81ff&#34;&gt;30&lt;/span&gt; 02:04 srv
+drwxr-xr-x  &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;4096&lt;/span&gt; Apr &lt;span style=&#34;color:#ae81ff&#34;&gt;18&lt;/span&gt;  &lt;span style=&#34;color:#ae81ff&#34;&gt;2022&lt;/span&gt; sys
+drwxrwxrwt  &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;4096&lt;/span&gt; Nov &lt;span style=&#34;color:#ae81ff&#34;&gt;30&lt;/span&gt; 02:07 tmp
+drwxr-xr-x  &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;4096&lt;/span&gt; Jan &lt;span style=&#34;color:#ae81ff&#34;&gt;19&lt;/span&gt; 12:20 tutorial
+drwxr-xr-x &lt;span style=&#34;color:#ae81ff&#34;&gt;14&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;4096&lt;/span&gt; Nov &lt;span style=&#34;color:#ae81ff&#34;&gt;30&lt;/span&gt; 02:04 usr
+drwxr-xr-x &lt;span style=&#34;color:#ae81ff&#34;&gt;11&lt;/span&gt; root root &lt;span style=&#34;color:#ae81ff&#34;&gt;4096&lt;/span&gt; Nov &lt;span style=&#34;color:#ae81ff&#34;&gt;30&lt;/span&gt; 02:07 var
+root@pete:/# cat /tutorial/ohai 
+iseeyou
+root@pete:/#
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Pretty sweet! Another way / a &amp;ldquo;better&amp;rdquo; way that we can get this view is with &lt;code&gt;nsenter&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ sudo nsenter --target &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;docker inspect --format &lt;span style=&#34;color:#f92672&#34;&gt;{{&lt;/span&gt;.State.Pid&lt;span style=&#34;color:#f92672&#34;&gt;}}&lt;/span&gt; 6a9&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt; --mount --uts --ipc --net --pid
+root@6a9014d7ebfd:/# cat /tutorial/ohai 
+iseeyou
+root@6a9014d7ebfd:/#
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;do-it-yourself&#34;&gt;Do it yourself&lt;/h2&gt;
+&lt;p&gt;This has been a quick look into how Docker avails of OverlayFS, but you can of course do this yourself. The basic syntax is:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;mount -t overlay overlay -o lowerdir&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;lower,upperdir&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;upper,workdir&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;workdir target
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;lowerdir&lt;/code&gt; is the lower filesystem&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;upperdir&lt;/code&gt; is the upper filesystem&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;workdir&lt;/code&gt; is a directory where the OverlayFS stores metadata about the overlay&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;target&lt;/code&gt; is the mount point where the overlay will be mounted&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;For example, if you have two directories, /mnt/lower and /mnt/upper, you can create an OverlayFS file system that combines them at /mnt/overlay with the following command:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;mount -t overlay overlay -o lowerdir&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;/mnt/lower,upperdir&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;/mnt/upper,workdir&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;/mnt/workdir /mnt/overlay
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;To view the contents of the overlay, you can simply navigate to the mount point (in this example, /mnt/overlay) and use standard Linux commands to view the files and directories.&lt;/p&gt;
+&lt;p&gt;You can also use &lt;code&gt;lsblk&lt;/code&gt; command to view the mounted overlays in your system and also you can unmount the overlays using umount command.&lt;/p&gt;
+&lt;p&gt;Please keep in mind that this is a basic example and there are many other options and settings that can be used when creating an OverlayFS file system.&lt;/p&gt;
+</content>
+    </item>
+    
     <item>
       <title>Docker networking: Network Namespaces, Docker Bridge and DNS</title>
       <link>https://www.petermcconnell.com/posts/linux_networking/</link>
