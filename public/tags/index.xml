@@ -7,7 +7,47 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; Peter McConnell 2023</copyright>
-    <lastBuildDate>Thu, 19 Jan 2023 12:05:02 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 17 May 2023 15:31:43 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>chaos-engineering</title>
+      <link>https://www.petermcconnell.com/tags/chaos-engineering/</link>
+      <pubDate>Wed, 17 May 2023 15:31:43 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/tags/chaos-engineering/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>ebpf</title>
+      <link>https://www.petermcconnell.com/tags/ebpf/</link>
+      <pubDate>Wed, 17 May 2023 15:31:43 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/tags/ebpf/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>golang</title>
+      <link>https://www.petermcconnell.com/tags/golang/</link>
+      <pubDate>Wed, 17 May 2023 15:31:43 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/tags/golang/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>xdp</title>
+      <link>https://www.petermcconnell.com/tags/xdp/</link>
+      <pubDate>Wed, 17 May 2023 15:31:43 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/tags/xdp/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
     <item>
       <title>docker</title>
       <link>https://www.petermcconnell.com/tags/docker/</link>
@@ -144,16 +184,6 @@
       <pubDate>Tue, 03 Jan 2023 12:33:02 +0000</pubDate>
       
       <guid>https://www.petermcconnell.com/tags/delve/</guid>
-      <description></description>
-      <content></content>
-    </item>
-    
-    <item>
-      <title>golang</title>
-      <link>https://www.petermcconnell.com/tags/golang/</link>
-      <pubDate>Tue, 03 Jan 2023 12:33:02 +0000</pubDate>
-      
-      <guid>https://www.petermcconnell.com/tags/golang/</guid>
       <description></description>
       <content></content>
     </item>
