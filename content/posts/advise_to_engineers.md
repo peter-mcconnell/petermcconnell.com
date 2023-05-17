@@ -1,7 +1,7 @@
 +++
 title = "Advice for engineers wanting to 'make it'"
 date = "2023-01-10T08:41:50Z"
-author = ""
+author = "Peter McConnell"
 authorTwitter = "PeteMcConnell_" #do not include @
 cover = "https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/sinek.png"
 tags = ["career advice", "software engineering", "mentorship"]
