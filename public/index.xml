@@ -50,6 +50,10 @@ Introduction In today&amp;rsquo;s highly connected and data-driven world, networ
 &lt;p&gt;With these steps completed, you have successfully set up your development environment. You are now ready to dive into building the XDP eBPF program and the accompanying Golang application.&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
+&lt;p&gt;libbpf&lt;/p&gt;
+&lt;p&gt;We are going to use libbpf in our C code. In the dilih repo we added this as a git submodule but you can choose to manage it elsewhere if you like. When we build our C program later we&amp;rsquo;ll include libbpf with &lt;code&gt;-I../libbpf/src&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
 &lt;p&gt;(Optional) IDE configuration&lt;/p&gt;
 &lt;p&gt;Whatever your editor of choice should be, invest some time in making sure it is set up for C and Golang. Particularly for autocomplete, linting, symbol detection etc. This will make your life much easier.&lt;/p&gt;
 &lt;p&gt;If you are curious about my &lt;em&gt;exact&lt;/em&gt; setup, I use the following repo to install neovim and everything else I need for development:&lt;/p&gt;
@@ -152,7 +156,7 @@ bpf_printk(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Passing packet&amp
 &lt;li&gt;
 &lt;p&gt;Compiling the XDP Program&lt;/p&gt;
 &lt;p&gt;To compile the XDP program, we will use the LLVM Clang compiler with the appropriate flags. Open a terminal and navigate to the bpf directory where the dilih_kern.c file is located. Then, run the following command:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;clang -O2 -target bpf -c dilih_kern.c -o dilih_kern.o
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;clang -I../libbpf/src -S -g -O2 -D __BPF_TRACING__ -Wall -Werror -target bpf -c dilih_kern.c -o dilih_kern.o
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This command compiles the dilih_kern.c file into a BPF object file named dilih_kern.o. The -target bpf flag specifies the target architecture as BPF, and the -O2 flag enables optimization.&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;

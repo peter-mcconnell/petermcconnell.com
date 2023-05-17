@@ -69,7 +69,11 @@ To get started with building the XDP eBPF program with C and Golang, you need to
     
     With these steps completed, you have successfully set up your development environment. You are now ready to dive into building the XDP eBPF program and the accompanying Golang application.
 
-4. (Optional) IDE configuration
+4. libbpf
+
+    We are going to use libbpf in our C code. In the dilih repo we added this as a git submodule but you can choose to manage it elsewhere if you like. When we build our C program later we'll include libbpf with `-I../libbpf/src`
+
+5. (Optional) IDE configuration
 
     Whatever your editor of choice should be, invest some time in making sure it is set up for C and Golang. Particularly for autocomplete, linting, symbol detection etc. This will make your life much easier.
 
@@ -197,7 +201,7 @@ Once we have written the XDP eBPF program in C, the next step is to compile it a
     To compile the XDP program, we will use the LLVM Clang compiler with the appropriate flags. Open a terminal and navigate to the bpf directory where the dilih_kern.c file is located. Then, run the following command:
 
     ```shell
-    clang -O2 -target bpf -c dilih_kern.c -o dilih_kern.o
+    clang -I../libbpf/src -S -g -O2 -D __BPF_TRACING__ -Wall -Werror -target bpf -c dilih_kern.c -o dilih_kern.o
     ```
 
     This command compiles the dilih_kern.c file into a BPF object file named dilih_kern.o. The -target bpf flag specifies the target architecture as BPF, and the -O2 flag enables optimization.
