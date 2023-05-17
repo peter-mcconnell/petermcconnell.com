@@ -14,17 +14,14 @@
       <pubDate>Wed, 17 May 2023 15:31:43 +0000</pubDate>
       
       <guid>https://www.petermcconnell.com/posts/writing-an-xdp-ebpf-program/</guid>
-      <description>note: you can find the entire codebase for this article here: https://github.com/peter-mcconnell/dilih
-Introduction In today&amp;rsquo;s highly connected and data-driven world, network performance is crucial for ensuring efficient communication and optimal user experience. XDP (eXpress Data Path) and eBPF (extended Berkeley Packet Filter) have emerged as powerful technologies that enable high-performance packet processing and network optimization. In this step-by-step guide, we will explore the process of building an XDP eBPF program using C and Golang.</description>
-      <content>&lt;p&gt;&lt;em&gt;note: you can find the entire codebase for this article here: &lt;a href=&#34;https://github.com/peter-mcconnell/dilih&#34;&gt;https://github.com/peter-mcconnell/dilih&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
-&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
-&lt;p&gt;In today&amp;rsquo;s highly connected and data-driven world, network performance is crucial for ensuring efficient communication and optimal user experience. XDP (eXpress Data Path) and eBPF (extended Berkeley Packet Filter) have emerged as powerful technologies that enable high-performance packet processing and network optimization. In this step-by-step guide, we will explore the process of building an XDP eBPF program using C and Golang. XDP allows for early packet interception at the network interface driver level, while eBPF provides a flexible and efficient execution environment for custom packet processing logic. Together, they offer an unprecedented level of control and performance in networking applications. Our project, named &amp;ldquo;dilih&amp;rdquo; (drop it like it&amp;rsquo;s hot), demonstrates how to build a simple chaos engineering tool that arbitrarily drops packets on a given network interface. Through this guide, you will gain a deep understanding of XDP, eBPF, and their practical applications in network performance optimization.&lt;/p&gt;
-&lt;p&gt;Credit to Midjourney for the logo.&lt;/p&gt;
+      <description>Introduction In today&amp;rsquo;s highly connected and data-driven world, network performance is crucial for ensuring efficient communication and optimal user experience. XDP (eXpress Data Path) and eBPF (extended Berkeley Packet Filter) have emerged as powerful technologies that enable high-performance packet processing and network optimization. In this step-by-step guide, we will explore the process of building an XDP eBPF program using C and Golang. XDP allows for early packet interception at the network interface driver level, while eBPF provides a flexible and efficient execution environment for custom packet processing logic.</description>
+      <content>&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;In today&amp;rsquo;s highly connected and data-driven world, network performance is crucial for ensuring efficient communication and optimal user experience. XDP (eXpress Data Path) and eBPF (extended Berkeley Packet Filter) have emerged as powerful technologies that enable high-performance packet processing and network optimization. In this step-by-step guide, we will explore the process of building an XDP eBPF program using C and Golang. XDP allows for early packet interception at the network interface driver level, while eBPF provides a flexible and efficient execution environment for custom packet processing logic. Together, they offer an unprecedented level of control and performance in networking applications. Our project, named &amp;ldquo;dilih&amp;rdquo; (drop it like it&amp;rsquo;s hot), demonstrates how to build a simple chaos engineering tool that arbitrarily drops packets on a given network interface, which can be a useful tool to allow application developers to understand how their products behave when the network isn&amp;rsquo;t. Through this guide, you will gain a basic understanding of XDP, eBPF, and their practical applications in network manipulation.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;note: you can find the entire codebase for this article here: &lt;a href=&#34;https://github.com/peter-mcconnell/dilih&#34;&gt;https://github.com/peter-mcconnell/dilih&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
 &lt;h2 id=&#34;project-overview&#34;&gt;Project Overview&lt;/h2&gt;
-&lt;p&gt;The project aims to build an XDP (eXpress Data Path) eBPF (extended Berkeley Packet Filter) program using C and Golang. Named &amp;ldquo;dilih&amp;rdquo; (drop it like it&amp;rsquo;s hot), the program serves as a simple chaos engineering tool that selectively drops packets on a given network interface. This project demonstrates the power and flexibility of XDP and eBPF in controlling packet processing at high speed, making it an ideal starting point for understanding these technologies.&lt;/p&gt;
-&lt;p&gt;The XDP eBPF program, implemented in C, hooks into the Linux kernel&amp;rsquo;s networking stack at an early stage to intercept packets and decide their fate. Using a randomization mechanism, the program selectively drops a configurable percentage of packets, allowing for controlled chaos in network traffic. Additionally, the program utilizes eBPF&amp;rsquo;s perf event mechanism to gather statistics and measure the processing time for dropped and passed packets.&lt;/p&gt;
-&lt;p&gt;The accompanying Golang application interacts with the XDP eBPF program, providing a user-friendly interface to monitor the packet drop behavior and visualize performance statistics. It leverages the eBPF maps to extract and aggregate the collected data, allowing users to gain insights into the impact of dropped packets and the efficiency of packet processing.&lt;/p&gt;
-&lt;p&gt;Throughout this guide, we will explore the implementation details of both the XDP eBPF program in C and the Golang application. By the end of the project, you will have a solid understanding of XDP, eBPF, and their practical applications in networking and performance optimization.&lt;/p&gt;
+&lt;p&gt;The project aims to build an XDP (eXpress Data Path) eBPF (extended Berkeley Packet Filter) program using C and Golang. Named &amp;ldquo;dilih&amp;rdquo; (drop it like it&amp;rsquo;s hot, as it drops packets like &amp;hellip; they&amp;rsquo;re hot?), the program serves as a simple chaos engineering tool that randomly drops around 50% of packets on a given network interface. This project demonstrates the power and flexibility of XDP and eBPF in controlling packet processing at high speed, making it an ideal starting point for understanding these technologies.&lt;/p&gt;
+&lt;p&gt;The XDP eBPF program, implemented in C, hooks into the Linux kernel&amp;rsquo;s networking stack at an early stage to intercept packets and decide their fate. Using a simple randomization mechanism the program selectively drops packets allowing for controlled chaos in network traffic. Additionally, the program utilizes eBPF&amp;rsquo;s perf event mechanism to gather statistics and measure the processing time for dropped and passed packets.&lt;/p&gt;
+&lt;p&gt;The accompanying Golang application interacts with the XDP eBPF program, providing a user-friendly interface to monitor the packet drop behavior and visualize performance statistics. It leverages eBPF maps to extract and aggregate the collected data from kernel space, allowing users to gain insights into the impact of dropped packets and the efficiency of packet processing.&lt;/p&gt;
 &lt;h2 id=&#34;setting-up-the-development-environment&#34;&gt;Setting Up the Development Environment&lt;/h2&gt;
 &lt;p&gt;To get started with building the XDP eBPF program with C and Golang, you need to set up your development environment. Follow these steps to ensure that you have all the necessary tools and dependencies in place:&lt;/p&gt;
 &lt;ol&gt;
@@ -44,43 +41,36 @@ Introduction In today&amp;rsquo;s highly connected and data-driven world, networ
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;Install Project Dependencies&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;go dependencies&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;Navigate to the project&amp;rsquo;s root directory and install the required Golang dependencies by running the following command:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;go mod download
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This command will fetch and install the necessary Golang packages defined in the project&amp;rsquo;s go.mod file.&lt;/p&gt;
-&lt;p&gt;With these steps completed, you have successfully set up your development environment. You are now ready to dive into building the XDP eBPF program and the accompanying Golang application.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;libbpf&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;libbpf&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;We are going to use libbpf in our C code. In the dilih repo we added this as a git submodule but you can choose to manage it elsewhere if you like. When we build our C program later we&amp;rsquo;ll include libbpf with &lt;code&gt;-I../libbpf/src&lt;/code&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;(Optional) IDE configuration&lt;/p&gt;
 &lt;p&gt;Whatever your editor of choice should be, invest some time in making sure it is set up for C and Golang. Particularly for autocomplete, linting, symbol detection etc. This will make your life much easier.&lt;/p&gt;
-&lt;p&gt;If you are curious about my &lt;em&gt;exact&lt;/em&gt; setup, I use the following repo to install neovim and everything else I need for development:&lt;/p&gt;
+&lt;p&gt;If you are curious about my &lt;em&gt;exact&lt;/em&gt; setup, I use the following repo to install neovim, configure my LSP and setup everything else I need for development:&lt;/p&gt;
 &lt;p&gt;&lt;a href=&#34;https://github.com/peter-mcconnell/.dotfiles/&#34;&gt;https://github.com/peter-mcconnell/.dotfiles/&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
 &lt;h2 id=&#34;writing-the-xdp-ebpf-program-in-c&#34;&gt;Writing the XDP eBPF Program in C&lt;/h2&gt;
-&lt;p&gt;The XDP (eXpress Data Path) program is implemented using the eBPF (extended Berkeley Packet Filter) framework in C. It allows us to intercept packets at an early stage in the Linux kernel&amp;rsquo;s networking stack and perform custom packet processing logic. In this section, we will walk through the steps to write the XDP eBPF program in C.&lt;/p&gt;
+&lt;p&gt;The XDP (eXpress Data Path) program is implemented using the eBPF (extended Berkeley Packet Filter) framework in C, with some help from libbpf. It allows us to intercept packets at an early stage in the Linux kernel&amp;rsquo;s networking stack and perform custom packet processing logic. In this section, we will walk through the steps to write the XDP eBPF program in C.&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;
 &lt;p&gt;Understanding the Program Logic&lt;/p&gt;
-&lt;p&gt;Before diving into the code, let&amp;rsquo;s understand the logic of our XDP program. The goal is to selectively drop packets on a given network interface. We will use a randomization mechanism to decide whether to drop or pass each packet. The program will also collect statistics and measure the processing time for dropped and passed packets using eBPF&amp;rsquo;s perf event mechanism.&lt;/p&gt;
+&lt;p&gt;Before diving into the code, let&amp;rsquo;s understand the logic of our XDP program. The goal is to randomly drop ~50% of packets on a given network interface. We will use a randomization mechanism to decide whether to drop or pass each packet (&amp;ldquo;is random number even?&amp;quot;). The program will also collect statistics and measure the processing time for dropped and passed packets using eBPF&amp;rsquo;s perf event mechanism. Our BPF program runs in kernel space but we&amp;rsquo;ll want to expose data to userspace, so we&amp;rsquo;ll use BPF maps to expose data to our Go program.&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;Creating the Program Source File&lt;/p&gt;
-&lt;p&gt;Start by creating a new file called dilih_kern.c in the bpf directory. This file will contain our XDP eBPF program logic. Open the file in your favorite text editor.&lt;/p&gt;
+&lt;p&gt;Start by creating a new file called dilih_kern.c in a ./bpf/ directory in your project. This file will contain our XDP eBPF program logic. Open the file in your favorite text editor.&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;Defining the required headers and structures&lt;/p&gt;
-&lt;p&gt;To begin, include the necessary headers and define the required structures for our XDP program. We need headers like bpf_helpers.h and bpf_endian.h, which provide useful helper functions and endianness conversions. We also need headers like linux/bpf.h, linux/in.h, linux/if_ether.h, and linux/ip.h for network-related structures and constants.&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;#include &amp;lt;stddef.h&amp;gt;
-#include &amp;lt;linux/bpf.h&amp;gt;
-#include &amp;lt;linux/in.h&amp;gt;
-#include &amp;lt;linux/if_ether.h&amp;gt;
-#include &amp;lt;linux/ip.h&amp;gt;
+&lt;p&gt;To begin, include the necessary headers and define the required structures for our XDP program. We need bpf.h and bpf_helpers.h which provide useful structures and helper functions.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;#include &amp;lt;linux/bpf.h&amp;gt;
 #include &amp;lt;bpf_helpers.h&amp;gt;
-#include &amp;lt;bpf_endian.h&amp;gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;Defining Data Structures and Maps&lt;/p&gt;
@@ -91,6 +81,10 @@ Introduction In today&amp;rsquo;s highly connected and data-driven world, networ
     __u8 type;
 };
 
+&lt;span style=&#34;color:#75715e&#34;&gt;#define TYPE_ENTER 1
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#define TYPE_DROP 2
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#define TYPE_PASS 3
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;
 &lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; {
     __uint(type, BPF_MAP_TYPE_PERF_EVENT_ARRAY);
     __uint(key_size, &lt;span style=&#34;color:#66d9ef&#34;&gt;sizeof&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt;));
@@ -98,7 +92,7 @@ Introduction In today&amp;rsquo;s highly connected and data-driven world, networ
     __uint(max_entries, &lt;span style=&#34;color:#ae81ff&#34;&gt;1024&lt;/span&gt;);
 } output_map SEC(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;.maps&amp;#34;&lt;/span&gt;);
 
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The output_map map will be used to store the perf events generated by our XDP program.&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The output_map map will be used to store the perf events generated by our XDP program. The TYPE_* definitions will make our code more readable later.&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;Implementing the XDP Program Function&lt;/p&gt;
@@ -106,7 +100,7 @@ Introduction In today&amp;rsquo;s highly connected and data-driven world, networ
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;SEC(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;xdp&amp;#34;&lt;/span&gt;)
 &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; xdp_dilih(&lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; xdp_md &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;ctx)
 {
-    &lt;span style=&#34;color:#75715e&#34;&gt;// Add program logic here
+    &lt;span style=&#34;color:#75715e&#34;&gt;// Add program logic here ... detailed in the next step
 &lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;}
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The xdp_dilih function will serve as our XDP eBPF program entry point. It will be called for every incoming packet.&lt;/p&gt;
 &lt;/li&gt;
@@ -117,83 +111,117 @@ Introduction In today&amp;rsquo;s highly connected and data-driven world, networ
 
 &lt;span style=&#34;color:#75715e&#34;&gt;// Perf event for entering xdp program
 &lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;e.timestamp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; bpf_ktime_get_ns();
-e.type &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;;
+e.type &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; TYPE_ENTER;
 e.processing_time_ns &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
 bpf_perf_event_output(ctx, &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;output_map, BPF_F_CURRENT_CPU, &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;e, &lt;span style=&#34;color:#66d9ef&#34;&gt;sizeof&lt;/span&gt;(e));
 
 &lt;span style=&#34;color:#75715e&#34;&gt;// Packet dropping logic
 &lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (bpf_get_prandom_u32() &lt;span style=&#34;color:#f92672&#34;&gt;%&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;) {
     &lt;span style=&#34;color:#75715e&#34;&gt;// Perf event for dropping packet
-&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    e.type &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;;
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    e.type &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; TYPE_DROP;
     __u64 ts &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; bpf_ktime_get_ns();
     e.processing_time_ns &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; ts &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; e.timestamp;
     e.timestamp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; ts;
     bpf_perf_event_output(ctx, &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;output_map, BPF_F_CURRENT_CPU, &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;e, &lt;span style=&#34;color:#66d9ef&#34;&gt;sizeof&lt;/span&gt;(e));
-
-    bpf_printk(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Dropping packet&amp;#34;&lt;/span&gt;);
     &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; XDP_DROP;
 }
 
 &lt;span style=&#34;color:#75715e&#34;&gt;// Perf event for passing packet
-&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;e.type &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;;
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;e.type &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; TYPE_PASS;
 __u64 ts &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; bpf_ktime_get_ns();
 e.processing_time_ns &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; ts &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; e.timestamp;
 e.timestamp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; ts;
 bpf_perf_event_output(ctx, &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;output_map, BPF_F_CURRENT_CPU, &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;e, &lt;span style=&#34;color:#66d9ef&#34;&gt;sizeof&lt;/span&gt;(e));
 
-bpf_printk(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Passing packet&amp;#34;&lt;/span&gt;);
-
 &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; XDP_PASS;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In this section of the code, we handle the perf events to collect data and measure the processing time of dropped and passed packets. We first emit a perf event when entering the XDP program (type 1). Then, we use a randomization mechanism to decide whether to drop or pass the packet. If the packet is dropped, we emit a perf event with type 2 and return XDP_DROP. If the packet is passed, we emit a perf event with type 3 and return XDP_PASS.&lt;/p&gt;
-&lt;p&gt;The bpf_ktime_get_ns() function is used to measure the timestamp and processing time of the packet. The bpf_get_prandom_u32() function generates a random value that helps in deciding whether to drop or pass the packet.&lt;/p&gt;
+&lt;p&gt;The bpf_ktime_get_ns() function is used to measure the timestamp (nanoseconds since system boot, excluding suspend time) and processing time of the packet. The bpf_get_prandom_u32() function generates a random value that helps in deciding whether to drop or pass the packet - the &amp;ldquo;is this random number even?&amp;rdquo; part.&lt;/p&gt;
 &lt;p&gt;Additionally, we use bpf_printk() to print debug messages that can be accessed through the kernel&amp;rsquo;s trace buffer.&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
 &lt;p&gt;That concludes the implementation of the XDP eBPF program in C. This program will selectively drop packets based on a randomization mechanism and emit perf events for collecting data and measuring processing time.&lt;/p&gt;
 &lt;h2 id=&#34;compiling-and-loading-the-xdp-ebpf-program&#34;&gt;Compiling and Loading the XDP eBPF Program&lt;/h2&gt;
 &lt;p&gt;Once we have written the XDP eBPF program in C, the next step is to compile it and load it into the kernel. In this section, we will walk through the steps to compile and load the XDP eBPF program.&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;Compiling the XDP Program&lt;/p&gt;
+&lt;h3 id=&#34;compiling-the-xdp-program&#34;&gt;Compiling the XDP Program&lt;/h3&gt;
 &lt;p&gt;To compile the XDP program, we will use the LLVM Clang compiler with the appropriate flags. Open a terminal and navigate to the bpf directory where the dilih_kern.c file is located. Then, run the following command:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;clang -I../libbpf/src -S -g -O2 -D __BPF_TRACING__ -Wall -Werror -target bpf -c dilih_kern.c -o dilih_kern.o
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This command compiles the dilih_kern.c file into a BPF object file named dilih_kern.o. The -target bpf flag specifies the target architecture as BPF, and the -O2 flag enables optimization.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Loading the XDP Program&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;clang -S &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;    -g &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;    -target bpf &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;    -I../libbpf/src&lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;    -Wall &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;    -Werror &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;    -O2 -emit-llvm -c -o dilih_kern.ll dilih_kern.c
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Let me explain the flags:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;-S&lt;/code&gt; Emit an intermediate representation (IR) assembly code file instead of generating object code. This step is used to generate LLVM IR code.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;-g&lt;/code&gt; Include BTF information&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;-target bpf&lt;/code&gt; Specify the target architecture as &amp;ldquo;bpf&amp;rdquo; (Berkeley Packet Filter), indicating that the code being compiled is intended to run on eBPF.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;-I../libbpf/src&lt;/code&gt; Add the path ../libbpf/src to the include search paths. This allows the compiler to find the necessary header files (bpf helper files) from the libbpf library.``Wall` Enable all compiler warning messages.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;-Werror&lt;/code&gt; Treat all warnings as errors, causing the compilation process to fail if any warnings are encountered.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;-O2&lt;/code&gt; Apply optimization level 2 to the generated code. This level of optimization focuses on improving performance without sacrificing code size. This is actually a requirement for some BPF usecases, though I&amp;rsquo;m struggling to recall right now what they are. TODO&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;-emit-llvm&lt;/code&gt; Instruct the compiler to emit LLVM IR code as the output.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;-c&lt;/code&gt; Compile the input source file without linking, producing an object file.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;-o&lt;/code&gt; dilih_kern.ll: Specify the output file name for the generated LLVM IR code as dilih_kern.ll.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Now we use the llc command is used to further process the LLVM IR code and generate the final object file:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;llc -march&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;bpf -filetype&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;obj -O2 -o dilih_kern.o dilih_kern.ll
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Let me explain the flags:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;-march=bpf&lt;/code&gt; Specify the target architecture as &amp;ldquo;bpf&amp;rdquo; for the code generation stage.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;-filetype=obj&lt;/code&gt; Specify the desired output file type as an object file.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;-O2&lt;/code&gt; Apply optimization level 2 to the generated code during the code generation stage.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;-o&lt;/code&gt; Specify the output file name for the generated object code as dilih_kern.o.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This command compiles the dilih_kern.c file into a BPF object file named dilih_kern.o. The -target bpf flag specifies the target architecture as BPF, and the -O2 flag enables optimization.&lt;/p&gt;
+&lt;h3 id=&#34;loading-the-xdp-program&#34;&gt;Loading the XDP Program&lt;/h3&gt;
 &lt;p&gt;To load the XDP program into the kernel, we will use the bpftool command-line utility. Ensure that you have the bpftool utility installed on your system. If it&amp;rsquo;s not already installed, you can typically install it using your distribution&amp;rsquo;s package manager.&lt;/p&gt;
 &lt;p&gt;In the terminal, run the following command to load the XDP program:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;sudo bpftool prog load dilih_kern.o /sys/fs/bpf/dilih
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This command loads the dilih_kern.o object file into the /sys/fs/bpf/dilih location. Adjust the path as necessary based on your system configuration. The bpftool utility will handle the loading process and verify the program&amp;rsquo;s validity.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Attaching the XDP Program&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;shell sudo bpftool prog load dilih\_kern.o /sys/fs/bpf/dilih &lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;This command loads the dilih_kern.o object file and pins it into the /sys/fs/bpf/dilih location. Adjust the path as necessary based on your system configuration. The bpftool utility will handle the loading process and verify the program&amp;rsquo;s validity.&lt;/p&gt;
+&lt;h3 id=&#34;attaching-the-xdp-program&#34;&gt;Attaching the XDP Program&lt;/h3&gt;
 &lt;p&gt;After loading the XDP program, we need to attach it to a network interface to start intercepting packets. To attach the XDP program, run the following command:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;sudo bpftool net attach xdp pinned /sys/fs/bpf/dilih dev &amp;lt;interface&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Replace &lt;!-- raw HTML omitted --&gt; with the name of the network interface you want to attach the XDP program to. For example, ens160. This command attaches the XDP program to the specified interface, enabling it to intercept incoming packets.&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# you can get &amp;lt;interface&amp;gt; by running `ip link&amp;#39;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Replace &lt;!-- raw HTML omitted --&gt; with the name of the network interface you want to attach the XDP program to. For example, eth0. This command attaches the XDP program to the specified interface, enabling it to intercept incoming packets.&lt;/p&gt;
+&lt;h3 id=&#34;makefile&#34;&gt;Makefile&lt;/h3&gt;
+&lt;p&gt;For convenience, lets throw some of what we learned above into a Makefile at &lt;code&gt;./bpf/Makefile&lt;/code&gt;. I&amp;rsquo;ll not go into depths about how Makefiles work in this article but will summarise the functionality after the code snippet:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Makefile&#34; data-lang=&#34;Makefile&#34;&gt;TARGET &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; dilih
+BPF_TARGET &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;TARGET:=_kern&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;
+BPF_C &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;BPF_TARGET:=.c&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;
+BPF_OBJ &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;BPF_C:.c=.o&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;
+
+BPF_PINNED_PATH &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; /sys/fs/bpf/&lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;TARGET&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
+XDP_NAME &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; dilih
+DEV &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; ens160
+
+&lt;span style=&#34;color:#a6e22e&#34;&gt;xdp&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;BPF_OBJ&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
+        -bpftool net detach xdpgeneric dev &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;DEV&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
+        rm -f &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;BPF_PINNED_PATH&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
+        bpftool prog load &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;BPF_OBJ&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;BPF_PINNED_PATH&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
+        bpftool net attach xdpgeneric pinned &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;BPF_PINNED_PATH&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt; dev &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;DEV&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
+
+&lt;span style=&#34;color:#a6e22e&#34;&gt;$(BPF_OBJ)&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; %.o: %.c
+        clang -S &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;                -g &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;                -target bpf &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;          -I../libbpf/src&lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;                -Wall &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;                -Werror &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;                -O2 -emit-llvm -c -o &lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;@:.o=.ll&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt; $&amp;lt;
+        llc -march&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;bpf -filetype&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;obj -O2 -o $@ &lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;@:.o=.ll&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;
+
+&lt;span style=&#34;color:#a6e22e&#34;&gt;clean&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;
+        -bpftool net detach xdpgeneric dev &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;DEV&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
+        sudo rm -f &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;BPF_PINNED_PATH&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
+        rm -f &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;BPF_OBJ&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
+        rm -f &lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;BPF_OBJ:.o=.ll&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;With this file in place and &lt;code&gt;make&lt;/code&gt; installed you can run something like &lt;code&gt;DEV=eth0 make&lt;/code&gt; to compile and load the eBPF program and &lt;code&gt;DEV=eth0 make clean&lt;/code&gt; to remove the files and unload the eBPF program.&lt;/p&gt;
 &lt;p&gt;Congratulations! You have successfully compiled and loaded the XDP eBPF program into the kernel and attached it to a network interface. The program is now ready to intercept and process packets based on your defined logic.&lt;/p&gt;
 &lt;p&gt;Please note that the compilation and loading process may vary slightly depending on your system configuration and specific requirements. Make sure to adjust the commands accordingly and refer to the documentation of the tools and utilities used.&lt;/p&gt;
 &lt;h2 id=&#34;writing-the-golang-application&#34;&gt;Writing the Golang Application&lt;/h2&gt;
 &lt;p&gt;In this section, we will write a Golang application that interacts with the XDP eBPF program and collects metrics. The Golang application will communicate with the loaded XDP program, read the perf events, and display statistics based on the collected data.&lt;/p&gt;
-&lt;p&gt;Setting Up the Golang Project
-Before we begin writing the Golang application, let&amp;rsquo;s set up the project structure and dependencies. Create a new directory for the Golang application and navigate into it.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;mkdir dilih-app
-cd dilih-app
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Initialize a new Go module using the following command:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;go mod init github.com/your-username/dilih-app
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This will create a Go module for your application and allow you to manage dependencies.&lt;/p&gt;
-&lt;p&gt;Next, let&amp;rsquo;s add the required dependencies for our Golang application. Open the go.mod file and add the following lines:&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;require (
-    github.com/cilium/ebpf v0.10.0
-    github.com/cilium/ebpf/link v0.10.0
-    github.com/cilium/ebpf/perf v0.10.0
-    github.com/prometheus/client_golang v1.11.0
-)
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Save the file and run &lt;code&gt;go mod download&lt;/code&gt; to download the dependencies.&lt;/p&gt;
-&lt;p&gt;Writing the Golang Application Code
-Now, let&amp;rsquo;s create a new file named main.go and open it in a text editor. This file will contain the code for our Golang application. Copy and paste the following code into main.go:&lt;/p&gt;
+&lt;h3 id=&#34;writing-the-golang-application-code&#34;&gt;Writing the Golang Application Code&lt;/h3&gt;
+&lt;p&gt;Let&amp;rsquo;s create a new file named &lt;code&gt;main.go&lt;/code&gt; and open it in a text editor. This file will contain the code for our Golang application. Copy and paste the following code into main.go:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;package&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;
 
 &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; (
@@ -350,30 +378,25 @@ Now, let&amp;rsquo;s create a new file named main.go and open it in a text edito
         &lt;span style=&#34;color:#a6e22e&#34;&gt;signal&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Notify&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;c&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;os&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Interrupt&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;syscall&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;SIGTERM&lt;/span&gt;)
         &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;c&lt;/span&gt;
 }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The code sets up the necessary components for the Golang application. It loads the BPF program, attaches it to the specified network interface, and initializes the perf event reader. However, the code to read and process the perf events is yet to be implemented.&lt;/p&gt;
-&lt;p&gt;In the next section, we&amp;rsquo;ll continue writing the code to read and process the perf events emitted by the BPF program.&lt;/p&gt;
-&lt;p&gt;Note: Remember to import the required packages at the beginning of the file.&lt;/p&gt;
-&lt;p&gt;Save the file and move on to the next section to complete the implementation of the Golang application.&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;You may need to run &lt;code&gt;go mod init &amp;amp;&amp;amp; go mod tidy&lt;/code&gt; if you haven&amp;rsquo;t already done so.&lt;/p&gt;
+&lt;p&gt;The code sets up the necessary components for the Golang application. It loads the BPF program, attaches it to the specified network interface, and initializes the perf event reader. However, the code to read and process the perf events is yet to be implemented.&lt;/p&gt;
 &lt;p&gt;That concludes the content for the &amp;ldquo;Writing the Golang Application&amp;rdquo; section. Feel free to modify and customize the content according to your needs.&lt;/p&gt;
 &lt;h2 id=&#34;building-and-running-the-project&#34;&gt;Building and Running the Project&lt;/h2&gt;
 &lt;p&gt;Now that we have implemented the XDP eBPF program in C and the Golang application, let&amp;rsquo;s build and run the project.&lt;/p&gt;
-&lt;p&gt;Building the XDP eBPF Program
-Before building the XDP eBPF program, ensure that you have the necessary build tools and dependencies installed on your system. You can refer to the project&amp;rsquo;s README or documentation for the specific requirements.&lt;/p&gt;
+&lt;h3 id=&#34;building-the-xdp-ebpf-program&#34;&gt;Building the XDP eBPF Program&lt;/h3&gt;
+&lt;p&gt;You can skip this step if you have already compiled the dilih_kern.o from the steps above.&lt;/p&gt;
+&lt;p&gt;Before building the XDP eBPF program, ensure that you have the necessary build tools and dependencies installed on your system. You can refer to the project&amp;rsquo;s README or documentation for the specific requirements.&lt;/p&gt;
 &lt;p&gt;To build the XDP eBPF program, navigate to the bpf directory and run the following command:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;make
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This command will compile the C code and generate the dilih_kern.o object file.&lt;/p&gt;
-&lt;p&gt;Building the Golang Application
-To build the Golang application, make sure you are in the root directory of the project. Run the following command:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;go build
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This command will compile the Golang code and generate an executable binary file.&lt;/p&gt;
-&lt;p&gt;Running the Project
-To run the project, make sure you have the necessary privileges to load and attach the XDP program to the network interface.&lt;/p&gt;
-&lt;p&gt;First, load the XDP eBPF program using the following command:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;sudo make xdp
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This command will load the dilih_kern.o program and attach it to the specified network interface.&lt;/p&gt;
-&lt;p&gt;Next, run the Golang application using the following command:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;sudo ./dilih-app
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/dillih_run.png&#34; alt=&#34;sample output&#34; title=&#34;sample output&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;building-the-golang-application&#34;&gt;Building the Golang Application&lt;/h3&gt;
+&lt;p&gt;To build the Golang application, make sure you are in the root directory of the project. Run the following command:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;CGO_ENABLED&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; go build
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This command will compile the Golang code and generate an executable binary file. Note: we do not need CGO for our application. We could leave it enabled if we wish, but I like to use CGO_ENABLED=0 when I can as it results in a statically compiled binary that I can easily load into containers.&lt;/p&gt;
+&lt;h3 id=&#34;running-the-go-project&#34;&gt;Running the Go Project&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;sudo ./dilih
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;You should start to see a summary of the packets processed on the given interface:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://github.com/peter-mcconnell/petermcconnell.com/blob/main/assets/dilih_run.png?raw=true&#34; alt=&#34;sample output&#34; title=&#34;sample output&#34;&gt;&lt;/p&gt;
 &lt;p&gt;Make sure to run the application with elevated privileges (sudo) to access the necessary resources.&lt;/p&gt;
 &lt;p&gt;The Golang application will start collecting data from the XDP program and display statistics based on the received perf events.&lt;/p&gt;
 &lt;p&gt;Cleaning Up
@@ -384,8 +407,8 @@ To clean up the project and remove the XDP program from the network interface, r
 &lt;p&gt;Feel free to explore additional features and modifications to enhance the project further.&lt;/p&gt;
 &lt;h2 id=&#34;testing-and-verifying-the-xdp-ebpf-program&#34;&gt;Testing and Verifying the XDP eBPF Program&lt;/h2&gt;
 &lt;p&gt;Testing and verifying the functionality of the XDP eBPF program is an essential step to ensure its correctness and effectiveness. In this section, we&amp;rsquo;ll cover some testing techniques and verification methods for the XDP program.&lt;/p&gt;
-&lt;p&gt;Test Environment Setup
-To create a suitable test environment, we&amp;rsquo;ll utilize virtual network interfaces (veth devices) to simulate network traffic and observe the behavior of the XDP program.&lt;/p&gt;
+&lt;h3 id=&#34;test-environment-setup&#34;&gt;Test Environment Setup&lt;/h3&gt;
+&lt;p&gt;To create a suitable test environment, we&amp;rsquo;ll utilize virtual network interfaces (veth devices) to simulate network traffic and observe the behavior of the XDP program.&lt;/p&gt;
 &lt;p&gt;Install the iproute2 package if it&amp;rsquo;s not already installed on your system. This package provides the necessary tools to manage network interfaces.&lt;/p&gt;
 &lt;p&gt;Create a pair of veth devices using the following commands:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;sudo ip link add veth0 type veth peer name veth1
@@ -397,8 +420,8 @@ sudo ip addr add 10.0.0.1/24 dev veth0
 sudo ip addr add 10.0.0.2/24 dev veth1
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This will bring up the interfaces and assign IP addresses (10.0.0.1 and 10.0.0.2) to them.&lt;/p&gt;
 &lt;p&gt;With the veth devices set up, we can proceed to test and verify the XDP eBPF program&amp;rsquo;s functionality.&lt;/p&gt;
-&lt;p&gt;Packet Drop Verification
-One of the primary functionalities of the XDP program is to drop a certain percentage of packets. We can verify this behavior by sending packets between the veth devices and observing the packet drop rate.&lt;/p&gt;
+&lt;h3 id=&#34;packet-drop-verification&#34;&gt;Packet Drop Verification&lt;/h3&gt;
+&lt;p&gt;One of the primary functionalities of the XDP program is to drop a certain percentage of packets. We can verify this behavior by sending packets between the veth devices and observing the packet drop rate.&lt;/p&gt;
 &lt;p&gt;Open two terminal windows and navigate to the project directory in both of them.&lt;/p&gt;
 &lt;p&gt;In the first terminal, run the following command to listen for ICMP echo requests (ping):&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;sudo tcpdump -i veth1 icmp
@@ -407,8 +430,8 @@ One of the primary functionalities of the XDP program is to drop a certain perce
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Observe the output in the first terminal. You should see the ICMP echo requests being captured.&lt;/p&gt;
 &lt;p&gt;Analyze the packet capture to verify the packet drop rate. If the XDP program is working correctly, approximately 50% of the ICMP echo requests should be dropped, resulting in a reduced number of captured packets.&lt;/p&gt;
 &lt;p&gt;By performing packet drop verification tests, you can ensure that the XDP program is functioning as expected and dropping packets according to the specified percentage.&lt;/p&gt;
-&lt;p&gt;Performance Analysis
-In addition to functional verification, it&amp;rsquo;s crucial to analyze the performance impact of the XDP eBPF program. This analysis helps evaluate the efficiency and overhead introduced by the program.&lt;/p&gt;
+&lt;h3 id=&#34;performance-analysis&#34;&gt;Performance Analysis&lt;/h3&gt;
+&lt;p&gt;In addition to functional verification, it&amp;rsquo;s crucial to analyze the performance impact of the XDP eBPF program. This analysis helps evaluate the efficiency and overhead introduced by the program.&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;
 &lt;p&gt;Use the provided Golang application to collect performance metrics and statistics from the XDP program. Refer to the &amp;ldquo;Building and Running the Project&amp;rdquo; section for instructions on how to run the Golang application.&lt;/p&gt;
