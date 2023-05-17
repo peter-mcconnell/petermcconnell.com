@@ -204,7 +204,7 @@
       <span class="post-author">Peter McConnell</span>
     
     
-      <span class="post-reading-time">:: 21 min read (4273 words)</span>
+      <span class="post-reading-time">:: 20 min read (4123 words)</span>
     
   </div>
 
@@ -236,7 +236,6 @@
       <nav id="TableOfContents">
   <ul>
     <li><a href="#introduction">Introduction</a></li>
-    <li><a href="#prerequisites">Prerequisites</a></li>
     <li><a href="#project-overview">Project Overview</a></li>
     <li><a href="#setting-up-the-development-environment">Setting Up the Development Environment</a></li>
     <li><a href="#writing-the-xdp-ebpf-program-in-c">Writing the XDP eBPF Program in C</a></li>
@@ -256,26 +255,6 @@
 <h2 id="introduction">Introduction<a href="#introduction" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>In today&rsquo;s highly connected and data-driven world, network performance is crucial for ensuring efficient communication and optimal user experience. XDP (eXpress Data Path) and eBPF (extended Berkeley Packet Filter) have emerged as powerful technologies that enable high-performance packet processing and network optimization. In this step-by-step guide, we will explore the process of building an XDP eBPF program using C and Golang. XDP allows for early packet interception at the network interface driver level, while eBPF provides a flexible and efficient execution environment for custom packet processing logic. Together, they offer an unprecedented level of control and performance in networking applications. Our project, named &ldquo;dilih&rdquo; (drop it like it&rsquo;s hot), demonstrates how to build a simple chaos engineering tool that arbitrarily drops packets on a given network interface. Through this guide, you will gain a deep understanding of XDP, eBPF, and their practical applications in network performance optimization.</p>
 <p>Credit to Midjourney for the logo.</p>
-<h2 id="prerequisites">Prerequisites<a href="#prerequisites" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
-<p>Before diving into the development of the XDP eBPF program with C and Golang, ensure that you have the following prerequisites in place:</p>
-<ol>
-<li>
-<p>Linux Operating System: XDP and eBPF are primarily supported on Linux. Make sure you have a Linux-based operating system installed on your machine.</p>
-</li>
-<li>
-<p>Kernel Version: XDP and eBPF functionality may vary depending on the kernel version. It is recommended to use a recent Linux kernel (4.18 or newer) to take advantage of the latest features and optimizations.</p>
-</li>
-<li>
-<p>Development Tools: Install the necessary development tools to build and compile the project. This includes packages like clang, llvm, and bpftool for compiling and loading the XDP eBPF program.</p>
-</li>
-<li>
-<p>Golang: Ensure that you have Golang installed on your system. Visit the official Golang website (<a href="https://golang.org">https://golang.org</a>) and follow the installation instructions for your specific operating system.</p>
-</li>
-<li>
-<p>Basic Knowledge of C and Golang: Familiarity with the C programming language and Golang is essential to understand the code and concepts used in the project. If you are new to these languages, consider going through some beginner-level tutorials or resources to get a grasp of the fundamentals.</p>
-</li>
-</ol>
-<p>By having these prerequisites met, you will be ready to embark on the journey of building an XDP eBPF program with C and Golang.</p>
 <h2 id="project-overview">Project Overview<a href="#project-overview" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>The project aims to build an XDP (eXpress Data Path) eBPF (extended Berkeley Packet Filter) program using C and Golang. Named &ldquo;dilih&rdquo; (drop it like it&rsquo;s hot), the program serves as a simple chaos engineering tool that selectively drops packets on a given network interface. This project demonstrates the power and flexibility of XDP and eBPF in controlling packet processing at high speed, making it an ideal starting point for understanding these technologies.</p>
 <p>The XDP eBPF program, implemented in C, hooks into the Linux kernel&rsquo;s networking stack at an early stage to intercept packets and decide their fate. Using a randomization mechanism, the program selectively drops a configurable percentage of packets, allowing for controlled chaos in network traffic. Additionally, the program utilizes eBPF&rsquo;s perf event mechanism to gather statistics and measure the processing time for dropped and passed packets.</p>
@@ -286,59 +265,57 @@
 <ol>
 <li>
 <p>Install Development Tools</p>
-<p>First, ensure that you have the required development tools installed on your system. This includes packages like clang, llvm, and bpftool. You can install these tools using the package manager available on your Linux distribution. For example, on Ubuntu, you can use the following command:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo apt-get install clang llvm bpftool make
-</code></pre></div><p>Make sure to install the latest versions available to leverage the latest features and bug fixes and ensure clang has the bpf target available.</p>
+<p>First, ensure that you have the required development tools installed on your system. This includes packages like clang, llvm, and bpftool. You can install these tools using the package manager available on your Linux distribution however I would recommend investing a little time to build these tools from source as it will give you greater control over the flags and features built into these tools.</p>
 <p>If you are curious about my <em>exact</em> LLVM / Clang setup, I use the following ansible tasks for my configuration:</p>
-<ul>
-<li><a href="https://github.com/peter-mcconnell/.dotfiles/blob/master/tasks/llvm.yaml">https://github.com/peter-mcconnell/.dotfiles/blob/master/tasks/llvm.yaml</a></li>
-<li><a href="https://github.com/peter-mcconnell/.dotfiles/blob/master/tasks/debugtools.yaml">https://github.com/peter-mcconnell/.dotfiles/blob/master/tasks/debugtools.yaml</a></li>
-<li><a href="https://github.com/peter-mcconnell/.dotfiles/blob/master/tasks/docker.yaml">https://github.com/peter-mcconnell/.dotfiles/blob/master/tasks/docker.yaml</a></li>
-</ul>
+<p><a href="https://github.com/peter-mcconnell/.dotfiles/blob/master/tasks/llvm.yaml">https://github.com/peter-mcconnell/.dotfiles/blob/master/tasks/llvm.yaml</a>
+<a href="https://github.com/peter-mcconnell/.dotfiles/blob/master/tasks/debugtools.yaml">https://github.com/peter-mcconnell/.dotfiles/blob/master/tasks/debugtools.yaml</a>
+<a href="https://github.com/peter-mcconnell/.dotfiles/blob/master/tasks/docker.yaml">https://github.com/peter-mcconnell/.dotfiles/blob/master/tasks/docker.yaml</a></p>
 </li>
 <li>
 <p>Install Golang</p>
 <p>Next, you need to install Golang, which is the programming language used for the accompanying Golang application. Visit the official Golang website at <a href="https://golang.org">https://golang.org</a> and follow the installation instructions specific to your operating system. Once installed, make sure the go command is accessible from the command line by adding the appropriate binary directory to your system&rsquo;s PATH.</p>
 <p>If you are curious about my <em>exact</em> Golang setup, I use the following ansible task for my configuration:</p>
-<ul>
-<li><a href="https://github.com/peter-mcconnell/.dotfiles/blob/master/tasks/golang.yaml">https://github.com/peter-mcconnell/.dotfiles/blob/master/tasks/golang.yaml</a></li>
-</ul>
+<p><a href="https://github.com/peter-mcconnell/.dotfiles/blob/master/tasks/golang.yaml">https://github.com/peter-mcconnell/.dotfiles/blob/master/tasks/golang.yaml</a></p>
 </li>
 <li>
-<p>Install Project Dependencies
-Navigate to the project&rsquo;s root directory and install the required Golang dependencies by running the following command:</p>
+<p>Install Project Dependencies</p>
+<p>Navigate to the project&rsquo;s root directory and install the required Golang dependencies by running the following command:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go mod download
 </code></pre></div><p>This command will fetch and install the necessary Golang packages defined in the project&rsquo;s go.mod file.</p>
 <p>With these steps completed, you have successfully set up your development environment. You are now ready to dive into building the XDP eBPF program and the accompanying Golang application.</p>
+</li>
+<li>
+<p>(Optional) IDE configuration</p>
+<p>Whatever your editor of choice should be, invest some time in making sure it is set up for C and Golang. Particularly for autocomplete, linting, symbol detection etc. This will make your life much easier.</p>
+<p>If you are curious about my <em>exact</em> setup, I use the following repo to install neovim and everything else I need for development:</p>
+<p><a href="https://github.com/peter-mcconnell/.dotfiles/">https://github.com/peter-mcconnell/.dotfiles/</a></p>
 </li>
 </ol>
 <h2 id="writing-the-xdp-ebpf-program-in-c">Writing the XDP eBPF Program in C<a href="#writing-the-xdp-ebpf-program-in-c" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>The XDP (eXpress Data Path) program is implemented using the eBPF (extended Berkeley Packet Filter) framework in C. It allows us to intercept packets at an early stage in the Linux kernel&rsquo;s networking stack and perform custom packet processing logic. In this section, we will walk through the steps to write the XDP eBPF program in C.</p>
 <ol>
 <li>
-<p>Understanding the Program Logic
-Before diving into the code, let&rsquo;s understand the logic of our XDP program. The goal is to selectively drop packets on a given network interface. We will use a randomization mechanism to decide whether to drop or pass each packet. The program will also collect statistics and measure the processing time for dropped and passed packets using eBPF&rsquo;s perf event mechanism.</p>
+<p>Understanding the Program Logic</p>
+<p>Before diving into the code, let&rsquo;s understand the logic of our XDP program. The goal is to selectively drop packets on a given network interface. We will use a randomization mechanism to decide whether to drop or pass each packet. The program will also collect statistics and measure the processing time for dropped and passed packets using eBPF&rsquo;s perf event mechanism.</p>
 </li>
 <li>
-<p>Creating the Program Source File
-Start by creating a new file called dilih_kern.c in the bpf directory. This file will contain our XDP eBPF program logic. Open the file in your favorite text editor.</p>
+<p>Creating the Program Source File</p>
+<p>Start by creating a new file called dilih_kern.c in the bpf directory. This file will contain our XDP eBPF program logic. Open the file in your favorite text editor.</p>
 </li>
 <li>
-<p>Defining the Required Headers and Structures
-To begin, include the necessary headers and define the required structures for our XDP program. We need headers like bpf_helpers.h and bpf_endian.h, which provide useful helper functions and endianness conversions. We also need headers like linux/bpf.h, linux/in.h, linux/if_ether.h, and linux/ip.h for network-related structures and constants.</p>
-</li>
-</ol>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stddef.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;linux/bpf.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;linux/in.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;linux/if_ether.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;linux/ip.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;bpf_helpers.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;bpf_endian.h&gt;</span><span style="color:#75715e">
-</span></code></pre></div><ol start="4">
-<li>Defining Data Structures and Maps
-Next, define the necessary data structures and maps that our XDP program will utilize. We will use a struct to represent the perf event data, and a BPF_MAP_TYPE_PERF_EVENT_ARRAY map to store the perf events. Define the following structures and maps:</li>
-</ol>
+<p>Defining the required headers and structures</p>
+<p>To begin, include the necessary headers and define the required structures for our XDP program. We need headers like bpf_helpers.h and bpf_endian.h, which provide useful helper functions and endianness conversions. We also need headers like linux/bpf.h, linux/in.h, linux/if_ether.h, and linux/ip.h for network-related structures and constants.</p>
+<pre tabindex="0"><code>#include &lt;stddef.h&gt;
+#include &lt;linux/bpf.h&gt;
+#include &lt;linux/in.h&gt;
+#include &lt;linux/if_ether.h&gt;
+#include &lt;linux/ip.h&gt;
+#include &lt;bpf_helpers.h&gt;
+#include &lt;bpf_endian.h&gt;
+</code></pre></li>
+<li>
+<p>Defining Data Structures and Maps</p>
+<p>Next, define the necessary data structures and maps that our XDP program will utilize. We will use a struct to represent the perf event data, and a BPF_MAP_TYPE_PERF_EVENT_ARRAY map to store the perf events. Define the following structures and maps:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">struct</span> perf_trace_event {
     __u64 timestamp;
     __u32 processing_time_ns;
@@ -353,20 +330,20 @@ Next, define the necessary data structures and maps that our XDP program will ut
 } output_map SEC(<span style="color:#e6db74">&#34;.maps&#34;</span>);
 
 </code></pre></div><p>The output_map map will be used to store the perf events generated by our XDP program.</p>
-<ol start="5">
-<li>Implementing the XDP Program Function
-Now, it&rsquo;s time to implement the XDP program function itself. Begin by declaring the XDP function with the appropriate signature:</li>
-</ol>
+</li>
+<li>
+<p>Implementing the XDP Program Function</p>
+<p>Now, it&rsquo;s time to implement the XDP program function itself. Begin by declaring the XDP function with the appropriate signature:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">SEC(<span style="color:#e6db74">&#34;xdp&#34;</span>)
 <span style="color:#66d9ef">int</span> xdp_dilih(<span style="color:#66d9ef">struct</span> xdp_md <span style="color:#f92672">*</span>ctx)
 {
     <span style="color:#75715e">// Add program logic here
 </span><span style="color:#75715e"></span>}
 </code></pre></div><p>The xdp_dilih function will serve as our XDP eBPF program entry point. It will be called for every incoming packet.</p>
-<ol start="6">
-<li>Handling Perf Events and Collecting Data
-Inside the xdp_dilih function, we can handle perf events to collect data and measure processing time. We have already defined the output_map to store these events. Use the bpf_perf_event_output helper function to emit perf events to the map.</li>
-</ol>
+</li>
+<li>
+<p>Handling Perf Events and Collecting Data</p>
+<p>Inside the xdp_dilih function, we can handle perf events to collect data and measure processing time. We have already defined the output_map to store these events. Use the bpf_perf_event_output helper function to emit perf events to the map.</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">struct</span> perf_trace_event e <span style="color:#f92672">=</span> {};
 
 <span style="color:#75715e">// Perf event for entering xdp program
@@ -401,28 +378,32 @@ bpf_printk(<span style="color:#e6db74">&#34;Passing packet&#34;</span>);
 </code></pre></div><p>In this section of the code, we handle the perf events to collect data and measure the processing time of dropped and passed packets. We first emit a perf event when entering the XDP program (type 1). Then, we use a randomization mechanism to decide whether to drop or pass the packet. If the packet is dropped, we emit a perf event with type 2 and return XDP_DROP. If the packet is passed, we emit a perf event with type 3 and return XDP_PASS.</p>
 <p>The bpf_ktime_get_ns() function is used to measure the timestamp and processing time of the packet. The bpf_get_prandom_u32() function generates a random value that helps in deciding whether to drop or pass the packet.</p>
 <p>Additionally, we use bpf_printk() to print debug messages that can be accessed through the kernel&rsquo;s trace buffer.</p>
+</li>
+</ol>
 <p>That concludes the implementation of the XDP eBPF program in C. This program will selectively drop packets based on a randomization mechanism and emit perf events for collecting data and measuring processing time.</p>
 <h2 id="compiling-and-loading-the-xdp-ebpf-program">Compiling and Loading the XDP eBPF Program<a href="#compiling-and-loading-the-xdp-ebpf-program" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>Once we have written the XDP eBPF program in C, the next step is to compile it and load it into the kernel. In this section, we will walk through the steps to compile and load the XDP eBPF program.</p>
 <ol>
-<li>Compiling the XDP Program
-To compile the XDP program, we will use the LLVM Clang compiler with the appropriate flags. Open a terminal and navigate to the bpf directory where the dilih_kern.c file is located. Then, run the following command:</li>
-</ol>
+<li>
+<p>Compiling the XDP Program</p>
+<p>To compile the XDP program, we will use the LLVM Clang compiler with the appropriate flags. Open a terminal and navigate to the bpf directory where the dilih_kern.c file is located. Then, run the following command:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">clang -O2 -target bpf -c dilih_kern.c -o dilih_kern.o
 </code></pre></div><p>This command compiles the dilih_kern.c file into a BPF object file named dilih_kern.o. The -target bpf flag specifies the target architecture as BPF, and the -O2 flag enables optimization.</p>
-<ol start="2">
-<li>Loading the XDP Program
-To load the XDP program into the kernel, we will use the bpftool command-line utility. Ensure that you have the bpftool utility installed on your system. If it&rsquo;s not already installed, you can typically install it using your distribution&rsquo;s package manager.</li>
-</ol>
+</li>
+<li>
+<p>Loading the XDP Program</p>
+<p>To load the XDP program into the kernel, we will use the bpftool command-line utility. Ensure that you have the bpftool utility installed on your system. If it&rsquo;s not already installed, you can typically install it using your distribution&rsquo;s package manager.</p>
 <p>In the terminal, run the following command to load the XDP program:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">sudo bpftool prog load dilih_kern.o /sys/fs/bpf/dilih
 </code></pre></div><p>This command loads the dilih_kern.o object file into the /sys/fs/bpf/dilih location. Adjust the path as necessary based on your system configuration. The bpftool utility will handle the loading process and verify the program&rsquo;s validity.</p>
-<ol start="3">
-<li>Attaching the XDP Program
-After loading the XDP program, we need to attach it to a network interface to start intercepting packets. To attach the XDP program, run the following command:</li>
-</ol>
+</li>
+<li>
+<p>Attaching the XDP Program</p>
+<p>After loading the XDP program, we need to attach it to a network interface to start intercepting packets. To attach the XDP program, run the following command:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">sudo bpftool net attach xdp pinned /sys/fs/bpf/dilih dev &lt;interface&gt;
 </code></pre></div><p>Replace <!-- raw HTML omitted --> with the name of the network interface you want to attach the XDP program to. For example, ens160. This command attaches the XDP program to the specified interface, enabling it to intercept incoming packets.</p>
+</li>
+</ol>
 <p>Congratulations! You have successfully compiled and loaded the XDP eBPF program into the kernel and attached it to a network interface. The program is now ready to intercept and process packets based on your defined logic.</p>
 <p>Please note that the compilation and loading process may vary slightly depending on your system configuration and specific requirements. Make sure to adjust the commands accordingly and refer to the documentation of the tools and utilities used.</p>
 <h2 id="writing-the-golang-application">Writing the Golang Application<a href="#writing-the-golang-application" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
@@ -665,10 +646,8 @@ In addition to functional verification, it&rsquo;s crucial to analyze the perfor
 </li>
 <li>
 <p>Monitor and observe the average processing time for both passed and dropped packets. The Golang application displays the average processing time in nanoseconds (ns) for each packet type.</p>
-<ul>
-<li>If the average processing time is consistently low, it indicates that the XDP program is performing efficiently and causing minimal processing overhead.</li>
-<li>If the average processing time is significantly high, it may indicate that the XDP program is introducing a considerable processing overhead, which may require optimization or further investigation.</li>
-</ul>
+<p>If the average processing time is consistently low, it indicates that the XDP program is performing efficiently and causing minimal processing overhead.</p>
+<p>If the average processing time is significantly high, it may indicate that the XDP program is introducing a considerable processing overhead, which may require optimization or further investigation.</p>
 </li>
 <li>
 <p>Collect data and analyze the performance metrics over an extended period of network traffic to identify any patterns or trends. Look for anomalies or deviations in the processing time that could indicate potential bottlenecks or inefficiencies.</p>
