@@ -49,10 +49,8 @@ had to do - any other job would feel like work and I didn't much like work. So
 with some luck and a sprinkle of white-lies I landed my first web developer
 role around 2004 and was hooked.
 
-Fast forward some years, I'm currently posted at firebolt.io where I help
-several teams who are focused around automation and running infrastructure. We
-have many complex problems to solve but the progress we're making is truly
-amazing. Oblig. "My views are my own / not representative of my employer"
+Fast forward some years, I'm currently posted at a stealth mode startup where I
+work on eBPF with C and Golang to build security and observability tools.
 
 Outside of work I try to contribute to the community when I can, though spare
 time is expensive when you have kids to spend it on. I recently got to speak at

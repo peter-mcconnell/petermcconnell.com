@@ -48,11 +48,6 @@ tinha que fazer - qualquer outro trabalho pareceria trabalho e eu não gostava m
 com alguma sorte e uma pitada de mentiras brancas, consegui meu primeiro desenvolvedor web
 papel por volta de 2004 e foi fisgado.
 
-Avançando alguns anos, atualmente estou postado no firebolt.io, onde ajudo
-várias equipes focadas em automação e infraestrutura em execução. Nós
-temos muitos problemas complexos para resolver, mas o progresso que estamos fazendo é realmente
-incrível. obrigado "Minhas opiniões são minhas / não representam meu empregador"
-
 Fora do trabalho tento contribuir com a comunidade quando posso, embora sobrando
 o tempo é caro quando você tem filhos para gastá-lo. Recentemente, consegui falar em
 NIDC, o que foi bom - você pode pegá-lo aqui:

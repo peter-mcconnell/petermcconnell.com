@@ -51,12 +51,6 @@ travail aurait l'air d'être un travail et je n'aimais pas beaucoup le travail.
 Alors avec un peu de chance et une pincée de mensonges blancs, j'ai décroché
 mon premier développeur web rôle vers 2004 et est devenu accro.
 
-Avance rapide de quelques années, je suis actuellement posté sur firebolt.io où
-j'aide plusieurs équipes qui se concentrent sur l'automatisation et l'exécution
-de l'infrastructure. Nous avons de nombreux problèmes complexes à résoudre,
-mais les progrès que nous réalisons sont vraiment incroyable. Oblig. "Mes
-opinions sont les miennes / ne représentent pas mon employeur"
-
 En dehors du travail, j'essaie de contribuer à la communauté quand je le peux,
 même si j'en ai le temps coûte cher quand on a des enfants pour le dépenser.
 J'ai récemment pris la parole à NIDC, ce qui était bien - vous pouvez le voir
