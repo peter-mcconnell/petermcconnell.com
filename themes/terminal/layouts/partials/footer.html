@@ -4,7 +4,6 @@
       {{ with .OutputFormats.Get "rss" -}}
       {{ printf `<a href="%s" title="rss feed">rss</a> | ` .Permalink | safeHTML }}
       {{ end -}}
-      <a target="_blank" href="https://twitter.com/PeteMcConnell_">twitter</a> |
       <a target="_blank" href="https://github.com/peter-mcconnell/">github</a> |
       <a target="_blank" href="https://www.linkedin.com/in/pemcconnell/">linkedin</a>
       {{ if $.Site.Copyright }}

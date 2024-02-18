@@ -204,7 +204,7 @@
       <span class="post-author">Peter McConnell</span>
     
     
-      <span class="post-reading-time">:: 7 min read (1301 words)</span>
+      <span class="post-reading-time">:: 7 min read (1300 words)</span>
     
   </div>
 
@@ -392,7 +392,7 @@ pkg/whispers: Implements the core functionality for loading and interacting with
 <p>Included with the repository is a Dockerfile that not only builds <code>whisper</code> but also contains an sshd server ready to go, so that you can play with it immediately. The following is a demonstration of that:</p>
 <p><a href="https://asciinema.org/a/641250"><img src="https://asciinema.org/a/641250.png" alt="asciicast"></a></p>
 <h2 id="improvements">Improvements<a href="#improvements" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
-<p>This project was designed to be very simple - specifically I&rsquo;m aiming to give an overview of the tech in a short meetup. As such, it isn&rsquo;t intended to be feature-complete. Namely this project results in a binary whereby you provide the <code>-binPath=/path/to/libpam</code>, however we can automate this attachment with more eBPF.</p>
+<p>This project was designed to be very simple - specifically I&rsquo;m aiming to give an overview of it during a tech talk. As such, it isn&rsquo;t intended to be feature-complete. Namely this project results in a binary whereby you provide the <code>-binPath=/path/to/libpam</code>, however we can automate this attachment with more eBPF.</p>
 <p>This project has used uprobes to trace arguments for a given user-space application. However we can automate the auto-attachment of these probes using kprobes. With kprobes we could filter <code>execve</code> and <code>fork</code> for <code>comm</code>s that we deem to be interesting (e.g. <code>sshd</code>, <code>passwd</code>) and when we get a match, we could run <code>ldd</code> against the <code>/proc/&lt;pid&gt;/exe</code> to see if we can see <code>libpam</code> and attach that way. There are some complexities to consider here such as the namespace for a given process may be different (e.g. for containers). We&rsquo;d likely also want to look at existing processes and attach probes to those also. However, these are all trivial problems to solve. The result being that you could run a single <code>whispers</code> with no targets, that would automatically attach our uprobes whenever a suitable process was started.</p>
 
       </div></div>
@@ -431,7 +431,6 @@ pkg/whispers: Implements the core functionality for loading and interacting with
     <footer class="footer">
   <div class="footer__inner">
     <div class="links">
-      <a target="_blank" href="https://twitter.com/PeteMcConnell_">twitter</a> |
       <a target="_blank" href="https://github.com/peter-mcconnell/">github</a> |
       <a target="_blank" href="https://www.linkedin.com/in/pemcconnell/">linkedin</a>
       
