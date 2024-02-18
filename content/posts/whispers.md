@@ -241,7 +241,29 @@ int trace_pam_get_authtok(struct pt_regs *ctx)
 };
 ```
 
-To handle compiling this code, given we're going to be using Golang we'll define a `go generate` later which will point to a bash script which will handle compilation.
+To handle compiling this code, given we're going to be using Golang we'll define a `go generate` later which will point to a bash script which will handle compilation. For now though we can create the `gen.sh` which will handle the compilation:
+
+```bash
+#!/usr/bin/env bash
+
+set -e
+set -x
+
+# Dynamically find kernel headers. Adjust this line according to your needs.
+KERNEL_HEADERS=$(find /usr/src -name "linux-headers-$(uname -r)" -type d | head -n 1)
+
+# Include directory for bpf_helpers.h. This might need adjustments.
+BPF_HELPERS_DIR="/usr/src/linux-headers-$(uname -r)/tools/bpf/resolve_btfids/libbpf/include/"
+
+# Run bpf2go with dynamic include paths
+go run github.com/cilium/ebpf/cmd/bpf2go -target amd64 bpf \
+    ../../bpf/uretprobe.c -- \
+    -I"${KERNEL_HEADERS}" \
+    -I"${BPF_HELPERS_DIR}" \
+    -I../../bpf/headers
+```
+
+This will be invoked by `go build` whenever it encounters a `// go generate ../path/to/gen.sh` directive. `go generate` is a command provided by the Go toolchain that automates the generation of code before the build process. It scans Go source files for special comments that specify commands to be run at generate time. These commands can invoke any process but are commonly used to generate Go code, making it a perfect fit for integrating eBPF programs into Go applications.
 
 #### Golang code
 
@@ -254,7 +276,7 @@ Ensure your Go environment is set up with the necessary dependencies:
 The Go codebase for whispers is structured as follows:
 
     cmd/: Contains the CLI interface for whispers.
-    pkg/config: Defines configuration structures and parsing logic.
+    pkg/config: Defines configuration structures.
     pkg/whispers: Implements the core functionality for loading and interacting with the eBPF program.
 
 Dependencies are defined in `go.mod` and can be pulled with `go mod tidy`.
