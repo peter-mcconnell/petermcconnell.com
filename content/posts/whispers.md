@@ -15,12 +15,6 @@ ToC = true
 
 In the vast and complex landscape of software security, safeguarding sensitive information remains a paramount concern for developers and security professionals alike. Among the myriad of challenges, securely managing and protecting credentials during authentication processes stands out as a critical vulnerability point. Traditional security measures often fall short in providing real-time insights into how credentials are handled and potentially exposed within applications, especially those relying on widely used authentication frameworks like PAM (Pluggable Authentication Modules).
 
-Enter whispers, a groundbreaking tool designed to bridge this gap by leveraging the power of eBPF (Extended Berkeley Packet Filter) technology and the Go programming language. whispers offers a unique window into the authentication process, capturing credentials in real-time as they're passed through libpam — a common library used by essential services such as openssh, passwd, and more. This capability not only shines a light on the unseen aspects of credential management but also serves as an invaluable educational resource for those looking to deepen their understanding of system security dynamics.
-
-Developed with an emphasis on practicality, whispers embodies a seamless integration between the cutting-edge eBPF technology and Go's robust system programming capabilities. By attaching to specific kernel functions related to authentication, whispers meticulously captures and logs credential usage, providing clear insights into the authentication flow and uncovering potential security vulnerabilities that could be exploited in real-world scenarios.
-
-whispers is not just a tool; it's a foray into the depths of system-level monitoring and security analysis. Whether you're a seasoned security professional, a system administrator, or a developer keen on enhancing your application's security posture, whispers offers a compelling glimpse into the critical intersection of authentication processes and security monitoring. Join us as we delve into the mechanics, applications, and educational benefits of whispers, illustrating how it stands as a testament to the innovative fusion of eBPF and Go in the service of software security.
-
 Developing the eBPF Program for whispers
 ----------------------------------------
 

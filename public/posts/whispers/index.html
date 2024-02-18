@@ -204,7 +204,7 @@
       <span class="post-author">Peter McConnell</span>
     
     
-      <span class="post-reading-time">:: 7 min read (1300 words)</span>
+      <span class="post-reading-time">:: 5 min read (1065 words)</span>
     
   </div>
 
@@ -252,9 +252,6 @@
 
   <div class="post-content"><div>
         <p>In the vast and complex landscape of software security, safeguarding sensitive information remains a paramount concern for developers and security professionals alike. Among the myriad of challenges, securely managing and protecting credentials during authentication processes stands out as a critical vulnerability point. Traditional security measures often fall short in providing real-time insights into how credentials are handled and potentially exposed within applications, especially those relying on widely used authentication frameworks like PAM (Pluggable Authentication Modules).</p>
-<p>Enter whispers, a groundbreaking tool designed to bridge this gap by leveraging the power of eBPF (Extended Berkeley Packet Filter) technology and the Go programming language. whispers offers a unique window into the authentication process, capturing credentials in real-time as they&rsquo;re passed through libpam — a common library used by essential services such as openssh, passwd, and more. This capability not only shines a light on the unseen aspects of credential management but also serves as an invaluable educational resource for those looking to deepen their understanding of system security dynamics.</p>
-<p>Developed with an emphasis on practicality, whispers embodies a seamless integration between the cutting-edge eBPF technology and Go&rsquo;s robust system programming capabilities. By attaching to specific kernel functions related to authentication, whispers meticulously captures and logs credential usage, providing clear insights into the authentication flow and uncovering potential security vulnerabilities that could be exploited in real-world scenarios.</p>
-<p>whispers is not just a tool; it&rsquo;s a foray into the depths of system-level monitoring and security analysis. Whether you&rsquo;re a seasoned security professional, a system administrator, or a developer keen on enhancing your application&rsquo;s security posture, whispers offers a compelling glimpse into the critical intersection of authentication processes and security monitoring. Join us as we delve into the mechanics, applications, and educational benefits of whispers, illustrating how it stands as a testament to the innovative fusion of eBPF and Go in the service of software security.</p>
 <h2 id="developing-the-ebpf-program-for-whispers">Developing the eBPF Program for whispers<a href="#developing-the-ebpf-program-for-whispers" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>This section provides an in-depth look at the development of the eBPF program for whispers, a tool designed to monitor and capture credentials handled by libpam. By leveraging eBPF, whispers taps into kernel functions related to authentication processes, offering unprecedented insights into credential management and security vulnerabilities.</p>
 <h3 id="technical-background">Technical Background<a href="#technical-background" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
