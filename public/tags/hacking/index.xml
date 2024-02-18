@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>hacking on Peter McConnell :: Ponderings from a Linux Systems engineer</title>
+    <link>https://www.petermcconnell.com/tags/hacking/</link>
+    <description>Recent content in hacking on Peter McConnell :: Ponderings from a Linux Systems engineer</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; Peter McConnell 2023</copyright>
+    <lastBuildDate>Sun, 18 Feb 2024 11:40:02 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/hacking/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Snooping on libpam (openssh auth, passwd) with Golang and eBPF</title>
+      <link>https://www.petermcconnell.com/posts/whispers/</link>
+      <pubDate>Sun, 18 Feb 2024 11:40:02 +0000</pubDate>
+      
+      <guid>https://www.petermcconnell.com/posts/whispers/</guid>
+      <description>In the vast and complex landscape of software security, safeguarding sensitive information remains a paramount concern for developers and security professionals alike. Among the myriad of challenges, securely managing and protecting credentials during authentication processes stands out as a critical vulnerability point. Traditional security measures often fall short in providing real-time insights into how credentials are handled and potentially exposed within applications, especially those relying on widely used authentication frameworks like PAM (Pluggable Authentication Modules).</description>
+      <content>&lt;p&gt;In the vast and complex landscape of software security, safeguarding sensitive information remains a paramount concern for developers and security professionals alike. Among the myriad of challenges, securely managing and protecting credentials during authentication processes stands out as a critical vulnerability point. Traditional security measures often fall short in providing real-time insights into how credentials are handled and potentially exposed within applications, especially those relying on widely used authentication frameworks like PAM (Pluggable Authentication Modules).&lt;/p&gt;
+&lt;p&gt;Enter whispers, a groundbreaking tool designed to bridge this gap by leveraging the power of eBPF (Extended Berkeley Packet Filter) technology and the Go programming language. whispers offers a unique window into the authentication process, capturing credentials in real-time as they&amp;rsquo;re passed through libpam — a common library used by essential services such as openssh, passwd, and more. This capability not only shines a light on the unseen aspects of credential management but also serves as an invaluable educational resource for those looking to deepen their understanding of system security dynamics.&lt;/p&gt;
+&lt;p&gt;Developed with an emphasis on practicality, whispers embodies a seamless integration between the cutting-edge eBPF technology and Go&amp;rsquo;s robust system programming capabilities. By attaching to specific kernel functions related to authentication, whispers meticulously captures and logs credential usage, providing clear insights into the authentication flow and uncovering potential security vulnerabilities that could be exploited in real-world scenarios.&lt;/p&gt;
+&lt;p&gt;whispers is not just a tool; it&amp;rsquo;s a foray into the depths of system-level monitoring and security analysis. Whether you&amp;rsquo;re a seasoned security professional, a system administrator, or a developer keen on enhancing your application&amp;rsquo;s security posture, whispers offers a compelling glimpse into the critical intersection of authentication processes and security monitoring. Join us as we delve into the mechanics, applications, and educational benefits of whispers, illustrating how it stands as a testament to the innovative fusion of eBPF and Go in the service of software security.&lt;/p&gt;
+&lt;h2 id=&#34;developing-the-ebpf-program-for-whispers&#34;&gt;Developing the eBPF Program for whispers&lt;/h2&gt;
+&lt;p&gt;This section provides an in-depth look at the development of the eBPF program for whispers, a tool designed to monitor and capture credentials handled by libpam. By leveraging eBPF, whispers taps into kernel functions related to authentication processes, offering unprecedented insights into credential management and security vulnerabilities.&lt;/p&gt;
+&lt;h3 id=&#34;technical-background&#34;&gt;Technical Background&lt;/h3&gt;
+&lt;p&gt;eBPF (Extended Berkeley Packet Filter) is a powerful technology that allows for the dynamic tracing of kernel and user space applications without modifying their source code or requiring prior knowledge of their internal workings. eBPF programs are run by the Linux kernel and can safely access kernel data structures, making them ideal for monitoring, networking, and security applications.
+Setting Up the Development Environment&lt;/p&gt;
+&lt;p&gt;Before diving into eBPF program development, ensure your development environment is properly set up with the following tools and libraries:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;LLVM &amp;amp; Clang: For compiling eBPF programs.
+Linux Kernel Headers: Required for eBPF program compilation to access kernel APIs.
+libbpf: A library for loading and interacting with eBPF programs and maps.
+Go toolchain: For the Go-based components of whispers.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;developing-the-ebpf-program&#34;&gt;Developing the eBPF Program&lt;/h3&gt;
+&lt;p&gt;The eBPF program for whispers is designed to attach to the pam_get_authtok function via a uretprobe, capturing credentials as they&amp;rsquo;re processed.
+Key Components&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;uretprobe.c: Contains the eBPF code that defines the data structures and logic for capturing and processing credential information from pam_get_authtok.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;bpf-code&#34;&gt;BPF code&lt;/h4&gt;
+&lt;p&gt;When trying to look up the structure of pam_get_authtok I encountered &lt;a href=&#34;https://github.com/citronneur/pamspy&#34;&gt;https://github.com/citronneur/pamspy&lt;/a&gt; which is where I lifted most of this code from, so credit to them:&lt;/p&gt;
+&lt;p&gt;You can see the code in full at &lt;a href=&#34;https://github.com/peter-mcconnell/whispers/blob/main/bpf/uretprobe.c&#34;&gt;https://github.com/peter-mcconnell/whispers/blob/main/bpf/uretprobe.c&lt;/a&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;...
+
+&lt;span style=&#34;color:#75715e&#34;&gt;// we need the pam_handle struct so that we can read the data in our BPF program
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;typedef&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; pam_handle
+{
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;authtok;
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;unsigned&lt;/span&gt; caller_is;
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;void&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;pam_conversation;
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;oldauthtok;
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;prompt;
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;service_name;
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;user;
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;rhost;
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;ruser;
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;tty;
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;xdisplay;
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;authtok_type;
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;void&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;data;
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;void&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;env;
+} pam_handle_t;
+
+&lt;span style=&#34;color:#75715e&#34;&gt;// we&amp;#39;re using a ringbuffer datastructure to share data back to our userspace program
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt;
+{
+  __uint(type, BPF_MAP_TYPE_RINGBUF);
+  __uint(max_entries, &lt;span style=&#34;color:#ae81ff&#34;&gt;256&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1024&lt;/span&gt;);
+} rb SEC(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;.maps&amp;#34;&lt;/span&gt;);
+
+...
+
+SEC(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;uretprobe/pam_get_authtok&amp;#34;&lt;/span&gt;)
+&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; trace_pam_get_authtok(&lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; pt_regs &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;ctx)
+{
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (&lt;span style=&#34;color:#f92672&#34;&gt;!&lt;/span&gt;PT_REGS_PARM1(ctx))
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
+
+  pam_handle_t&lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; phandle &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; (pam_handle_t&lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;)PT_REGS_PARM1(ctx);
+
+  u32 pid &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; bpf_get_current_pid_tgid() &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;32&lt;/span&gt;;
+
+  u64 password_addr &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
+  bpf_probe_read(&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;password_addr, &lt;span style=&#34;color:#66d9ef&#34;&gt;sizeof&lt;/span&gt;(password_addr), &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;phandle&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;authtok);
+
+  u64 username_addr &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
+  bpf_probe_read(&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;username_addr, &lt;span style=&#34;color:#66d9ef&#34;&gt;sizeof&lt;/span&gt;(username_addr), &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;phandle&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;user);
+
+  event_t &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;e;
+  e &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; bpf_ringbuf_reserve(&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;rb, &lt;span style=&#34;color:#66d9ef&#34;&gt;sizeof&lt;/span&gt;(&lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;e), &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;);
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (e)
+  {
+    e&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;pid &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; pid;
+    bpf_probe_read(&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;e&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;password, &lt;span style=&#34;color:#66d9ef&#34;&gt;sizeof&lt;/span&gt;(e&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;password), (&lt;span style=&#34;color:#66d9ef&#34;&gt;void&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;)password_addr);
+    bpf_probe_read(&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;e&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;username, &lt;span style=&#34;color:#66d9ef&#34;&gt;sizeof&lt;/span&gt;(e&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;username), (&lt;span style=&#34;color:#66d9ef&#34;&gt;void&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;)username_addr);
+    bpf_get_current_comm(&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;e&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;comm, &lt;span style=&#34;color:#66d9ef&#34;&gt;sizeof&lt;/span&gt;(e&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;comm));
+    bpf_ringbuf_submit(e, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;);
+  }
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
+};
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;To handle compiling this code, given we&amp;rsquo;re going to be using Golang we&amp;rsquo;ll define a &lt;code&gt;go generate&lt;/code&gt; later which will point to a bash script which will handle compilation.&lt;/p&gt;
+&lt;h4 id=&#34;golang-code&#34;&gt;Golang code&lt;/h4&gt;
+&lt;p&gt;This section delves into the Go component of whispers, which serves as the user-space counterpart to the eBPF program. It outlines how to leverage Go to load the eBPF program, attach probes, read from eBPF maps, and process the captured credential data for monitoring and analysis purposes.&lt;/p&gt;
+&lt;p&gt;Ensure your Go environment is set up with the necessary dependencies:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;Go (1.21 or newer): Ensure the Go toolchain is installed.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The Go codebase for whispers is structured as follows:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;cmd/: Contains the CLI interface for whispers.
+pkg/config: Defines configuration structures and parsing logic.
+pkg/whispers: Implements the core functionality for loading and interacting with the eBPF program.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Dependencies are defined in &lt;code&gt;go.mod&lt;/code&gt; and can be pulled with &lt;code&gt;go mod tidy&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;This article will only touch on the most interesting parts of the code. The source can be read at &lt;a href=&#34;https://github.com/peter-mcconnell/whispers/blob/main/pkg/whispers/whispers.go&#34;&gt;https://github.com/peter-mcconnell/whispers/blob/main/pkg/whispers/whispers.go&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;We&amp;rsquo;re using cilium ebpf to handle loading our BPF program and interacting with the BPF maps. In the following, &lt;code&gt;bpfObjects&lt;/code&gt; and &lt;code&gt;loadBpfObjects&lt;/code&gt; are defined in the auto-generated file &lt;code&gt;bpf_x86_bpfel.go&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-golang&#34; data-lang=&#34;golang&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Listen&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;ctx&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;context&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Context&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;cfg&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;config&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Config&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;error&lt;/span&gt; {
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;objs&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;bpfObjects&lt;/span&gt;{}
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;loadBpfObjects&lt;/span&gt;(&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;objs&lt;/span&gt;, &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt;); &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt; {
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt;
+    }
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;defer&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;objs&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Close&lt;/span&gt;()
+
+    &lt;span style=&#34;color:#f92672&#34;&gt;...&lt;/span&gt;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The above snippet demonstrates loading the eBPF program and ensuring it is correctly cleaned up upon termination.&lt;/p&gt;
+&lt;p&gt;whispers attaches uretprobes to target functions (e.g., pam_get_authtok) also using the cilium/ebpf library:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-golang&#34; data-lang=&#34;golang&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;ex&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;link&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;OpenExecutable&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;cfg&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;BinPath&lt;/span&gt;)
+&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt; {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt;
+}
+&lt;span style=&#34;color:#a6e22e&#34;&gt;up&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;ex&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Uretprobe&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;cfg&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Symbol&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;objs&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;TracePamGetAuthtok&lt;/span&gt;, &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt;)
+&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt; {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt;
+}
+&lt;span style=&#34;color:#66d9ef&#34;&gt;defer&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;up&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Close&lt;/span&gt;()
+&lt;span style=&#34;color:#f92672&#34;&gt;...&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The Go code uses a ring buffer to read events captured by the eBPF program:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-golang&#34; data-lang=&#34;golang&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;rb&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;ringbuf&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;NewReader&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;objs&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Rb&lt;/span&gt;)
+&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt; {
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;log&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Printf&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;failed to open ring buffer reader: %v&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt;)
+}
+&lt;span style=&#34;color:#66d9ef&#34;&gt;defer&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;rb&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Close&lt;/span&gt;()
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;go&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt;() {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; {
+        &lt;span style=&#34;color:#a6e22e&#34;&gt;record&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;rb&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Read&lt;/span&gt;()
+        &lt;span style=&#34;color:#f92672&#34;&gt;...&lt;/span&gt;
+        &lt;span style=&#34;color:#a6e22e&#34;&gt;event&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;parseEventData&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;record&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;RawSample&lt;/span&gt;)
+        &lt;span style=&#34;color:#f92672&#34;&gt;...&lt;/span&gt;
+    }
+}()
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;After reading events from the ring buffer, whispers processes and logs the captured credentials:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-golang&#34; data-lang=&#34;golang&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;log&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Printf&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Event: PID: %d, Comm: %s, Username: %s, Password: %s&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;event&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Pid&lt;/span&gt;,
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;byteArrayToString&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;event&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Comm&lt;/span&gt;[:]),
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;byteArrayToString&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;event&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Username&lt;/span&gt;[:]),
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;byteArrayToString&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;event&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Password&lt;/span&gt;[:]))
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;seeing-it-in-action&#34;&gt;Seeing it in action&lt;/h2&gt;
+&lt;p&gt;Included with the repository is a Dockerfile that not only builds &lt;code&gt;whisper&lt;/code&gt; but also contains an sshd server ready to go, so that you can play with it immediately. The following is a demonstration of that:&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://asciinema.org/a/641250&#34;&gt;&lt;img src=&#34;https://asciinema.org/a/641250.png&#34; alt=&#34;asciicast&#34;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;improvements&#34;&gt;Improvements&lt;/h2&gt;
+&lt;p&gt;This project was designed to be very simple - specifically I&amp;rsquo;m aiming to give an overview of the tech in a short meetup. As such, it isn&amp;rsquo;t intended to be feature-complete. Namely this project results in a binary whereby you provide the &lt;code&gt;-binPath=/path/to/libpam&lt;/code&gt;, however we can automate this attachment with more eBPF.&lt;/p&gt;
+&lt;p&gt;This project has used uprobes to trace arguments for a given user-space application. However we can automate the auto-attachment of these probes using kprobes. With kprobes we could filter &lt;code&gt;execve&lt;/code&gt; and &lt;code&gt;fork&lt;/code&gt; for &lt;code&gt;comm&lt;/code&gt;s that we deem to be interesting (e.g. &lt;code&gt;sshd&lt;/code&gt;, &lt;code&gt;passwd&lt;/code&gt;) and when we get a match, we could run &lt;code&gt;ldd&lt;/code&gt; against the &lt;code&gt;/proc/&amp;lt;pid&amp;gt;/exe&lt;/code&gt; to see if we can see &lt;code&gt;libpam&lt;/code&gt; and attach that way. There are some complexities to consider here such as the namespace for a given process may be different (e.g. for containers). We&amp;rsquo;d likely also want to look at existing processes and attach probes to those also. However, these are all trivial problems to solve. The result being that you could run a single &lt;code&gt;whispers&lt;/code&gt; with no targets, that would automatically attach our uprobes whenever a suitable process was started.&lt;/p&gt;
+</content>
+    </item>
+    
+  </channel>
+</rss>

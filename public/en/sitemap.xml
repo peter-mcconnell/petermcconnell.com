@@ -2,20 +2,43 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://www.petermcconnell.com/posts/writing-an-xdp-ebpf-program/</loc>
-    <lastmod>2023-05-17T15:31:43+00:00</lastmod>
-  </url><url>
-    <loc>https://www.petermcconnell.com/tags/chaos-engineering/</loc>
-    <lastmod>2023-05-17T15:31:43+00:00</lastmod>
-  </url><url>
     <loc>https://www.petermcconnell.com/tags/ebpf/</loc>
-    <lastmod>2023-05-17T15:31:43+00:00</lastmod>
+    <lastmod>2024-02-18T11:40:02+00:00</lastmod>
   </url><url>
     <loc>https://www.petermcconnell.com/tags/golang/</loc>
-    <lastmod>2023-05-17T15:31:43+00:00</lastmod>
+    <lastmod>2024-02-18T11:40:02+00:00</lastmod>
+  </url><url>
+    <loc>https://www.petermcconnell.com/tags/hacking/</loc>
+    <lastmod>2024-02-18T11:40:02+00:00</lastmod>
+  </url><url>
+    <loc>https://www.petermcconnell.com/tags/libpam/</loc>
+    <lastmod>2024-02-18T11:40:02+00:00</lastmod>
+  </url><url>
+    <loc>https://www.petermcconnell.com/tags/linux/</loc>
+    <lastmod>2024-02-18T11:40:02+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="es"
+                href="https://www.petermcconnell.com/es/tags/linux/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="fr"
+                href="https://www.petermcconnell.com/fr/tags/linux/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="pt"
+                href="https://www.petermcconnell.com/pt/tags/linux/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://www.petermcconnell.com/tags/linux/"
+                />
   </url><url>
     <loc>https://www.petermcconnell.com/</loc>
-    <lastmod>2023-05-17T15:31:43+00:00</lastmod>
+    <lastmod>2024-02-18T11:40:02+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="pt"
@@ -38,7 +61,7 @@
                 />
   </url><url>
     <loc>https://www.petermcconnell.com/posts/</loc>
-    <lastmod>2023-05-17T15:31:43+00:00</lastmod>
+    <lastmod>2024-02-18T11:40:02+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="es"
@@ -60,8 +83,11 @@
                 href="https://www.petermcconnell.com/posts/"
                 />
   </url><url>
+    <loc>https://www.petermcconnell.com/posts/whispers/</loc>
+    <lastmod>2024-02-18T11:40:02+00:00</lastmod>
+  </url><url>
     <loc>https://www.petermcconnell.com/tags/</loc>
-    <lastmod>2023-05-17T15:31:43+00:00</lastmod>
+    <lastmod>2024-02-18T11:40:02+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="es"
@@ -83,6 +109,12 @@
                 href="https://www.petermcconnell.com/tags/"
                 />
   </url><url>
+    <loc>https://www.petermcconnell.com/posts/writing-an-xdp-ebpf-program/</loc>
+    <lastmod>2023-05-17T15:31:43+00:00</lastmod>
+  </url><url>
+    <loc>https://www.petermcconnell.com/tags/chaos-engineering/</loc>
+    <lastmod>2023-05-17T15:31:43+00:00</lastmod>
+  </url><url>
     <loc>https://www.petermcconnell.com/tags/xdp/</loc>
     <lastmod>2023-05-17T15:31:43+00:00</lastmod>
   </url><url>
@@ -94,29 +126,6 @@
   </url><url>
     <loc>https://www.petermcconnell.com/tags/filesystems/</loc>
     <lastmod>2023-01-19T12:05:02+00:00</lastmod>
-  </url><url>
-    <loc>https://www.petermcconnell.com/tags/linux/</loc>
-    <lastmod>2023-01-19T12:05:02+00:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="es"
-                href="https://www.petermcconnell.com/es/tags/linux/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="fr"
-                href="https://www.petermcconnell.com/fr/tags/linux/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="pt"
-                href="https://www.petermcconnell.com/pt/tags/linux/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://www.petermcconnell.com/tags/linux/"
-                />
   </url><url>
     <loc>https://www.petermcconnell.com/tags/overlayfs/</loc>
     <lastmod>2023-01-19T12:05:02+00:00</lastmod>
