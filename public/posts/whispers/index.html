@@ -7,7 +7,7 @@
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="In the vast and complex landscape of software security, safeguarding sensitive information remains a paramount concern for developers and security professionals …" />
-<meta name="keywords" content="linux, ebpf, golang, hacking, libpam, openssh, passwd" />
+<meta name="keywords" content="linux, ebpf, golang, hacking, security, libpam, openssh, passwd" />
 
 
 <link rel="canonical" href="https://www.petermcconnell.com/posts/whispers/" />
@@ -204,7 +204,7 @@
       <span class="post-author">Peter McConnell</span>
     
     
-      <span class="post-reading-time">:: 6 min read (1140 words)</span>
+      <span class="post-reading-time">:: 13 min read (2596 words)</span>
     
   </div>
 
@@ -217,7 +217,7 @@
       
       #<a href="https://www.petermcconnell.com/tags/golang/">golang</a>&nbsp;
       
-      #<a href="https://www.petermcconnell.com/tags/hacking/">hacking</a>&nbsp;
+      #<a href="https://www.petermcconnell.com/tags/security/">security</a>&nbsp;
       
       #<a href="https://www.petermcconnell.com/tags/libpam/">libpam</a>&nbsp;
       
@@ -237,9 +237,21 @@
       </h2>
       <nav id="TableOfContents">
   <ul>
+    <li><a href="#a-high-level-introduction-to-some-of-the-tech-well-be-playing-with">A high-level introduction to some of the tech we&rsquo;ll be playing with</a>
+      <ul>
+        <li><a href="#uprobes-user-space-probes">Uprobes: User Space Probes</a></li>
+        <li><a href="#ebpf-extended-berkeley-packet-filter">eBPF: Extended Berkeley Packet Filter</a></li>
+        <li><a href="#bpf-maps-bridging-kernel-and-user-space">BPF Maps: Bridging Kernel and User Space</a></li>
+      </ul>
+    </li>
+    <li><a href="#knowing-what-to-look-for">Knowing what to look for</a>
+      <ul>
+        <li><a href="#creating-a-debug-environment">Creating a debug environment</a></li>
+      </ul>
+    </li>
     <li><a href="#developing-the-ebpf-program-for-whispers">Developing the eBPF Program for whispers</a>
       <ul>
-        <li><a href="#technical-background">Technical Background</a></li>
+        <li><a href="#dependencies">Dependencies</a></li>
         <li><a href="#developing-the-ebpf-program">Developing the eBPF Program</a></li>
       </ul>
     </li>
@@ -254,25 +266,116 @@
         <p>In the vast and complex landscape of software security, safeguarding sensitive information remains a paramount concern for developers and security professionals alike. Among the myriad of challenges, securely managing and protecting credentials during authentication processes stands out as a critical vulnerability point. Traditional security measures often fall short in providing real-time insights into how credentials are handled and potentially exposed within applications, especially those relying on widely used authentication frameworks like PAM (Pluggable Authentication Modules).</p>
 <p>I work for a runtime security platform so this topic, BPF, Golang and Linux are some that I find the most interesting. Tangentally I was asked to give a talk at a Golang meetup, so figured I&rsquo;d create a mini project to showcase some of this tech may be a good way to get others excited about these topics. Hence this repo and article.</p>
 <p>The source code for this project can be seen here: <a href="https://github.com/peter-mcconnell/whispers">https://github.com/peter-mcconnell/whispers</a>.</p>
+<h2 id="a-high-level-introduction-to-some-of-the-tech-well-be-playing-with">A high-level introduction to some of the tech we&rsquo;ll be playing with<a href="#a-high-level-introduction-to-some-of-the-tech-well-be-playing-with" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>Two pivotal technologies at the heart of our work here are <code>uprobes</code> (user space probes) and <code>eBPF</code> (Extended Berkeley Packet Filter).</p>
+<h3 id="uprobes-user-space-probes">Uprobes: User Space Probes<a href="#uprobes-user-space-probes" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>Uprobes are a dynamic tracing feature of the Linux kernel that allows developers to instrument user space binaries. By attaching to specific locations in the executable code (such as function entry or exit points), uprobes enable the collection of data about the binary&rsquo;s execution without modifying its code. This makes uprobes an invaluable tool for performance analysis, debugging, and, as with whispers, security monitoring.</p>
+<p>When a specified location is executed, the uprobe triggers, and control is passed to a handler function, which can gather information about the execution context, such as function arguments, return values, and the process ID. This capability allows whispers to monitor authentication processes by attaching uprobes to critical functions within libpam, capturing credential data as it&rsquo;s passed through these functions.</p>
+<h3 id="ebpf-extended-berkeley-packet-filter">eBPF: Extended Berkeley Packet Filter<a href="#ebpf-extended-berkeley-packet-filter" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>eBPF is a revolutionary technology that extends the traditional Berkeley Packet Filter (BPF) with enhanced capabilities, allowing for the safe execution of small programs within the Linux kernel without changing kernel source code or loading kernel modules. eBPF programs are written in a restricted C-like language, compiled into bytecode, and then executed by the kernel&rsquo;s virtual machine, ensuring safety and efficiency.</p>
+<p>eBPF has a wide range of applications, from networking and security to performance monitoring and debugging. It interacts with the kernel and user space through maps (data structures for storing state) and program types (defining what an eBPF program can do).</p>
+<p>For our project, eBPF is used to implement uprobes for capturing authentication data. The eBPF program is attached to the target function in the user space binary, and upon function execution, the eBPF program is triggered, capturing relevant data and passing it back to user space for analysis. This seamless interaction between user and kernel space is what enables whispers to monitor and log credential information efficiently and transparently.
+The combination of uprobes and eBPF offers a powerful mechanism for introspecting and monitoring system and application behavior in real-time. With uprobes providing the ability to hook into specific points of interest in user space applications and eBPF facilitating the safe execution of custom logic within the kernel, developers can create sophisticated monitoring tools like whispers that are both efficient and minimally invasive.</p>
+<p>This innovative approach to system monitoring not only enhances security by exposing potential vulnerabilities and data exposures but also serves as an educational tool, shedding light on the inner workings of system authentication processes and the capabilities of modern Linux kernel technologies.</p>
+<h3 id="bpf-maps-bridging-kernel-and-user-space">BPF Maps: Bridging Kernel and User Space<a href="#bpf-maps-bridging-kernel-and-user-space" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>An integral component of eBPF&rsquo;s powerful capabilities comes from BPF maps, sophisticated data structures designed to store and share data between eBPF programs running in the kernel and applications in user space. These maps play a crucial role in maintaining state, passing information, and facilitating complex data management tasks within eBPF-driven applications like whispers.
+What Are BPF Maps?</p>
+<p>BPF maps are key-value stores that can be accessed by eBPF programs and user space applications. They come in various types, each optimized for specific use cases, such as arrays, hash maps, and ring buffers. The choice of map type depends on the nature of the data being stored and the access patterns required by the eBPF program and the user space application.</p>
+<p>Key Features and Benefits:</p>
+<ul>
+<li>Efficient Data Sharing: BPF maps provide a high-performance mechanism for sharing data between the kernel and user space, crucial for applications that require real-time processing and analysis.</li>
+<li>Statefulness: Unlike traditional stateless packet processing in the kernel, BPF maps enable eBPF programs to maintain state across function calls and packet processing stages, allowing for more sophisticated logic and tracking capabilities.</li>
+<li>Versatility: The variety of available map types makes BPF maps suitable for a wide range of applications, from performance monitoring and networking to security and observability tools like whispers.</li>
+<li>Safety and Isolation: Access to BPF maps from eBPF programs is rigorously checked by the kernel&rsquo;s verifier, ensuring that only valid, safe operations are performed, thereby protecting the kernel from potentially malicious or buggy code.</li>
+</ul>
+<p>In the context of our project &ldquo;whispers&rdquo;, BPF maps serve as the primary mechanism for transferring captured credential data from the eBPF program (attached to libpam functions via uprobes) to the user space component of the tool. For instance, ring buffers are utilized to efficiently pass event data (such as authentication attempts) from kernel to user space, where it can be processed, analyzed, and logged. This enables whispers to monitor and report on authentication processes with minimal overhead and without requiring direct access to the monitored application&rsquo;s memory or internal data structures.</p>
+<h2 id="knowing-what-to-look-for">Knowing what to look for<a href="#knowing-what-to-look-for" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>We know that we want to snoop for creds on libpam, as used by OpenSSH. In order to &ldquo;snoop&rdquo; on libpam we need to know which functions and structures of this library we should snoop on. We also know that we wish to attach uprobes, so are relying on the available symbols of libpam - that seems a reasonable place to start.</p>
+<h3 id="creating-a-debug-environment">Creating a debug environment<a href="#creating-a-debug-environment" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>When setting off on a new adventure I like to create a little investigation environment that allows me to poke at things, break them etc. Often this results in a Dockerfile and this case is no different:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-dockerfile" data-lang="dockerfile"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> ubuntu:22.04</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENV</span> DEBIAN_FRONTEND<span style="color:#f92672">=</span>noninteractive
+<span style="color:#66d9ef">RUN</span> apt-get update -yq <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>		apt-get install -yq openssh-server <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>		<span style="color:#75715e"># some debug utilities, to aide exploration</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>		apt-get install -yq binutils bpftrace systemtap systemtap-sdt-dev linux-headers-<span style="color:#66d9ef">$(</span>uname -r<span style="color:#66d9ef">)</span> vim <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>		mkdir -p /var/run/sshd <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>		echo <span style="color:#e6db74">&#39;root:pass&#39;</span> | chpasswd <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>		sed -i <span style="color:#e6db74">&#39;s/#PermitRootLogin prohibit-password/PermitRootLogin yes/&#39;</span> /etc/ssh/sshd_config <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>		echo <span style="color:#e6db74">&#34;StrictHostKeyChecking no&#34;</span> &gt;&gt; /etc/ssh/ssh_config<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">EXPOSE</span><span style="color:#e6db74"> 22</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">CMD</span> [<span style="color:#e6db74">&#34;/usr/sbin/sshd&#34;</span>, <span style="color:#e6db74">&#34;-D&#34;</span>]<span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><p>This not only installs and configures openssh, but also includes some toys for debugging. Using this <code>Dockerfile</code> I <code>docker build -t=debug .</code> and <code>docker run --privileged -p 2222:22 --rm --name debug -d debug</code> to get it going in the background. I then <code>docker exec -ti debug bash</code> to poke around. We&rsquo;re running <code>--privileged</code> so that we can test attaching probes and running <code>-p 2222:22</code> so we can attempt to ssh into the container from host.</p>
+<p><img src="https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/whispers_debug_env.png" alt="docker debug process" title="docker debug process"></p>
+<p>The screenshot above shows the simple process of hunting down where libpam is using sshd as a starting point. I could have just done <code>find / -name &quot;libpam*&quot;</code> but I wanted to be extra sure it was linked from openssh, which is what I&rsquo;m intending on using for my tests.</p>
+<p>Now that I&rsquo;ve identified the location for libpam, and that it is indeed linked from sshd, I can proceed to identify symbols which may be of interest. To do this I simply ask <code>readelf</code> to dump the symbols and grep the output for <code>auth</code> which is a term I&rsquo;d expect to see in the symbol name for a function that handles authentication.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">root@664e76f33de2:/# readelf -Ws /lib/x86_64-linux-gnu/libpam.so.0 | grep auth
+    82: 00000000000088e0   <span style="color:#ae81ff">699</span> FUNC    GLOBAL DEFAULT   <span style="color:#ae81ff">15</span> pam_get_authtok_verify@@LIBPAM_EXTENSION_1.1.1
+    93: 00000000000088b0    <span style="color:#ae81ff">12</span> FUNC    GLOBAL DEFAULT   <span style="color:#ae81ff">15</span> pam_get_authtok@@LIBPAM_EXTENSION_1.1
+   112: 00000000000088c0    <span style="color:#ae81ff">26</span> FUNC    GLOBAL DEFAULT   <span style="color:#ae81ff">15</span> pam_get_authtok_noverify@@LIBPAM_EXTENSION_1.1.1
+   116: 0000000000009ab0   <span style="color:#ae81ff">371</span> FUNC    GLOBAL DEFAULT   <span style="color:#ae81ff">15</span> pam_chauthtok@@LIBPAM_1.0
+   118: <span style="color:#ae81ff">0000000000009940</span>   <span style="color:#ae81ff">259</span> FUNC    GLOBAL DEFAULT   <span style="color:#ae81ff">15</span> pam_authenticate@@LIBPAM_1.0
+</code></pre></div><p>These all seem reasonably interesting. To ensure these are the right things to hook onto I test them out using `bpftrace -e &lsquo;uprobe:/lib/x86_64-linux-gnu/libpam.so.0:pam_get_authtok { printf(&ldquo;pam_get_authtok called\n&rdquo;); }&rsquo;</p>
+<p>`:</p>
+<p><img src="https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/whispers_bpftrace.png" alt="bpftrace" title="running bpftrace on pam_get_authtok"></p>
+<p>With <code>bpftrace</code> running and the uprobe trace attached I then ssh into the container using <code>ssh root@localhost -p 2222:22</code> from another terminal and can see the trace is made when authentication is handled. Seems like we&rsquo;re on the right track.</p>
+<p>Now I have something to look for in the source code so head over to <a href="https://github.com/linux-pam/linux-pam/">https://github.com/linux-pam/linux-pam/</a> where after a bit of searching for the symbols I find <a href="https://github.com/linux-pam/linux-pam/blob/1e2c6cecf81dcaeea0c2c9d37bc35eea120cd77d/libpam/pam_get_authtok.c#L213">https://github.com/linux-pam/linux-pam/blob/1e2c6cecf81dcaeea0c2c9d37bc35eea120cd77d/libpam/pam_get_authtok.c#L213</a> which looks like the function signature we&rsquo;re after:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">int</span>
+<span style="color:#a6e22e">pam_get_authtok</span> (pam_handle_t <span style="color:#f92672">*</span>pamh, <span style="color:#66d9ef">int</span> item, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">**</span>authtok,
+		 <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>prompt)
+{
+  <span style="color:#66d9ef">return</span> pam_get_authtok_internal (pamh, item, authtok, prompt, <span style="color:#ae81ff">0</span>);
+}
+</code></pre></div><p>With our BPF program we&rsquo;ll intercept the arguments, so first thing to look up is <code>pam_handle_t</code> which after some scouring leads to <a href="https://github.com/linux-pam/linux-pam/blob/1e2c6cecf81dcaeea0c2c9d37bc35eea120cd77d/libpam/pam_private.h#L154">https://github.com/linux-pam/linux-pam/blob/1e2c6cecf81dcaeea0c2c9d37bc35eea120cd77d/libpam/pam_private.h#L154</a>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
+<span style="color:#66d9ef">struct</span> pam_handle {
+    <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>authtok;
+    <span style="color:#66d9ef">unsigned</span> caller_is;
+    <span style="color:#66d9ef">struct</span> pam_conv <span style="color:#f92672">*</span>pam_conversation;
+    <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>oldauthtok;
+    <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>prompt;                <span style="color:#75715e">/* for use by pam_get_user() */</span>
+    <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>service_name;
+    <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>user;
+    <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>rhost;
+    <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>ruser;
+    <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>tty;
+    <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>xdisplay;
+    <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>authtok_type;          <span style="color:#75715e">/* PAM_AUTHTOK_TYPE */</span>
+    <span style="color:#66d9ef">struct</span> pam_data <span style="color:#f92672">*</span>data;
+    <span style="color:#66d9ef">struct</span> pam_environ <span style="color:#f92672">*</span>env;      <span style="color:#75715e">/* structure to maintain environment list */</span>
+    <span style="color:#66d9ef">struct</span> _pam_fail_delay fail_delay;   <span style="color:#75715e">/* helper function for easy delays */</span>
+    <span style="color:#66d9ef">struct</span> pam_xauth_data xauth;        <span style="color:#75715e">/* auth info for X display */</span>
+    <span style="color:#66d9ef">struct</span> service handlers;
+    <span style="color:#66d9ef">struct</span> _pam_former_state former;  <span style="color:#75715e">/* library state - support for
+</span><span style="color:#75715e">					 event driven applications */</span>
+    <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>mod_name;	<span style="color:#75715e">/* Name of the module currently executed */</span>
+    <span style="color:#66d9ef">int</span> mod_argc;               <span style="color:#75715e">/* Number of module arguments */</span>
+    <span style="color:#66d9ef">char</span> <span style="color:#f92672">**</span>mod_argv;            <span style="color:#75715e">/* module arguments */</span>
+    <span style="color:#66d9ef">int</span> choice;			<span style="color:#75715e">/* Which function we call from the module */</span>
+
+<span style="color:#75715e">#ifdef HAVE_LIBAUDIT
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> audit_state;             <span style="color:#75715e">/* keep track of reported audit messages */</span>
+<span style="color:#75715e">#endif
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> authtok_verified;
+    <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>confdir;
+};
+</code></pre></div><p>This has some interesting fields like <code>authtok</code> and <code>user</code>. At this point it feels like we have a reasonable direction for what to hook into.</p>
 <h2 id="developing-the-ebpf-program-for-whispers">Developing the eBPF Program for whispers<a href="#developing-the-ebpf-program-for-whispers" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
-<p>This section provides an in-depth look at the development of the eBPF program for whispers, a tool designed to monitor and capture credentials handled by libpam. By leveraging eBPF, whispers taps into kernel functions related to authentication processes, offering unprecedented insights into credential management and security vulnerabilities.</p>
-<h3 id="technical-background">Technical Background<a href="#technical-background" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
-<p>eBPF (Extended Berkeley Packet Filter) is a powerful technology that allows for the dynamic tracing of kernel and user space applications without modifying their source code or requiring prior knowledge of their internal workings. eBPF programs are run by the Linux kernel and can safely access kernel data structures, making them ideal for monitoring, networking, and security applications.
-Setting Up the Development Environment</p>
+<p>This section provides a high level overview at the development of the eBPF program for <code>whispers</code>, a tool designed to monitor and capture credentials handled by <code>libpam</code>. By leveraging eBPF, whispers taps into kernel functions related to authentication processes, offering unprecedented insights into credential management and security vulnerabilities. You can check out all of the source code here: <a href="https://github.com/peter-mcconnell/whispers">https://github.com/peter-mcconnell/whispers</a>.</p>
+<h3 id="dependencies">Dependencies<a href="#dependencies" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
 <p>Before diving into eBPF program development, ensure your development environment is properly set up with the following tools and libraries:</p>
-<pre><code>LLVM &amp; Clang: For compiling eBPF programs.
-Linux Kernel Headers: Required for eBPF program compilation to access kernel APIs.
-libbpf: A library for loading and interacting with eBPF programs and maps.
-Go toolchain: For the Go-based components of whispers.
-</code></pre>
+<ul>
+<li>LLVM &amp; Clang: For compiling eBPF programs.</li>
+<li>Linux Kernel Headers: Required for eBPF program compilation to access kernel APIs.</li>
+<li>libbpf: A library for loading and interacting with eBPF programs and maps.</li>
+<li>Go toolchain: For the Go-based components of whispers.</li>
+</ul>
 <h3 id="developing-the-ebpf-program">Developing the eBPF Program<a href="#developing-the-ebpf-program" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
-<p>The eBPF program for whispers is designed to attach to the pam_get_authtok function via a uretprobe, capturing credentials as they&rsquo;re processed.
-Key Components</p>
+<p>The eBPF program for whispers is designed to attach to the pam_get_authtok function via a uretprobe, capturing credentials as they&rsquo;re processed.</p>
 <pre><code>uretprobe.c: Contains the eBPF code that defines the data structures and logic for capturing and processing credential information from pam\_get\_authtok.
 </code></pre>
-<h4 id="bpf-code">BPF code<a href="#bpf-code" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
-<p>When trying to look up the structure of pam_get_authtok I encountered <a href="https://github.com/citronneur/pamspy">https://github.com/citronneur/pamspy</a> which is where I lifted most of this code from, so credit to them:</p>
-<p>You can see the code in full at <a href="https://github.com/peter-mcconnell/whispers/blob/main/bpf/uretprobe.c">https://github.com/peter-mcconnell/whispers/blob/main/bpf/uretprobe.c</a></p>
+<p>When trying to look up the structure of pam_get_authtok I encountered <a href="https://github.com/citronneur/pamspy">https://github.com/citronneur/pamspy</a> which is where I lifted most of this code from, so credit to them, but you can see this just matches the structure we found in the libpam source code mentioned above:</p>
+<p><a href="https://github.com/peter-mcconnell/whispers/blob/main/bpf/uretprobe.c">https://github.com/peter-mcconnell/whispers/blob/main/bpf/uretprobe.c</a></p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">...
 
 <span style="color:#75715e">// we need the pam_handle struct so that we can read the data in our BPF program

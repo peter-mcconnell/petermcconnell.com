@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>hacking on Peter McConnell :: Ponderings from a Linux Systems engineer</title>
-    <link>https://www.petermcconnell.com/tags/hacking/</link>
-    <description>Recent content in hacking on Peter McConnell :: Ponderings from a Linux Systems engineer</description>
+    <title>security on Peter McConnell :: Ponderings from a Linux Systems engineer</title>
+    <link>https://www.petermcconnell.com/tags/security/</link>
+    <description>Recent content in security on Peter McConnell :: Ponderings from a Linux Systems engineer</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; Peter McConnell 2023</copyright>
-    <lastBuildDate>Sun, 18 Feb 2024 11:40:02 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/hacking/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 18 Feb 2024 11:40:02 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/security/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Snooping on libpam (openssh auth, passwd) with Golang and eBPF</title>
       <link>https://www.petermcconnell.com/posts/whispers/</link>
@@ -32,17 +32,18 @@ The combination of uprobes and eBPF offers a powerful mechanism for introspectin
 &lt;h3 id=&#34;bpf-maps-bridging-kernel-and-user-space&#34;&gt;BPF Maps: Bridging Kernel and User Space&lt;/h3&gt;
 &lt;p&gt;An integral component of eBPF&amp;rsquo;s powerful capabilities comes from BPF maps, sophisticated data structures designed to store and share data between eBPF programs running in the kernel and applications in user space. These maps play a crucial role in maintaining state, passing information, and facilitating complex data management tasks within eBPF-driven applications like whispers.
 What Are BPF Maps?&lt;/p&gt;
-&lt;p&gt;BPF maps are key-value stores that can be accessed by eBPF programs and user space applications. They come in various types, each optimized for specific use cases, such as arrays, hash maps, and ring buffers. The choice of map type depends on the nature of the data being stored and the access patterns required by the eBPF program and the user space application.
-Key Features and Benefits&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;Efficient Data Sharing: BPF maps provide a high-performance mechanism for sharing data between the kernel and user space, crucial for applications that require real-time processing and analysis.
-Statefulness: Unlike traditional stateless packet processing in the kernel, BPF maps enable eBPF programs to maintain state across function calls and packet processing stages, allowing for more sophisticated logic and tracking capabilities.
-Versatility: The variety of available map types makes BPF maps suitable for a wide range of applications, from performance monitoring and networking to security and observability tools like whispers.
-Safety and Isolation: Access to BPF maps from eBPF programs is rigorously checked by the kernel&#39;s verifier, ensuring that only valid, safe operations are performed, thereby protecting the kernel from potentially malicious or buggy code.
-&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;BPF maps are key-value stores that can be accessed by eBPF programs and user space applications. They come in various types, each optimized for specific use cases, such as arrays, hash maps, and ring buffers. The choice of map type depends on the nature of the data being stored and the access patterns required by the eBPF program and the user space application.&lt;/p&gt;
+&lt;p&gt;Key Features and Benefits:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Efficient Data Sharing: BPF maps provide a high-performance mechanism for sharing data between the kernel and user space, crucial for applications that require real-time processing and analysis.&lt;/li&gt;
+&lt;li&gt;Statefulness: Unlike traditional stateless packet processing in the kernel, BPF maps enable eBPF programs to maintain state across function calls and packet processing stages, allowing for more sophisticated logic and tracking capabilities.&lt;/li&gt;
+&lt;li&gt;Versatility: The variety of available map types makes BPF maps suitable for a wide range of applications, from performance monitoring and networking to security and observability tools like whispers.&lt;/li&gt;
+&lt;li&gt;Safety and Isolation: Access to BPF maps from eBPF programs is rigorously checked by the kernel&amp;rsquo;s verifier, ensuring that only valid, safe operations are performed, thereby protecting the kernel from potentially malicious or buggy code.&lt;/li&gt;
+&lt;/ul&gt;
 &lt;p&gt;In the context of our project &amp;ldquo;whispers&amp;rdquo;, BPF maps serve as the primary mechanism for transferring captured credential data from the eBPF program (attached to libpam functions via uprobes) to the user space component of the tool. For instance, ring buffers are utilized to efficiently pass event data (such as authentication attempts) from kernel to user space, where it can be processed, analyzed, and logged. This enables whispers to monitor and report on authentication processes with minimal overhead and without requiring direct access to the monitored application&amp;rsquo;s memory or internal data structures.&lt;/p&gt;
 &lt;h2 id=&#34;knowing-what-to-look-for&#34;&gt;Knowing what to look for&lt;/h2&gt;
 &lt;p&gt;We know that we want to snoop for creds on libpam, as used by OpenSSH. In order to &amp;ldquo;snoop&amp;rdquo; on libpam we need to know which functions and structures of this library we should snoop on. We also know that we wish to attach uprobes, so are relying on the available symbols of libpam - that seems a reasonable place to start.&lt;/p&gt;
-&lt;h3 id=&#34;creating-a-debug-environment&#34;&gt;creating a debug environment&lt;/h3&gt;
+&lt;h3 id=&#34;creating-a-debug-environment&#34;&gt;Creating a debug environment&lt;/h3&gt;
 &lt;p&gt;When setting off on a new adventure I like to create a little investigation environment that allows me to poke at things, break them etc. Often this results in a Dockerfile and this case is no different:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-dockerfile&#34; data-lang=&#34;dockerfile&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; ubuntu:22.04&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;
 &lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;ENV&lt;/span&gt; DEBIAN_FRONTEND&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;noninteractive
@@ -115,11 +116,12 @@ Safety and Isolation: Access to BPF maps from eBPF programs is rigorously checke
 &lt;p&gt;This section provides a high level overview at the development of the eBPF program for &lt;code&gt;whispers&lt;/code&gt;, a tool designed to monitor and capture credentials handled by &lt;code&gt;libpam&lt;/code&gt;. By leveraging eBPF, whispers taps into kernel functions related to authentication processes, offering unprecedented insights into credential management and security vulnerabilities. You can check out all of the source code here: &lt;a href=&#34;https://github.com/peter-mcconnell/whispers&#34;&gt;https://github.com/peter-mcconnell/whispers&lt;/a&gt;.&lt;/p&gt;
 &lt;h3 id=&#34;dependencies&#34;&gt;Dependencies&lt;/h3&gt;
 &lt;p&gt;Before diving into eBPF program development, ensure your development environment is properly set up with the following tools and libraries:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;LLVM &amp;amp; Clang: For compiling eBPF programs.
-Linux Kernel Headers: Required for eBPF program compilation to access kernel APIs.
-libbpf: A library for loading and interacting with eBPF programs and maps.
-Go toolchain: For the Go-based components of whispers.
-&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;LLVM &amp;amp; Clang: For compiling eBPF programs.&lt;/li&gt;
+&lt;li&gt;Linux Kernel Headers: Required for eBPF program compilation to access kernel APIs.&lt;/li&gt;
+&lt;li&gt;libbpf: A library for loading and interacting with eBPF programs and maps.&lt;/li&gt;
+&lt;li&gt;Go toolchain: For the Go-based components of whispers.&lt;/li&gt;
+&lt;/ul&gt;
 &lt;h3 id=&#34;developing-the-ebpf-program&#34;&gt;Developing the eBPF Program&lt;/h3&gt;
 &lt;p&gt;The eBPF program for whispers is designed to attach to the pam_get_authtok function via a uretprobe, capturing credentials as they&amp;rsquo;re processed.&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;uretprobe.c: Contains the eBPF code that defines the data structures and logic for capturing and processing credential information from pam\_get\_authtok.
