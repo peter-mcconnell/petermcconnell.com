@@ -204,7 +204,7 @@
       <span class="post-author">Peter McConnell</span>
     
     
-      <span class="post-reading-time">:: 5 min read (1065 words)</span>
+      <span class="post-reading-time">:: 6 min read (1140 words)</span>
     
   </div>
 
@@ -252,6 +252,8 @@
 
   <div class="post-content"><div>
         <p>In the vast and complex landscape of software security, safeguarding sensitive information remains a paramount concern for developers and security professionals alike. Among the myriad of challenges, securely managing and protecting credentials during authentication processes stands out as a critical vulnerability point. Traditional security measures often fall short in providing real-time insights into how credentials are handled and potentially exposed within applications, especially those relying on widely used authentication frameworks like PAM (Pluggable Authentication Modules).</p>
+<p>I work for a runtime security platform so this topic, BPF, Golang and Linux are some that I find the most interesting. Tangentally I was asked to give a talk at a Golang meetup, so figured I&rsquo;d create a mini project to showcase some of this tech may be a good way to get others excited about these topics. Hence this repo and article.</p>
+<p>The source code for this project can be seen here: <a href="https://github.com/peter-mcconnell/whispers">https://github.com/peter-mcconnell/whispers</a>.</p>
 <h2 id="developing-the-ebpf-program-for-whispers">Developing the eBPF Program for whispers<a href="#developing-the-ebpf-program-for-whispers" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>This section provides an in-depth look at the development of the eBPF program for whispers, a tool designed to monitor and capture credentials handled by libpam. By leveraging eBPF, whispers taps into kernel functions related to authentication processes, offering unprecedented insights into credential management and security vulnerabilities.</p>
 <h3 id="technical-background">Technical Background<a href="#technical-background" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
@@ -266,7 +268,7 @@ Go toolchain: For the Go-based components of whispers.
 <h3 id="developing-the-ebpf-program">Developing the eBPF Program<a href="#developing-the-ebpf-program" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
 <p>The eBPF program for whispers is designed to attach to the pam_get_authtok function via a uretprobe, capturing credentials as they&rsquo;re processed.
 Key Components</p>
-<pre><code>uretprobe.c: Contains the eBPF code that defines the data structures and logic for capturing and processing credential information from pam_get_authtok.
+<pre><code>uretprobe.c: Contains the eBPF code that defines the data structures and logic for capturing and processing credential information from pam\_get\_authtok.
 </code></pre>
 <h4 id="bpf-code">BPF code<a href="#bpf-code" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
 <p>When trying to look up the structure of pam_get_authtok I encountered <a href="https://github.com/citronneur/pamspy">https://github.com/citronneur/pamspy</a> which is where I lifted most of this code from, so credit to them:</p>

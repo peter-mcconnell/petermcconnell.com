@@ -15,6 +15,10 @@ ToC = true
 
 In the vast and complex landscape of software security, safeguarding sensitive information remains a paramount concern for developers and security professionals alike. Among the myriad of challenges, securely managing and protecting credentials during authentication processes stands out as a critical vulnerability point. Traditional security measures often fall short in providing real-time insights into how credentials are handled and potentially exposed within applications, especially those relying on widely used authentication frameworks like PAM (Pluggable Authentication Modules).
 
+I work for a runtime security platform so this topic, BPF, Golang and Linux are some that I find the most interesting. Tangentally I was asked to give a talk at a Golang meetup, so figured I'd create a mini project to showcase some of this tech may be a good way to get others excited about these topics. Hence this repo and article.
+
+The source code for this project can be seen here: https://github.com/peter-mcconnell/whispers.
+
 Developing the eBPF Program for whispers
 ----------------------------------------
 
@@ -37,7 +41,7 @@ Before diving into eBPF program development, ensure your development environment
 The eBPF program for whispers is designed to attach to the pam_get_authtok function via a uretprobe, capturing credentials as they're processed.
 Key Components
 
-    uretprobe.c: Contains the eBPF code that defines the data structures and logic for capturing and processing credential information from pam_get_authtok.
+    uretprobe.c: Contains the eBPF code that defines the data structures and logic for capturing and processing credential information from pam\_get\_authtok.
 
 #### BPF code
 
