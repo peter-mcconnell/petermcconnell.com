@@ -260,7 +260,7 @@ set -x
 KERNEL_HEADERS=$(find /usr/src -name "linux-headers-$(uname -r)" -type d | head -n 1)
 
 # Include directory for bpf_helpers.h. This might need adjustments.
-BPF_HELPERS_DIR="/usr/src/linux-headers-$(uname -r)/tools/bpf/resolve_btfids/libbpf/include/"
+BPF_HELPERS_DIR="${KERNEL_HEADERS}/tools/bpf/resolve_btfids/libbpf/include/"
 
 # Run bpf2go with dynamic include paths
 go run github.com/cilium/ebpf/cmd/bpf2go -target amd64 bpf \
@@ -290,7 +290,7 @@ Dependencies are defined in `go.mod` and can be pulled with `go mod tidy`.
 
 This article will only touch on the most interesting parts of the code. The source can be read at https://github.com/peter-mcconnell/whispers/blob/main/pkg/whispers/whispers.go.
 
-We're using cilium ebpf to handle loading our BPF program and interacting with the BPF maps. In the following, `bpfObjects` and `loadBpfObjects` are defined in the auto-generated file `bpf_x86_bpfel.go`:
+We're using cilium ebpf to handle loading our BPF program and interacting with the BPF maps. In the following, `bpfObjects` and `loadBpfObjects` are defined in the auto-generated file `bpf_x86_bpfel.go` which is generated during `go build` due to the `// go:generate ...` directive which triggers `gen.sh`:
 
 ```go
 func Listen(ctx context.Context, cfg *config.Config) error {

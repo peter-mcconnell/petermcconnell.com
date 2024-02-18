@@ -204,7 +204,7 @@
       <span class="post-author">Peter McConnell</span>
     
     
-      <span class="post-reading-time">:: 14 min read (2908 words)</span>
+      <span class="post-reading-time">:: 14 min read (2923 words)</span>
     
   </div>
 
@@ -451,7 +451,7 @@ set -x
 KERNEL_HEADERS<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>find /usr/src -name <span style="color:#e6db74">&#34;linux-headers-</span><span style="color:#66d9ef">$(</span>uname -r<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span> -type d | head -n 1<span style="color:#66d9ef">)</span>
 
 <span style="color:#75715e"># Include directory for bpf_helpers.h. This might need adjustments.</span>
-BPF_HELPERS_DIR<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/usr/src/linux-headers-</span><span style="color:#66d9ef">$(</span>uname -r<span style="color:#66d9ef">)</span><span style="color:#e6db74">/tools/bpf/resolve_btfids/libbpf/include/&#34;</span>
+BPF_HELPERS_DIR<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>KERNEL_HEADERS<span style="color:#e6db74">}</span><span style="color:#e6db74">/tools/bpf/resolve_btfids/libbpf/include/&#34;</span>
 
 <span style="color:#75715e"># Run bpf2go with dynamic include paths</span>
 go run github.com/cilium/ebpf/cmd/bpf2go -target amd64 bpf <span style="color:#ae81ff">\
@@ -472,7 +472,7 @@ pkg/whispers: Implements the core functionality for loading and interacting with
 </code></pre>
 <p>Dependencies are defined in <code>go.mod</code> and can be pulled with <code>go mod tidy</code>.</p>
 <p>This article will only touch on the most interesting parts of the code. The source can be read at <a href="https://github.com/peter-mcconnell/whispers/blob/main/pkg/whispers/whispers.go">https://github.com/peter-mcconnell/whispers/blob/main/pkg/whispers/whispers.go</a>.</p>
-<p>We&rsquo;re using cilium ebpf to handle loading our BPF program and interacting with the BPF maps. In the following, <code>bpfObjects</code> and <code>loadBpfObjects</code> are defined in the auto-generated file <code>bpf_x86_bpfel.go</code>:</p>
+<p>We&rsquo;re using cilium ebpf to handle loading our BPF program and interacting with the BPF maps. In the following, <code>bpfObjects</code> and <code>loadBpfObjects</code> are defined in the auto-generated file <code>bpf_x86_bpfel.go</code> which is generated during <code>go build</code> due to the <code>// go:generate ...</code> directive which triggers <code>gen.sh</code>:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">Listen</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">cfg</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">config</span>.<span style="color:#a6e22e">Config</span>) <span style="color:#66d9ef">error</span> {
     <span style="color:#a6e22e">objs</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">bpfObjects</span>{}
     <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">loadBpfObjects</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">objs</span>, <span style="color:#66d9ef">nil</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
