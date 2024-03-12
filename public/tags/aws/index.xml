@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>aws on Peter McConnell :: Ponderings from a Linux Systems engineer</title>
+    <title>Aws on Peter McConnell :: Ponderings from a Linux Systems engineer</title>
     <link>https://www.petermcconnell.com/tags/aws/</link>
-    <description>Recent content in aws on Peter McConnell :: Ponderings from a Linux Systems engineer</description>
+    <description>Recent content in Aws on Peter McConnell :: Ponderings from a Linux Systems engineer</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
+    <language>en</language>
     <copyright>&amp;copy; Peter McConnell 2023</copyright>
     <lastBuildDate>Tue, 29 Nov 2022 23:16:21 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/aws/index.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -16,7 +16,7 @@
       <guid>https://www.petermcconnell.com/posts/hugo/</guid>
       <description>How I set this website up, for free tldr; Hugo + Github + AWS Amplify. Easy peasy. total time: 1 hour (mostly spent writing content)
 Some parameters:
- free templates. I&amp;rsquo;m no designer static web asset output is fine. I&amp;rsquo;m not building a backend (yet)  but having the option to do so is a bonus   this project should be as low effort as possible  so; no html / css / js where possible also; automated deploys on push to $branch  ideally I don&amp;rsquo;t need to maintain ci to do this.</description>
+free templates. I&amp;rsquo;m no designer static web asset output is fine. I&amp;rsquo;m not building a backend (yet) but having the option to do so is a bonus this project should be as low effort as possible so; no html / css / js where possible also; automated deploys on push to $branch ideally I don&amp;rsquo;t need to maintain ci to do this.</description>
       <content>&lt;h2 id=&#34;how-i-set-this-website-up-for-free&#34;&gt;How I set this website up, for free&lt;/h2&gt;
 &lt;p&gt;tldr; Hugo + Github + AWS Amplify. Easy peasy.
 total time: 1 hour (mostly spent writing content)&lt;/p&gt;

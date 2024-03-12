@@ -207,7 +207,7 @@ Docker uses OverlayFS to manage the file system of its containers. When a contai
       <span class="post-author">Peter McConnell</span>
     
     
-      <span class="post-reading-time">:: 8 min read (1566 words)</span>
+      <span class="post-reading-time">:: 8 min read (1569 words)</span>
     
   </div>
 
@@ -251,54 +251,54 @@ Docker uses OverlayFS to manage the file system of its containers. When a contai
         <p>This is a brief follow up to my article on <a href="https://www.petermcconnell.com/posts/linux_networking/">Docker networking: Network Namespaces, Docker Bridge and DNS</a></p>
 <p>Docker uses OverlayFS to manage the file system of its containers. When a container is run, Docker creates a new layer for the container&rsquo;s file system on top of the base image. This allows the container to have its own file system that is isolated from the host system and other containers.</p>
 <p>Running the <code>ubuntu:22.04</code> image we can see the root file system differs from the host where I&rsquo;m running it. Below you can see there is a file in root called <code>/.dockerenv</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ docker run --rm -ti ubuntu:22.04 bash
-root@541cc3b62543:/# ls -al /
-total <span style="color:#ae81ff">56</span>
-drwxr-xr-x   <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">4096</span> Jan <span style="color:#ae81ff">19</span> 11:51 .
-drwxr-xr-x   <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">4096</span> Jan <span style="color:#ae81ff">19</span> 11:51 ..
--rwxr-xr-x   <span style="color:#ae81ff">1</span> root root    <span style="color:#ae81ff">0</span> Jan <span style="color:#ae81ff">19</span> 11:51 .dockerenv
-lrwxrwxrwx   <span style="color:#ae81ff">1</span> root root    <span style="color:#ae81ff">7</span> Nov <span style="color:#ae81ff">30</span> 02:04 bin -&gt; usr/bin
-drwxr-xr-x   <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Apr <span style="color:#ae81ff">18</span>  <span style="color:#ae81ff">2022</span> boot
-drwxr-xr-x   <span style="color:#ae81ff">5</span> root root  <span style="color:#ae81ff">360</span> Jan <span style="color:#ae81ff">19</span> 11:51 dev
-drwxr-xr-x   <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">4096</span> Jan <span style="color:#ae81ff">19</span> 11:51 etc
-drwxr-xr-x   <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Apr <span style="color:#ae81ff">18</span>  <span style="color:#ae81ff">2022</span> home
-lrwxrwxrwx   <span style="color:#ae81ff">1</span> root root    <span style="color:#ae81ff">7</span> Nov <span style="color:#ae81ff">30</span> 02:04 lib -&gt; usr/lib
-lrwxrwxrwx   <span style="color:#ae81ff">1</span> root root    <span style="color:#ae81ff">9</span> Nov <span style="color:#ae81ff">30</span> 02:04 lib32 -&gt; usr/lib32
-lrwxrwxrwx   <span style="color:#ae81ff">1</span> root root    <span style="color:#ae81ff">9</span> Nov <span style="color:#ae81ff">30</span> 02:04 lib64 -&gt; usr/lib64
-lrwxrwxrwx   <span style="color:#ae81ff">1</span> root root   <span style="color:#ae81ff">10</span> Nov <span style="color:#ae81ff">30</span> 02:04 libx32 -&gt; usr/libx32
-drwxr-xr-x   <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">30</span> 02:04 media
-drwxr-xr-x   <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">30</span> 02:04 mnt
-drwxr-xr-x   <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">30</span> 02:04 opt
-dr-xr-xr-x <span style="color:#ae81ff">491</span> root root    <span style="color:#ae81ff">0</span> Jan <span style="color:#ae81ff">19</span> 11:51 proc
-drwx------   <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">30</span> 02:07 root
-drwxr-xr-x   <span style="color:#ae81ff">5</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">30</span> 02:07 run
-lrwxrwxrwx   <span style="color:#ae81ff">1</span> root root    <span style="color:#ae81ff">8</span> Nov <span style="color:#ae81ff">30</span> 02:04 sbin -&gt; usr/sbin
-drwxr-xr-x   <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">30</span> 02:04 srv
-dr-xr-xr-x  <span style="color:#ae81ff">13</span> root root    <span style="color:#ae81ff">0</span> Jan <span style="color:#ae81ff">19</span> 11:51 sys
-drwxrwxrwt   <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">30</span> 02:07 tmp
-drwxr-xr-x  <span style="color:#ae81ff">14</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">30</span> 02:04 usr
-drwxr-xr-x  <span style="color:#ae81ff">11</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">30</span> 02:07 var
-</code></pre></div><p>Which does not exist at root on the host running the container:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">root@541cc3b62543:/# 
-root@541cc3b62543:/# exit
-exit
-$ stat /.dockerenv
-stat: cannot statx <span style="color:#e6db74">&#39;/.dockerenv&#39;</span>: No such file or directory
-</code></pre></div><p>So &hellip; <em>where</em> does it exist? To inspect the layers of a running container, you can use the &ldquo;docker inspect&rdquo; command followed by the container ID or name. This will return a JSON object containing information about the container, including its layers. To view this we&rsquo;ll re-run our <code>ubuntu:22.04</code> container, grab the ID and inspect it:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ docker run --rm -d -ti ubuntu:22.04 bash
-6a9014d7ebfddb3a107b29aca3764f24e51f64fda1e8b8cec135c18923daefeb
-<span style="color:#75715e"># lower directory</span>
-$ docker inspect 6a9014d7ebfddb3a107b29aca3764f24e51f64fda1e8b8cec135c18923daefeb -f <span style="color:#e6db74">&#39;{{.GraphDriver.Data.LowerDir}}&#39;</span>
-/dockerstore/overlay2/268eb11c54948d6293aa3947b7a2c83b1395b18509518e26487f0e79997f787a-init/diff:/dockerstore/overlay2/bb9057b4f1980fe004301f181c3313c15c2a75b7c7b7c5a6fe80159d2275f0d3/diff
-
-<span style="color:#75715e"># upper directory</span>
-$ docker inspect 6a9014d7ebfddb3a107b29aca3764f24e51f64fda1e8b8cec135c18923daefeb -f <span style="color:#e6db74">&#39;{{.GraphDriver.Data.UpperDir}}&#39;</span>
-/dockerstore/overlay2/268eb11c54948d6293aa3947b7a2c83b1395b18509518e26487f0e79997f787a/diff
-
-<span style="color:#75715e"># merged directory</span>
-$ docker inspect 6a9014d7ebfddb3a107b29aca3764f24e51f64fda1e8b8cec135c18923daefeb -f <span style="color:#e6db74">&#39;{{.GraphDriver.Data.MergedDir}}&#39;</span>
-/dockerstore/overlay2/268eb11c54948d6293aa3947b7a2c83b1395b18509518e26487f0e79997f787a/merged
-</code></pre></div><p>I&rsquo;ll keep this container running and we&rsquo;ll dig into these contents shortly.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ docker run --rm -ti ubuntu:22.04 bash
+</span></span><span style="display:flex;"><span>root@541cc3b62543:/# ls -al /
+</span></span><span style="display:flex;"><span>total <span style="color:#ae81ff">56</span>
+</span></span><span style="display:flex;"><span>drwxr-xr-x   <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">4096</span> Jan <span style="color:#ae81ff">19</span> 11:51 .
+</span></span><span style="display:flex;"><span>drwxr-xr-x   <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">4096</span> Jan <span style="color:#ae81ff">19</span> 11:51 ..
+</span></span><span style="display:flex;"><span>-rwxr-xr-x   <span style="color:#ae81ff">1</span> root root    <span style="color:#ae81ff">0</span> Jan <span style="color:#ae81ff">19</span> 11:51 .dockerenv
+</span></span><span style="display:flex;"><span>lrwxrwxrwx   <span style="color:#ae81ff">1</span> root root    <span style="color:#ae81ff">7</span> Nov <span style="color:#ae81ff">30</span> 02:04 bin -&gt; usr/bin
+</span></span><span style="display:flex;"><span>drwxr-xr-x   <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Apr <span style="color:#ae81ff">18</span>  <span style="color:#ae81ff">2022</span> boot
+</span></span><span style="display:flex;"><span>drwxr-xr-x   <span style="color:#ae81ff">5</span> root root  <span style="color:#ae81ff">360</span> Jan <span style="color:#ae81ff">19</span> 11:51 dev
+</span></span><span style="display:flex;"><span>drwxr-xr-x   <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">4096</span> Jan <span style="color:#ae81ff">19</span> 11:51 etc
+</span></span><span style="display:flex;"><span>drwxr-xr-x   <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Apr <span style="color:#ae81ff">18</span>  <span style="color:#ae81ff">2022</span> home
+</span></span><span style="display:flex;"><span>lrwxrwxrwx   <span style="color:#ae81ff">1</span> root root    <span style="color:#ae81ff">7</span> Nov <span style="color:#ae81ff">30</span> 02:04 lib -&gt; usr/lib
+</span></span><span style="display:flex;"><span>lrwxrwxrwx   <span style="color:#ae81ff">1</span> root root    <span style="color:#ae81ff">9</span> Nov <span style="color:#ae81ff">30</span> 02:04 lib32 -&gt; usr/lib32
+</span></span><span style="display:flex;"><span>lrwxrwxrwx   <span style="color:#ae81ff">1</span> root root    <span style="color:#ae81ff">9</span> Nov <span style="color:#ae81ff">30</span> 02:04 lib64 -&gt; usr/lib64
+</span></span><span style="display:flex;"><span>lrwxrwxrwx   <span style="color:#ae81ff">1</span> root root   <span style="color:#ae81ff">10</span> Nov <span style="color:#ae81ff">30</span> 02:04 libx32 -&gt; usr/libx32
+</span></span><span style="display:flex;"><span>drwxr-xr-x   <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">30</span> 02:04 media
+</span></span><span style="display:flex;"><span>drwxr-xr-x   <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">30</span> 02:04 mnt
+</span></span><span style="display:flex;"><span>drwxr-xr-x   <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">30</span> 02:04 opt
+</span></span><span style="display:flex;"><span>dr-xr-xr-x <span style="color:#ae81ff">491</span> root root    <span style="color:#ae81ff">0</span> Jan <span style="color:#ae81ff">19</span> 11:51 proc
+</span></span><span style="display:flex;"><span>drwx------   <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">30</span> 02:07 root
+</span></span><span style="display:flex;"><span>drwxr-xr-x   <span style="color:#ae81ff">5</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">30</span> 02:07 run
+</span></span><span style="display:flex;"><span>lrwxrwxrwx   <span style="color:#ae81ff">1</span> root root    <span style="color:#ae81ff">8</span> Nov <span style="color:#ae81ff">30</span> 02:04 sbin -&gt; usr/sbin
+</span></span><span style="display:flex;"><span>drwxr-xr-x   <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">30</span> 02:04 srv
+</span></span><span style="display:flex;"><span>dr-xr-xr-x  <span style="color:#ae81ff">13</span> root root    <span style="color:#ae81ff">0</span> Jan <span style="color:#ae81ff">19</span> 11:51 sys
+</span></span><span style="display:flex;"><span>drwxrwxrwt   <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">30</span> 02:07 tmp
+</span></span><span style="display:flex;"><span>drwxr-xr-x  <span style="color:#ae81ff">14</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">30</span> 02:04 usr
+</span></span><span style="display:flex;"><span>drwxr-xr-x  <span style="color:#ae81ff">11</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">30</span> 02:07 var
+</span></span></code></pre></div><p>Which does not exist at root on the host running the container:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>root@541cc3b62543:/# 
+</span></span><span style="display:flex;"><span>root@541cc3b62543:/# exit
+</span></span><span style="display:flex;"><span>exit
+</span></span><span style="display:flex;"><span>$ stat /.dockerenv
+</span></span><span style="display:flex;"><span>stat: cannot statx <span style="color:#e6db74">&#39;/.dockerenv&#39;</span>: No such file or directory
+</span></span></code></pre></div><p>So &hellip; <em>where</em> does it exist? To inspect the layers of a running container, you can use the &ldquo;docker inspect&rdquo; command followed by the container ID or name. This will return a JSON object containing information about the container, including its layers. To view this we&rsquo;ll re-run our <code>ubuntu:22.04</code> container, grab the ID and inspect it:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ docker run --rm -d -ti ubuntu:22.04 bash
+</span></span><span style="display:flex;"><span>6a9014d7ebfddb3a107b29aca3764f24e51f64fda1e8b8cec135c18923daefeb
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># lower directory</span>
+</span></span><span style="display:flex;"><span>$ docker inspect 6a9014d7ebfddb3a107b29aca3764f24e51f64fda1e8b8cec135c18923daefeb -f <span style="color:#e6db74">&#39;{{.GraphDriver.Data.LowerDir}}&#39;</span>
+</span></span><span style="display:flex;"><span>/dockerstore/overlay2/268eb11c54948d6293aa3947b7a2c83b1395b18509518e26487f0e79997f787a-init/diff:/dockerstore/overlay2/bb9057b4f1980fe004301f181c3313c15c2a75b7c7b7c5a6fe80159d2275f0d3/diff
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># upper directory</span>
+</span></span><span style="display:flex;"><span>$ docker inspect 6a9014d7ebfddb3a107b29aca3764f24e51f64fda1e8b8cec135c18923daefeb -f <span style="color:#e6db74">&#39;{{.GraphDriver.Data.UpperDir}}&#39;</span>
+</span></span><span style="display:flex;"><span>/dockerstore/overlay2/268eb11c54948d6293aa3947b7a2c83b1395b18509518e26487f0e79997f787a/diff
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># merged directory</span>
+</span></span><span style="display:flex;"><span>$ docker inspect 6a9014d7ebfddb3a107b29aca3764f24e51f64fda1e8b8cec135c18923daefeb -f <span style="color:#e6db74">&#39;{{.GraphDriver.Data.MergedDir}}&#39;</span>
+</span></span><span style="display:flex;"><span>/dockerstore/overlay2/268eb11c54948d6293aa3947b7a2c83b1395b18509518e26487f0e79997f787a/merged
+</span></span></code></pre></div><p>I&rsquo;ll keep this container running and we&rsquo;ll dig into these contents shortly.</p>
 <p>When a container is run, its layers are stored in the host system&rsquo;s file system, typically in the <code>/var/lib/docker/overlay2</code> directory. You can see mine is in <code>/dockerstore/</code> as I have manually set <code>data-root</code> in <code>/etc/docker/daemon.json</code> for the host that I&rsquo;m testing this on. Each layer is represented by a directory that contains the files and directories that make up that layer. The topmost layer is the one that the container is currently using, and the lower layers are the ones that are inherited from the base image.</p>
 <p>The advantages of using layers in Docker include:</p>
 <ul>
@@ -311,104 +311,104 @@ $ docker inspect 6a9014d7ebfddb3a107b29aca3764f24e51f64fda1e8b8cec135c18923daefe
 <p>Now lets take a deeper look at the filesystem for our running container.</p>
 <h2 id="lowerdir">LowerDir<a href="#lowerdir" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>This value is unique in the outputs above in that it&rsquo;s actually two paths, separated by a colon:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ docker inspect 6a9014d7ebfddb3a107b29aca3764f24e51f64fda1e8b8cec135c18923daefeb -f <span style="color:#e6db74">&#39;{{.GraphDriver.Data.LowerDir}}&#39;</span>
-/dockerstore/overlay2/268eb11c54948d6293aa3947b7a2c83b1395b18509518e26487f0e79997f787a-init/diff:/dockerstore/overlay2/bb9057b4f1980fe004301f181c3313c15c2a75b7c7b7c5a6fe80159d2275f0d3/diff
-</code></pre></div><p>The first part (left side of <code>:</code>) is the path to the init layer of the container. this is the layer that contains the initial filesystem of the container, which is based on the base image. We can take a look at the contents of that layer with <code>ls</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">sudo ls /dockerstore/overlay2/268eb11c54948d6293aa3947b7a2c83b1395b18509518e26487f0e79997f787a-init/diff
-dev  etc
-</code></pre></div><p>The second part (right side of <code>:</code>) is the path to the layer of the container that includes changes from the rest of the Dockerfile. Again we can take a look:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">sudo ls /dockerstore/overlay2/bb9057b4f1980fe004301f181c3313c15c2a75b7c7b7c5a6fe80159d2275f0d3/diff
-bin  boot  dev	etc  home  lib	lib32  lib64  libx32  media  mnt  opt  proc  root  run	sbin  srv  sys	tmp  usr  var
-</code></pre></div><p>To better visualise this, lets create our own Dockerfile:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-dockerfile" data-lang="dockerfile"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> ubuntu:22.04</span><span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> mkdir -p /testinglowerdir/ <span style="color:#f92672">&amp;&amp;</span> echo -n <span style="color:#e6db74">&#34;hellothere&#34;</span> &gt; /testinglowerdir/foo<span style="color:#960050;background-color:#1e0010">
-</span></code></pre></div><p>Now, given what we learned above, when we run this container the first part of <code>LowerDir</code> should contain <em>all</em> the contents for <code>ubuntu:22.04</code> and the second part of <code>LowerDir</code> should contain only <code>/testinglowerdir/</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ docker build -t<span style="color:#f92672">=</span>test .
-Sending build context to Docker daemon  2.048kB
-Step 1/2 : FROM ubuntu:22.04
- ---&gt; 6b7dfa7e8fdb
-Step 2/2 : RUN mkdir -p /testinglowerdir/ <span style="color:#f92672">&amp;&amp;</span> echo -n <span style="color:#e6db74">&#34;hellothere&#34;</span> &gt; /testinglowerdir/foo
- ---&gt; Running in e71a7cd5541c
-Removing intermediate container e71a7cd5541c
- ---&gt; df924945a2b0
-Successfully built df924945a2b0
-Successfully tagged test:latest
-$ docker run --rm -d -ti test bash
-9c9fe0bcd283bc0c9649b77246115e3a09e8885efd53f0e9de09de537bea9188
-$ docker inspect 9c9fe0bcd283bc0c9649b77246115e3a09e8885efd53f0e9de09de537bea9188 -f <span style="color:#e6db74">&#39;{{.GraphDriver.Data.LowerDir}}&#39;</span>
-/dockerstore/overlay2/5501fd185b14a60317f3e0db485bb8f8c5cf41b7cb1ed0688526ba918938b7bf-init/diff:/dockerstore/overlay2/4d49e9a62bad55c3761ab08ded87f56010b28a40f264896c01e5c1c653b826a8/diff:/dockerstore/overlay2/bb9057b4f1980fe004301f181c3313c15c2a75b7c7b7c5a6fe80159d2275f0d3/diff
-$ <span style="color:#75715e"># show directory contents for second part of LowerDir</span>
-$ sudo ls /dockerstore/overlay2/4d49e9a62bad55c3761ab08ded87f56010b28a40f264896c01e5c1c653b826a8/diff
-testinglowerdir
-</code></pre></div><h2 id="upperdir">UpperDir<a href="#upperdir" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ docker inspect 6a9014d7ebfddb3a107b29aca3764f24e51f64fda1e8b8cec135c18923daefeb -f <span style="color:#e6db74">&#39;{{.GraphDriver.Data.UpperDir}}&#39;</span>
-/dockerstore/overlay2/268eb11c54948d6293aa3947b7a2c83b1395b18509518e26487f0e79997f787a/diff
-</code></pre></div><p>The UpperDir contains changes that we&rsquo;ve made at runtime. To see this in action we can exec into our container and create a simple directory with a file in the root directory:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">docker exec -ti 6a9 bash
-root@6a9014d7ebfd:/# mkdir /tutorial
-root@6a9014d7ebfd:/# echo <span style="color:#e6db74">&#39;iseeyou&#39;</span> &gt; /tutorial/ohai
-</code></pre></div><p>We can now see this in our UpperDir directory:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ sudo ls /dockerstore/overlay2/268eb11c54948d6293aa3947b7a2c83b1395b18509518e26487f0e79997f787a/diff/
-root  tutorial
-$ sudo cat /dockerstore/overlay2/268eb11c54948d6293aa3947b7a2c83b1395b18509518e26487f0e79997f787a/diff/tutorial/ohai
-iseeyou
-</code></pre></div><p>Want to quickly see what files are being created by a running container? This is something the <code>UpperDir</code> can tell you.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ docker inspect 6a9014d7ebfddb3a107b29aca3764f24e51f64fda1e8b8cec135c18923daefeb -f <span style="color:#e6db74">&#39;{{.GraphDriver.Data.LowerDir}}&#39;</span>
+</span></span><span style="display:flex;"><span>/dockerstore/overlay2/268eb11c54948d6293aa3947b7a2c83b1395b18509518e26487f0e79997f787a-init/diff:/dockerstore/overlay2/bb9057b4f1980fe004301f181c3313c15c2a75b7c7b7c5a6fe80159d2275f0d3/diff
+</span></span></code></pre></div><p>The first part (left side of <code>:</code>) is the path to the init layer of the container. this is the layer that contains the initial filesystem of the container, which is based on the base image. We can take a look at the contents of that layer with <code>ls</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>sudo ls /dockerstore/overlay2/268eb11c54948d6293aa3947b7a2c83b1395b18509518e26487f0e79997f787a-init/diff
+</span></span><span style="display:flex;"><span>dev  etc
+</span></span></code></pre></div><p>The second part (right side of <code>:</code>) is the path to the layer of the container that includes changes from the rest of the Dockerfile. Again we can take a look:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>sudo ls /dockerstore/overlay2/bb9057b4f1980fe004301f181c3313c15c2a75b7c7b7c5a6fe80159d2275f0d3/diff
+</span></span><span style="display:flex;"><span>bin  boot  dev	etc  home  lib	lib32  lib64  libx32  media  mnt  opt  proc  root  run	sbin  srv  sys	tmp  usr  var
+</span></span></code></pre></div><p>To better visualise this, lets create our own Dockerfile:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-dockerfile" data-lang="dockerfile"><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> ubuntu:22.04</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> mkdir -p /testinglowerdir/ <span style="color:#f92672">&amp;&amp;</span> echo -n <span style="color:#e6db74">&#34;hellothere&#34;</span> &gt; /testinglowerdir/foo<span style="color:#960050;background-color:#1e0010">
+</span></span></span></code></pre></div><p>Now, given what we learned above, when we run this container the first part of <code>LowerDir</code> should contain <em>all</em> the contents for <code>ubuntu:22.04</code> and the second part of <code>LowerDir</code> should contain only <code>/testinglowerdir/</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ docker build -t<span style="color:#f92672">=</span>test .
+</span></span><span style="display:flex;"><span>Sending build context to Docker daemon  2.048kB
+</span></span><span style="display:flex;"><span>Step 1/2 : FROM ubuntu:22.04
+</span></span><span style="display:flex;"><span> ---&gt; 6b7dfa7e8fdb
+</span></span><span style="display:flex;"><span>Step 2/2 : RUN mkdir -p /testinglowerdir/ <span style="color:#f92672">&amp;&amp;</span> echo -n <span style="color:#e6db74">&#34;hellothere&#34;</span> &gt; /testinglowerdir/foo
+</span></span><span style="display:flex;"><span> ---&gt; Running in e71a7cd5541c
+</span></span><span style="display:flex;"><span>Removing intermediate container e71a7cd5541c
+</span></span><span style="display:flex;"><span> ---&gt; df924945a2b0
+</span></span><span style="display:flex;"><span>Successfully built df924945a2b0
+</span></span><span style="display:flex;"><span>Successfully tagged test:latest
+</span></span><span style="display:flex;"><span>$ docker run --rm -d -ti test bash
+</span></span><span style="display:flex;"><span>9c9fe0bcd283bc0c9649b77246115e3a09e8885efd53f0e9de09de537bea9188
+</span></span><span style="display:flex;"><span>$ docker inspect 9c9fe0bcd283bc0c9649b77246115e3a09e8885efd53f0e9de09de537bea9188 -f <span style="color:#e6db74">&#39;{{.GraphDriver.Data.LowerDir}}&#39;</span>
+</span></span><span style="display:flex;"><span>/dockerstore/overlay2/5501fd185b14a60317f3e0db485bb8f8c5cf41b7cb1ed0688526ba918938b7bf-init/diff:/dockerstore/overlay2/4d49e9a62bad55c3761ab08ded87f56010b28a40f264896c01e5c1c653b826a8/diff:/dockerstore/overlay2/bb9057b4f1980fe004301f181c3313c15c2a75b7c7b7c5a6fe80159d2275f0d3/diff
+</span></span><span style="display:flex;"><span>$ <span style="color:#75715e"># show directory contents for second part of LowerDir</span>
+</span></span><span style="display:flex;"><span>$ sudo ls /dockerstore/overlay2/4d49e9a62bad55c3761ab08ded87f56010b28a40f264896c01e5c1c653b826a8/diff
+</span></span><span style="display:flex;"><span>testinglowerdir
+</span></span></code></pre></div><h2 id="upperdir">UpperDir<a href="#upperdir" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ docker inspect 6a9014d7ebfddb3a107b29aca3764f24e51f64fda1e8b8cec135c18923daefeb -f <span style="color:#e6db74">&#39;{{.GraphDriver.Data.UpperDir}}&#39;</span>
+</span></span><span style="display:flex;"><span>/dockerstore/overlay2/268eb11c54948d6293aa3947b7a2c83b1395b18509518e26487f0e79997f787a/diff
+</span></span></code></pre></div><p>The UpperDir contains changes that we&rsquo;ve made at runtime. To see this in action we can exec into our container and create a simple directory with a file in the root directory:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>docker exec -ti 6a9 bash
+</span></span><span style="display:flex;"><span>root@6a9014d7ebfd:/# mkdir /tutorial
+</span></span><span style="display:flex;"><span>root@6a9014d7ebfd:/# echo <span style="color:#e6db74">&#39;iseeyou&#39;</span> &gt; /tutorial/ohai
+</span></span></code></pre></div><p>We can now see this in our UpperDir directory:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ sudo ls /dockerstore/overlay2/268eb11c54948d6293aa3947b7a2c83b1395b18509518e26487f0e79997f787a/diff/
+</span></span><span style="display:flex;"><span>root  tutorial
+</span></span><span style="display:flex;"><span>$ sudo cat /dockerstore/overlay2/268eb11c54948d6293aa3947b7a2c83b1395b18509518e26487f0e79997f787a/diff/tutorial/ohai
+</span></span><span style="display:flex;"><span>iseeyou
+</span></span></code></pre></div><p>Want to quickly see what files are being created by a running container? This is something the <code>UpperDir</code> can tell you.</p>
 <h2 id="mergeddir">MergedDir<a href="#mergeddir" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ docker inspect 6a9014d7ebfddb3a107b29aca3764f24e51f64fda1e8b8cec135c18923daefeb -f <span style="color:#e6db74">&#39;{{.GraphDriver.Data.MergedDir}}&#39;</span>
-/dockerstore/overlay2/268eb11c54948d6293aa3947b7a2c83b1395b18509518e26487f0e79997f787a/merged
-</code></pre></div><p>I&rsquo;m sure you&rsquo;ve guessed what this one is&hellip; This is the merged structure:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ sudo ls /dockerstore/overlay2/268eb11c54948d6293aa3947b7a2c83b1395b18509518e26487f0e79997f787a/merged
-bin  boot  dev	etc  home  lib	lib32  lib64  libx32  media  mnt  opt  proc  root  run	sbin  srv  sys	tmp  tutorial  usr  var
-</code></pre></div><p>Here you can see all of the directories from the LowerDir and UpperDir together. We can chroot into this directory to &ldquo;see what docker sees&rdquo;:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">sudo chroot /dockerstore/overlay2/268eb11c54948d6293aa3947b7a2c83b1395b18509518e26487f0e79997f787a/merged /bin/bash
-root@pete:/# ls -al
-total <span style="color:#ae81ff">72</span>
-drwxr-xr-x  <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">4096</span> Jan <span style="color:#ae81ff">19</span> 12:21 .
-drwxr-xr-x  <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">4096</span> Jan <span style="color:#ae81ff">19</span> 12:21 ..
--rwxr-xr-x  <span style="color:#ae81ff">1</span> root root    <span style="color:#ae81ff">0</span> Jan <span style="color:#ae81ff">19</span> 11:56 .dockerenv
-lrwxrwxrwx  <span style="color:#ae81ff">1</span> root root    <span style="color:#ae81ff">7</span> Nov <span style="color:#ae81ff">30</span> 02:04 bin -&gt; usr/bin
-drwxr-xr-x  <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Apr <span style="color:#ae81ff">18</span>  <span style="color:#ae81ff">2022</span> boot
-drwxr-xr-x  <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">4096</span> Jan <span style="color:#ae81ff">19</span> 11:56 dev
-drwxr-xr-x  <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">4096</span> Jan <span style="color:#ae81ff">19</span> 11:56 etc
-drwxr-xr-x  <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Apr <span style="color:#ae81ff">18</span>  <span style="color:#ae81ff">2022</span> home
-lrwxrwxrwx  <span style="color:#ae81ff">1</span> root root    <span style="color:#ae81ff">7</span> Nov <span style="color:#ae81ff">30</span> 02:04 lib -&gt; usr/lib
-lrwxrwxrwx  <span style="color:#ae81ff">1</span> root root    <span style="color:#ae81ff">9</span> Nov <span style="color:#ae81ff">30</span> 02:04 lib32 -&gt; usr/lib32
-lrwxrwxrwx  <span style="color:#ae81ff">1</span> root root    <span style="color:#ae81ff">9</span> Nov <span style="color:#ae81ff">30</span> 02:04 lib64 -&gt; usr/lib64
-lrwxrwxrwx  <span style="color:#ae81ff">1</span> root root   <span style="color:#ae81ff">10</span> Nov <span style="color:#ae81ff">30</span> 02:04 libx32 -&gt; usr/libx32
-drwxr-xr-x  <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">30</span> 02:04 media
-drwxr-xr-x  <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">30</span> 02:04 mnt
-drwxr-xr-x  <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">30</span> 02:04 opt
-drwxr-xr-x  <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Apr <span style="color:#ae81ff">18</span>  <span style="color:#ae81ff">2022</span> proc
-drwx------  <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">4096</span> Jan <span style="color:#ae81ff">19</span> 12:16 root
-drwxr-xr-x  <span style="color:#ae81ff">5</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">30</span> 02:07 run
-lrwxrwxrwx  <span style="color:#ae81ff">1</span> root root    <span style="color:#ae81ff">8</span> Nov <span style="color:#ae81ff">30</span> 02:04 sbin -&gt; usr/sbin
-drwxr-xr-x  <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">30</span> 02:04 srv
-drwxr-xr-x  <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Apr <span style="color:#ae81ff">18</span>  <span style="color:#ae81ff">2022</span> sys
-drwxrwxrwt  <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">30</span> 02:07 tmp
-drwxr-xr-x  <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Jan <span style="color:#ae81ff">19</span> 12:20 tutorial
-drwxr-xr-x <span style="color:#ae81ff">14</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">30</span> 02:04 usr
-drwxr-xr-x <span style="color:#ae81ff">11</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">30</span> 02:07 var
-root@pete:/# cat /tutorial/ohai 
-iseeyou
-root@pete:/#
-</code></pre></div><p>Pretty sweet! Another way / a &ldquo;better&rdquo; way that we can get this view is with <code>nsenter</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ sudo nsenter --target <span style="color:#66d9ef">$(</span>docker inspect --format <span style="color:#f92672">{{</span>.State.Pid<span style="color:#f92672">}}</span> 6a9<span style="color:#66d9ef">)</span> --mount --uts --ipc --net --pid
-root@6a9014d7ebfd:/# cat /tutorial/ohai 
-iseeyou
-root@6a9014d7ebfd:/#
-</code></pre></div><h2 id="do-it-yourself">Do it yourself<a href="#do-it-yourself" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ docker inspect 6a9014d7ebfddb3a107b29aca3764f24e51f64fda1e8b8cec135c18923daefeb -f <span style="color:#e6db74">&#39;{{.GraphDriver.Data.MergedDir}}&#39;</span>
+</span></span><span style="display:flex;"><span>/dockerstore/overlay2/268eb11c54948d6293aa3947b7a2c83b1395b18509518e26487f0e79997f787a/merged
+</span></span></code></pre></div><p>I&rsquo;m sure you&rsquo;ve guessed what this one is&hellip; This is the merged structure:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ sudo ls /dockerstore/overlay2/268eb11c54948d6293aa3947b7a2c83b1395b18509518e26487f0e79997f787a/merged
+</span></span><span style="display:flex;"><span>bin  boot  dev	etc  home  lib	lib32  lib64  libx32  media  mnt  opt  proc  root  run	sbin  srv  sys	tmp  tutorial  usr  var
+</span></span></code></pre></div><p>Here you can see all of the directories from the LowerDir and UpperDir together. We can chroot into this directory to &ldquo;see what docker sees&rdquo;:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>sudo chroot /dockerstore/overlay2/268eb11c54948d6293aa3947b7a2c83b1395b18509518e26487f0e79997f787a/merged /bin/bash
+</span></span><span style="display:flex;"><span>root@pete:/# ls -al
+</span></span><span style="display:flex;"><span>total <span style="color:#ae81ff">72</span>
+</span></span><span style="display:flex;"><span>drwxr-xr-x  <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">4096</span> Jan <span style="color:#ae81ff">19</span> 12:21 .
+</span></span><span style="display:flex;"><span>drwxr-xr-x  <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">4096</span> Jan <span style="color:#ae81ff">19</span> 12:21 ..
+</span></span><span style="display:flex;"><span>-rwxr-xr-x  <span style="color:#ae81ff">1</span> root root    <span style="color:#ae81ff">0</span> Jan <span style="color:#ae81ff">19</span> 11:56 .dockerenv
+</span></span><span style="display:flex;"><span>lrwxrwxrwx  <span style="color:#ae81ff">1</span> root root    <span style="color:#ae81ff">7</span> Nov <span style="color:#ae81ff">30</span> 02:04 bin -&gt; usr/bin
+</span></span><span style="display:flex;"><span>drwxr-xr-x  <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Apr <span style="color:#ae81ff">18</span>  <span style="color:#ae81ff">2022</span> boot
+</span></span><span style="display:flex;"><span>drwxr-xr-x  <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">4096</span> Jan <span style="color:#ae81ff">19</span> 11:56 dev
+</span></span><span style="display:flex;"><span>drwxr-xr-x  <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">4096</span> Jan <span style="color:#ae81ff">19</span> 11:56 etc
+</span></span><span style="display:flex;"><span>drwxr-xr-x  <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Apr <span style="color:#ae81ff">18</span>  <span style="color:#ae81ff">2022</span> home
+</span></span><span style="display:flex;"><span>lrwxrwxrwx  <span style="color:#ae81ff">1</span> root root    <span style="color:#ae81ff">7</span> Nov <span style="color:#ae81ff">30</span> 02:04 lib -&gt; usr/lib
+</span></span><span style="display:flex;"><span>lrwxrwxrwx  <span style="color:#ae81ff">1</span> root root    <span style="color:#ae81ff">9</span> Nov <span style="color:#ae81ff">30</span> 02:04 lib32 -&gt; usr/lib32
+</span></span><span style="display:flex;"><span>lrwxrwxrwx  <span style="color:#ae81ff">1</span> root root    <span style="color:#ae81ff">9</span> Nov <span style="color:#ae81ff">30</span> 02:04 lib64 -&gt; usr/lib64
+</span></span><span style="display:flex;"><span>lrwxrwxrwx  <span style="color:#ae81ff">1</span> root root   <span style="color:#ae81ff">10</span> Nov <span style="color:#ae81ff">30</span> 02:04 libx32 -&gt; usr/libx32
+</span></span><span style="display:flex;"><span>drwxr-xr-x  <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">30</span> 02:04 media
+</span></span><span style="display:flex;"><span>drwxr-xr-x  <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">30</span> 02:04 mnt
+</span></span><span style="display:flex;"><span>drwxr-xr-x  <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">30</span> 02:04 opt
+</span></span><span style="display:flex;"><span>drwxr-xr-x  <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Apr <span style="color:#ae81ff">18</span>  <span style="color:#ae81ff">2022</span> proc
+</span></span><span style="display:flex;"><span>drwx------  <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">4096</span> Jan <span style="color:#ae81ff">19</span> 12:16 root
+</span></span><span style="display:flex;"><span>drwxr-xr-x  <span style="color:#ae81ff">5</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">30</span> 02:07 run
+</span></span><span style="display:flex;"><span>lrwxrwxrwx  <span style="color:#ae81ff">1</span> root root    <span style="color:#ae81ff">8</span> Nov <span style="color:#ae81ff">30</span> 02:04 sbin -&gt; usr/sbin
+</span></span><span style="display:flex;"><span>drwxr-xr-x  <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">30</span> 02:04 srv
+</span></span><span style="display:flex;"><span>drwxr-xr-x  <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Apr <span style="color:#ae81ff">18</span>  <span style="color:#ae81ff">2022</span> sys
+</span></span><span style="display:flex;"><span>drwxrwxrwt  <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">30</span> 02:07 tmp
+</span></span><span style="display:flex;"><span>drwxr-xr-x  <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Jan <span style="color:#ae81ff">19</span> 12:20 tutorial
+</span></span><span style="display:flex;"><span>drwxr-xr-x <span style="color:#ae81ff">14</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">30</span> 02:04 usr
+</span></span><span style="display:flex;"><span>drwxr-xr-x <span style="color:#ae81ff">11</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">30</span> 02:07 var
+</span></span><span style="display:flex;"><span>root@pete:/# cat /tutorial/ohai 
+</span></span><span style="display:flex;"><span>iseeyou
+</span></span><span style="display:flex;"><span>root@pete:/#
+</span></span></code></pre></div><p>Pretty sweet! Another way / a &ldquo;better&rdquo; way that we can get this view is with <code>nsenter</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ sudo nsenter --target <span style="color:#66d9ef">$(</span>docker inspect --format <span style="color:#f92672">{{</span>.State.Pid<span style="color:#f92672">}}</span> 6a9<span style="color:#66d9ef">)</span> --mount --uts --ipc --net --pid
+</span></span><span style="display:flex;"><span>root@6a9014d7ebfd:/# cat /tutorial/ohai 
+</span></span><span style="display:flex;"><span>iseeyou
+</span></span><span style="display:flex;"><span>root@6a9014d7ebfd:/#
+</span></span></code></pre></div><h2 id="do-it-yourself">Do it yourself<a href="#do-it-yourself" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>This has been a quick look into how Docker avails of OverlayFS, but you can of course do this yourself. The basic syntax is:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">mount -t overlay overlay -o lowerdir<span style="color:#f92672">=</span>lower,upperdir<span style="color:#f92672">=</span>upper,workdir<span style="color:#f92672">=</span>workdir target
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>mount -t overlay overlay -o lowerdir<span style="color:#f92672">=</span>lower,upperdir<span style="color:#f92672">=</span>upper,workdir<span style="color:#f92672">=</span>workdir target
+</span></span></code></pre></div><ul>
 <li><code>lowerdir</code> is the lower filesystem</li>
 <li><code>upperdir</code> is the upper filesystem</li>
 <li><code>workdir</code> is a directory where the OverlayFS stores metadata about the overlay</li>
 <li><code>target</code> is the mount point where the overlay will be mounted</li>
 </ul>
 <p>For example, if you have two directories, /mnt/lower and /mnt/upper, you can create an OverlayFS file system that combines them at /mnt/overlay with the following command:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">mount -t overlay overlay -o lowerdir<span style="color:#f92672">=</span>/mnt/lower,upperdir<span style="color:#f92672">=</span>/mnt/upper,workdir<span style="color:#f92672">=</span>/mnt/workdir /mnt/overlay
-</code></pre></div><p>To view the contents of the overlay, you can simply navigate to the mount point (in this example, /mnt/overlay) and use standard Linux commands to view the files and directories.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>mount -t overlay overlay -o lowerdir<span style="color:#f92672">=</span>/mnt/lower,upperdir<span style="color:#f92672">=</span>/mnt/upper,workdir<span style="color:#f92672">=</span>/mnt/workdir /mnt/overlay
+</span></span></code></pre></div><p>To view the contents of the overlay, you can simply navigate to the mount point (in this example, /mnt/overlay) and use standard Linux commands to view the files and directories.</p>
 <p>You can also use <code>lsblk</code> command to view the mounted overlays in your system and also you can unmount the overlays using umount command.</p>
 <p>Please keep in mind that this is a basic example and there are many other options and settings that can be used when creating an OverlayFS file system.</p>
 

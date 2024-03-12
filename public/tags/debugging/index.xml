@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>debugging on Peter McConnell :: Ponderings from a Linux Systems engineer</title>
+    <title>Debugging on Peter McConnell :: Ponderings from a Linux Systems engineer</title>
     <link>https://www.petermcconnell.com/tags/debugging/</link>
-    <description>Recent content in debugging on Peter McConnell :: Ponderings from a Linux Systems engineer</description>
+    <description>Recent content in Debugging on Peter McConnell :: Ponderings from a Linux Systems engineer</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
+    <language>en</language>
     <copyright>&amp;copy; Peter McConnell 2023</copyright>
     <lastBuildDate>Thu, 05 Jan 2023 16:51:58 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/debugging/index.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -23,8 +23,8 @@ debugging Python - the context This is the flow I take when faced with a new Pyt
 &lt;h2 id=&#34;what-are-the-requirements&#34;&gt;what are the requirements?&lt;/h2&gt;
 &lt;p&gt;The debugger of choice (for me) is &lt;code&gt;ipdb&lt;/code&gt;. The reasons for this are at the end of the article.&lt;/p&gt;
 &lt;p&gt;Install &lt;code&gt;ipdb&lt;/code&gt;:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;pip3 install --user ipdb
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We&amp;rsquo;ll also need to gather information from the &lt;code&gt;refining scope&lt;/code&gt; section below.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;pip3 install --user ipdb
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We&amp;rsquo;ll also need to gather information from the &lt;code&gt;refining scope&lt;/code&gt; section below.&lt;/p&gt;
 &lt;h2 id=&#34;refining-scope&#34;&gt;refining scope&lt;/h2&gt;
 &lt;p&gt;Often (my own usecase) my Python debugging story typically starts with: &amp;ldquo;This app is broken. It&amp;rsquo;s doing X&amp;rdquo; which tells me very little about what&amp;rsquo;s wrong and where to look. My first objective is to make the size of the problem statement as small / tight as possible. To do so, before I&amp;rsquo;ve looked at any code I try to do the following:&lt;/p&gt;
 &lt;ul&gt;
@@ -52,95 +52,95 @@ debugging Python - the context This is the flow I take when faced with a new Pyt
 &lt;p&gt;At this point I should have the confidence to know that the problem requires debugging.&lt;/p&gt;
 &lt;h2 id=&#34;example-application&#34;&gt;example application&lt;/h2&gt;
 &lt;p&gt;To get started create the following file. This is the simplest possible example I could create so as to keep signal/noise ratio in favour of the actual debugging steps:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#!/usr/bin/env python&lt;/span&gt;
-&lt;span style=&#34;color:#75715e&#34;&gt;# main.py&lt;/span&gt;
-&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;doubleit&lt;/span&gt;(val):
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; val &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;
-
-&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; __name__ &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;__main__&amp;#34;&lt;/span&gt;:
-    print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 2: &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;%d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;, doubleit(&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;))
-    print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 4: &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;%d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;, doubleit(&lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;))
-    print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 8: &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;%d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;, doubleit(&lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt;))
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We&amp;rsquo;ll use this simple example for our debugging.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#!/usr/bin/env python&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# main.py&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;doubleit&lt;/span&gt;(val):
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; val &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; __name__ &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;__main__&amp;#34;&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 2: &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;%d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;, doubleit(&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;))
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 4: &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;%d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;, doubleit(&lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;))
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 8: &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;%d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;, doubleit(&lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt;))
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We&amp;rsquo;ll use this simple example for our debugging.&lt;/p&gt;
 &lt;h2 id=&#34;using-ipdb&#34;&gt;using ipdb&lt;/h2&gt;
 &lt;p&gt;From the information gathered earlier lets imagine the outputs were that the program above is spitting out the wrong values. We expect the &lt;code&gt;doubleit&lt;/code&gt; lines to show their values being doubled but instead they seem to be trebled (yes, it&amp;rsquo;s obvious why, but imagine this is a very large program and you don&amp;rsquo;t know why the output is what it is).&lt;/p&gt;
 &lt;p&gt;With that information to hand we can look for the &lt;code&gt;doubleit&lt;/code&gt; method and add set some breakpoints so that we can explore the program as it&amp;rsquo;s running to understand the state:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#!/usr/bin/env python&lt;/span&gt;
-&lt;span style=&#34;color:#75715e&#34;&gt;# main.py&lt;/span&gt;
-&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;doubleit&lt;/span&gt;(val):
-    &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; ipdb       &lt;span style=&#34;color:#75715e&#34;&gt;# &amp;lt; added this line&lt;/span&gt;
-    ipdb&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;set_trace()  &lt;span style=&#34;color:#75715e&#34;&gt;# &amp;lt; added this line&lt;/span&gt;
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; val &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;
-
-&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; __name__ &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;__main__&amp;#34;&lt;/span&gt;:
-    print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 2: &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;%d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;, doubleit(&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;))
-    print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 4: &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;%d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;, doubleit(&lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;))
-    print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 8: &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;%d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;, doubleit(&lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt;))
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can continue to add &lt;code&gt;ipdb.set_trace()&lt;/code&gt; points throughout our code. Generally speaking when I am running this for the first time I&amp;rsquo;ll tend to just drop one or two points in the codebase that I know are going to be in the path, with the expectation that I&amp;rsquo;ll manually step through the execution to learn how it flows. When we&amp;rsquo;ve added all of the breakpoints that we need we can instruct the program to run with &lt;code&gt;python main.py&lt;/code&gt;:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ python main.py
-&amp;gt; /home/pete/go/src/github.com/peter-mcconnell/petermcconnell.com/assets/dummy/pydebug/main.py&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;6&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;doubleit&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt;
-      &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;     ipdb.set_trace&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt;
-----&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;     &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; val * &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;
-      &lt;span style=&#34;color:#ae81ff&#34;&gt;7&lt;/span&gt;
-
-ipdb&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now we&amp;rsquo;ve ran our program with an attached debugger and it has paused execution at the breakpoint we set. We can run &lt;code&gt;args&lt;/code&gt; to see which arguments where passed to the method:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&amp;gt; /home/pete/go/src/github.com/peter-mcconnell/petermcconnell.com/assets/dummy/pydebug/main.py&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;6&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;doubleit&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt;
-      &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;     ipdb.set_trace&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt;
-----&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;     &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; val * &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;
-      &lt;span style=&#34;color:#ae81ff&#34;&gt;7&lt;/span&gt;
-
-ipdb&amp;gt; args
-val &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;So in this point in the program we&amp;rsquo;re in the &lt;code&gt;doubleit&lt;/code&gt; method when it was invoked with a &lt;code&gt;val&lt;/code&gt; value of &lt;code&gt;2&lt;/code&gt;. We can print this and other variables using &lt;code&gt;p&lt;/code&gt;:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;ipdb&amp;gt; p val
-&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;or just the variable name on its own:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;ipdb&amp;gt; val
-&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can even call methods from this point:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;ipdb&amp;gt; doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;6&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-&lt;span style=&#34;color:#ae81ff&#34;&gt;18&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;To walk over the execution we can press &lt;code&gt;n&lt;/code&gt; to go to the next point of execution:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;ipdb&amp;gt; doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;6&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-&lt;span style=&#34;color:#ae81ff&#34;&gt;18&lt;/span&gt;
-ipdb&amp;gt; n
---Return--
-&lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;
-&amp;gt; /home/pete/go/src/github.com/peter-mcconnell/petermcconnell.com/assets/dummy/pydebug/main.py&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;6&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;doubleit&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt;
-      &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;     ipdb.set_trace&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt;
-----&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;     &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; val * &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;
-      &lt;span style=&#34;color:#ae81ff&#34;&gt;7&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and view the backtrace with &lt;code&gt;bt&lt;/code&gt;:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;ipdb&amp;gt; bt
-  /home/pete/go/src/github.com/peter-mcconnell/petermcconnell.com/assets/dummy/pydebug/main.py&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;9&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;&amp;lt;module&amp;gt;&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt;
-      &lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; __name__ &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;__main__&amp;#34;&lt;/span&gt;:
-----&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;9&lt;/span&gt;     print&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 2: %d&amp;#34;&lt;/span&gt;, doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;2&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;
-     &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;     print&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 4: %d&amp;#34;&lt;/span&gt;, doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;4&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;
-
-&lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;
-&amp;gt; /home/pete/go/src/github.com/peter-mcconnell/petermcconnell.com/assets/dummy/pydebug/main.py&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;6&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;doubleit&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt;
-      &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;     ipdb.set_trace&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt;
-----&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;     &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; val * &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;
-      &lt;span style=&#34;color:#ae81ff&#34;&gt;7&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;To view the code around the current point of execution just press &lt;code&gt;l&lt;/code&gt;:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;ipdb&amp;gt; l
-      &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;#!/usr/bin/env python&lt;/span&gt;
-      &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;# main.py&lt;/span&gt;
-      &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt; def doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;val&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;:
-      &lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;     import ipdb
-      &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;     ipdb.set_trace&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt;
-----&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;     &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; val * &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;
-      &lt;span style=&#34;color:#ae81ff&#34;&gt;7&lt;/span&gt;
-      &lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; __name__ &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;__main__&amp;#34;&lt;/span&gt;:
-      &lt;span style=&#34;color:#ae81ff&#34;&gt;9&lt;/span&gt;     print&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 2: %d&amp;#34;&lt;/span&gt;, doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;2&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;
-     &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;     print&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 4: %d&amp;#34;&lt;/span&gt;, doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;4&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;
-     &lt;span style=&#34;color:#ae81ff&#34;&gt;11&lt;/span&gt;     print&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 8: %d&amp;#34;&lt;/span&gt;, doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;8&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Which of course shows our very hard to find logic error, &lt;code&gt;* 3&lt;/code&gt; instead of &lt;code&gt;* 2&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#!/usr/bin/env python&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# main.py&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;doubleit&lt;/span&gt;(val):
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; ipdb       &lt;span style=&#34;color:#75715e&#34;&gt;# &amp;lt; added this line&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    ipdb&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;set_trace()  &lt;span style=&#34;color:#75715e&#34;&gt;# &amp;lt; added this line&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; val &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; __name__ &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;__main__&amp;#34;&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 2: &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;%d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;, doubleit(&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;))
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 4: &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;%d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;, doubleit(&lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;))
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 8: &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;%d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;, doubleit(&lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt;))
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can continue to add &lt;code&gt;ipdb.set_trace()&lt;/code&gt; points throughout our code. Generally speaking when I am running this for the first time I&amp;rsquo;ll tend to just drop one or two points in the codebase that I know are going to be in the path, with the expectation that I&amp;rsquo;ll manually step through the execution to learn how it flows. When we&amp;rsquo;ve added all of the breakpoints that we need we can instruct the program to run with &lt;code&gt;python main.py&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ python main.py
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;gt; /home/pete/go/src/github.com/peter-mcconnell/petermcconnell.com/assets/dummy/pydebug/main.py&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;6&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;doubleit&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;     ipdb.set_trace&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;----&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;     &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; val * &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#ae81ff&#34;&gt;7&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ipdb&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now we&amp;rsquo;ve ran our program with an attached debugger and it has paused execution at the breakpoint we set. We can run &lt;code&gt;args&lt;/code&gt; to see which arguments where passed to the method:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;gt; /home/pete/go/src/github.com/peter-mcconnell/petermcconnell.com/assets/dummy/pydebug/main.py&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;6&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;doubleit&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;     ipdb.set_trace&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;----&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;     &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; val * &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#ae81ff&#34;&gt;7&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ipdb&amp;gt; args
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;val &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;So in this point in the program we&amp;rsquo;re in the &lt;code&gt;doubleit&lt;/code&gt; method when it was invoked with a &lt;code&gt;val&lt;/code&gt; value of &lt;code&gt;2&lt;/code&gt;. We can print this and other variables using &lt;code&gt;p&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ipdb&amp;gt; p val
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;or just the variable name on its own:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ipdb&amp;gt; val
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can even call methods from this point:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ipdb&amp;gt; doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;6&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;18&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;To walk over the execution we can press &lt;code&gt;n&lt;/code&gt; to go to the next point of execution:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ipdb&amp;gt; doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;6&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;18&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ipdb&amp;gt; n
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;--Return--
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;gt; /home/pete/go/src/github.com/peter-mcconnell/petermcconnell.com/assets/dummy/pydebug/main.py&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;6&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;doubleit&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;     ipdb.set_trace&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;----&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;     &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; val * &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#ae81ff&#34;&gt;7&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and view the backtrace with &lt;code&gt;bt&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ipdb&amp;gt; bt
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  /home/pete/go/src/github.com/peter-mcconnell/petermcconnell.com/assets/dummy/pydebug/main.py&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;9&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;&amp;lt;module&amp;gt;&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; __name__ &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;__main__&amp;#34;&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;----&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;9&lt;/span&gt;     print&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 2: %d&amp;#34;&lt;/span&gt;, doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;2&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;     print&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 4: %d&amp;#34;&lt;/span&gt;, doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;4&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;gt; /home/pete/go/src/github.com/peter-mcconnell/petermcconnell.com/assets/dummy/pydebug/main.py&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;6&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;doubleit&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;     ipdb.set_trace&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;----&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;     &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; val * &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#ae81ff&#34;&gt;7&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;To view the code around the current point of execution just press &lt;code&gt;l&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ipdb&amp;gt; l
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;#!/usr/bin/env python&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;# main.py&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt; def doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;val&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;     import ipdb
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;     ipdb.set_trace&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;----&amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;     &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; val * &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#ae81ff&#34;&gt;7&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; __name__ &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;__main__&amp;#34;&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#ae81ff&#34;&gt;9&lt;/span&gt;     print&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 2: %d&amp;#34;&lt;/span&gt;, doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;2&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;     print&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 4: %d&amp;#34;&lt;/span&gt;, doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;4&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     &lt;span style=&#34;color:#ae81ff&#34;&gt;11&lt;/span&gt;     print&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 8: %d&amp;#34;&lt;/span&gt;, doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;8&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Which of course shows our very hard to find logic error, &lt;code&gt;* 3&lt;/code&gt; instead of &lt;code&gt;* 2&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;Note: you can also set breakpoints in the stdlib functions (paths will vary depending on your setup):&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;ipdb&amp;gt; b /home/pete/.local/lib/python3.10/site-packages/requests/api.py:14
-Breakpoint &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; at /home/pete/.local/lib/python3.10/site-packages/requests/api.py:14
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;debug-flow&#34;&gt;debug flow&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ipdb&amp;gt; b /home/pete/.local/lib/python3.10/site-packages/requests/api.py:14
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Breakpoint &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; at /home/pete/.local/lib/python3.10/site-packages/requests/api.py:14
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;debug-flow&#34;&gt;debug flow&lt;/h2&gt;
 &lt;p&gt;Using the commands above I can begin my cyclic process of narrowing in on the fix:&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;repro -&amp;gt; explore -&amp;gt; understand -&amp;gt; tweak -&amp;gt; repeat&lt;/p&gt;
@@ -204,10 +204,10 @@ what are the requirements? The debugger of choice (for me) is dlv / delve.</desc
 &lt;h2 id=&#34;what-are-the-requirements&#34;&gt;what are the requirements?&lt;/h2&gt;
 &lt;p&gt;The debugger of choice (for me) is &lt;code&gt;dlv&lt;/code&gt; / &lt;code&gt;delve&lt;/code&gt;. The reasons for this are at the end of the article.&lt;/p&gt;
 &lt;p&gt;Install &lt;code&gt;delve&lt;/code&gt;: &lt;a href=&#34;https://github.com/go-delve/delve&#34;&gt;https://github.com/go-delve/delve&lt;/a&gt;&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;git clone https://github.com/go-delve/delve
-cd delve
-go install github.com/go-delve/delve/cmd/dlv
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Have the following pieces of information:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git clone https://github.com/go-delve/delve
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;cd delve
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;go install github.com/go-delve/delve/cmd/dlv
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Have the following pieces of information:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;a list of 1 or more points in my code where I&amp;rsquo;d like to set breakpoints
 &lt;ul&gt;
@@ -217,147 +217,147 @@ go install github.com/go-delve/delve/cmd/dlv
 &lt;/ul&gt;
 &lt;h2 id=&#34;example-program&#34;&gt;example program&lt;/h2&gt;
 &lt;p&gt;For the sake of this article we&amp;rsquo;ll create a simple application to debug:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// main.go
-&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;package&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;
-
-&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
-
-&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;doubleit&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;val&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; {
-        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;val&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;  &lt;span style=&#34;color:#75715e&#34;&gt;// should be * 2
-&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;}
-
-&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;() {
-        &lt;span style=&#34;color:#a6e22e&#34;&gt;fmt&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Printf&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 2: %d\n&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;doubleit&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;))
-        &lt;span style=&#34;color:#a6e22e&#34;&gt;fmt&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Printf&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 4: %d\n&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;doubleit&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;))
-        &lt;span style=&#34;color:#a6e22e&#34;&gt;fmt&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Printf&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 8: %d\n&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;doubleit&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt;))
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;When we run this with &lt;code&gt;go run main.go&lt;/code&gt; we want it to double the numbers we pass but for &lt;em&gt;some reason&lt;/em&gt; we&amp;rsquo;re getting different results.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// main.go
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;package&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;doubleit&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;val&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;val&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;  &lt;span style=&#34;color:#75715e&#34;&gt;// should be * 2
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;() {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#a6e22e&#34;&gt;fmt&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Printf&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 2: %d\n&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;doubleit&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;))
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#a6e22e&#34;&gt;fmt&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Printf&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 4: %d\n&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;doubleit&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;))
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#a6e22e&#34;&gt;fmt&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Printf&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 8: %d\n&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;doubleit&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt;))
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;When we run this with &lt;code&gt;go run main.go&lt;/code&gt; we want it to double the numbers we pass but for &lt;em&gt;some reason&lt;/em&gt; we&amp;rsquo;re getting different results.&lt;/p&gt;
 &lt;p&gt;We will also need a &lt;code&gt;go.mod&lt;/code&gt; for Delve to run so also perform a &lt;code&gt;go mod init&lt;/code&gt; from this directory.&lt;/p&gt;
 &lt;h2 id=&#34;debug-it&#34;&gt;debug it&lt;/h2&gt;
 &lt;p&gt;To get started from the project directory&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;dlv debug
-Type &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;help&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; list of commands.
-&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;dlv&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now set some breakpoints. For this example we&amp;rsquo;ll say we want to debug our &lt;code&gt;doubleit&lt;/code&gt; method - the first line of which is at &lt;code&gt;:7&lt;/code&gt;:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;dlv debug
-Type &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;help&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; list of commands.
-&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;dlv&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; b main.go:7
-Breakpoint &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; set at 0x49c8bb &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; main.doubleit&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt; ./main.go:7
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;When we&amp;rsquo;ve added all of the breakpoints that we need we can instruct the program to run with &lt;code&gt;c&lt;/code&gt;:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;dlv debug
-Type &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;help&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; list of commands.
-&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;dlv&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; b main.go:7
-Breakpoint &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; set at 0x49c8bb &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; main.doubleit&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt; ./main.go:7
-&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;dlv&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; c
-&amp;gt; main.doubleit&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt; ./main.go:7 &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;hits goroutine&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;1&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;:1 total:1&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;PC: 0x49c8bb&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-     2:	package main
-     3:
-     4:	import &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
-     5:
-     6:	func doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;val int&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; int &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
-&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&amp;gt;   7:		&lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; val * &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt; // should be * &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
-     8:	&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
-     9:
-    10:	func main&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
-    11:		fmt.Printf&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 2: %d\n&amp;#34;&lt;/span&gt;, doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;2&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;
-    12:		fmt.Printf&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 4: %d\n&amp;#34;&lt;/span&gt;, doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;4&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;
-&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;dlv&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now we&amp;rsquo;ve ran our program with an attached debugger and it has paused execution at the breakpoint we set. We can run &lt;code&gt;args&lt;/code&gt; to see which arguments where passed to the method:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;dlv&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; c
-&amp;gt; main.doubleit&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt; ./main.go:7 &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;hits goroutine&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;1&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;:1 total:1&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;PC: 0x49c8bb&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-     2:	package main
-     3:
-     4:	import &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
-     5:
-     6:	func doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;val int&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; int &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
-&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&amp;gt;   7:		&lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; val * &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt; // should be * &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
-     8:	&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
-     9:
-    10:	func main&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
-    11:		fmt.Printf&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 2: %d\n&amp;#34;&lt;/span&gt;, doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;2&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;
-    12:		fmt.Printf&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 4: %d\n&amp;#34;&lt;/span&gt;, doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;4&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;
-&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;dlv&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; args
-val &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
-~r0 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;So in this point in the program we&amp;rsquo;re in the &lt;code&gt;doubleit&lt;/code&gt; method when it was invoked with a &lt;code&gt;val&lt;/code&gt; value of &lt;code&gt;2&lt;/code&gt;. We can print this and other variables using &lt;code&gt;p&lt;/code&gt;:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;dlv&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; p val
-&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can even call methods from this point using &lt;code&gt;call&lt;/code&gt;:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;dlv&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; call doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;6&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-&amp;gt; main.doubleit&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt; ./main.go:7 &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;hits goroutine&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;6&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;:1 total:2&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;PC: 0x49c8bb&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-     2:	package main
-     3:
-     4:	import &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
-     5:
-     6:	func doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;val int&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; int &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
-&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&amp;gt;   7:		&lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; val * &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt; // should be * &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
-     8:	&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
-     9:
-    10:	func main&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
-    11:		fmt.Printf&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 2: %d\n&amp;#34;&lt;/span&gt;, doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;2&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;
-    12:		fmt.Printf&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 4: %d\n&amp;#34;&lt;/span&gt;, doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;4&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;
-&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;dlv&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; args
-val &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In the example above we hit our own breakpoint set earlier allowing us to print the &lt;code&gt;args&lt;/code&gt; for the &lt;code&gt;call&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;dlv debug
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Type &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;help&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; list of commands.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;dlv&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now set some breakpoints. For this example we&amp;rsquo;ll say we want to debug our &lt;code&gt;doubleit&lt;/code&gt; method - the first line of which is at &lt;code&gt;:7&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;dlv debug
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Type &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;help&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; list of commands.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;dlv&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; b main.go:7
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Breakpoint &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; set at 0x49c8bb &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; main.doubleit&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt; ./main.go:7
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;When we&amp;rsquo;ve added all of the breakpoints that we need we can instruct the program to run with &lt;code&gt;c&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;dlv debug
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Type &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;help&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; list of commands.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;dlv&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; b main.go:7
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Breakpoint &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; set at 0x49c8bb &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; main.doubleit&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt; ./main.go:7
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;dlv&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; c
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;gt; main.doubleit&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt; ./main.go:7 &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;hits goroutine&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;1&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;:1 total:1&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;PC: 0x49c8bb&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     2:	package main
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     3:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     4:	import &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     5:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     6:	func doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;val int&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; int &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&amp;gt;   7:		&lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; val * &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt; // should be * &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     8:	&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     9:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    10:	func main&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    11:		fmt.Printf&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 2: %d\n&amp;#34;&lt;/span&gt;, doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;2&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    12:		fmt.Printf&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 4: %d\n&amp;#34;&lt;/span&gt;, doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;4&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;dlv&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now we&amp;rsquo;ve ran our program with an attached debugger and it has paused execution at the breakpoint we set. We can run &lt;code&gt;args&lt;/code&gt; to see which arguments where passed to the method:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;dlv&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; c
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;gt; main.doubleit&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt; ./main.go:7 &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;hits goroutine&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;1&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;:1 total:1&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;PC: 0x49c8bb&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     2:	package main
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     3:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     4:	import &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     5:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     6:	func doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;val int&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; int &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&amp;gt;   7:		&lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; val * &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt; // should be * &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     8:	&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     9:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    10:	func main&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    11:		fmt.Printf&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 2: %d\n&amp;#34;&lt;/span&gt;, doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;2&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    12:		fmt.Printf&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 4: %d\n&amp;#34;&lt;/span&gt;, doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;4&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;dlv&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; args
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;val &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;~r0 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;So in this point in the program we&amp;rsquo;re in the &lt;code&gt;doubleit&lt;/code&gt; method when it was invoked with a &lt;code&gt;val&lt;/code&gt; value of &lt;code&gt;2&lt;/code&gt;. We can print this and other variables using &lt;code&gt;p&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;dlv&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; p val
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can even call methods from this point using &lt;code&gt;call&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;dlv&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; call doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;6&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;gt; main.doubleit&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt; ./main.go:7 &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;hits goroutine&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;6&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;:1 total:2&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;PC: 0x49c8bb&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     2:	package main
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     3:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     4:	import &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     5:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     6:	func doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;val int&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; int &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&amp;gt;   7:		&lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; val * &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt; // should be * &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     8:	&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     9:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    10:	func main&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    11:		fmt.Printf&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 2: %d\n&amp;#34;&lt;/span&gt;, doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;2&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    12:		fmt.Printf&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 4: %d\n&amp;#34;&lt;/span&gt;, doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;4&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;dlv&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; args
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;val &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In the example above we hit our own breakpoint set earlier allowing us to print the &lt;code&gt;args&lt;/code&gt; for the &lt;code&gt;call&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;To walk over the execution we can press &lt;code&gt;n&lt;/code&gt; to go to the next point of execution:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;dlv&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; n
-&amp;gt; main.doubleit&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt; ./main.go:6 &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;PC: 0x49c8a0&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-     1:	// main.go
-     2:	package main
-     3:
-     4:	import &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
-     5:
-&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&amp;gt;   6:	func doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;val int&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; int &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
-     7:		&lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; val * &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt; // should be * &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
-     8:	&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
-     9:
-    10:	func main&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
-    11:		fmt.Printf&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 2: %d\n&amp;#34;&lt;/span&gt;, doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;2&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;
-&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;dlv&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; n
-&amp;gt; main.doubleit&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt; ./main.go:7 &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;hits goroutine&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;6&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;:2 total:3&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;PC: 0x49c8bb&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-     2:	package main
-     3:
-     4:	import &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
-     5:
-     6:	func doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;val int&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; int &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
-&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&amp;gt;   7:		&lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; val * &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt; // should be * &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
-     8:	&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
-     9:
-    10:	func main&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
-    11:		fmt.Printf&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 2: %d\n&amp;#34;&lt;/span&gt;, doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;2&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;
-    12:		fmt.Printf&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 4: %d\n&amp;#34;&lt;/span&gt;, doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;4&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;
-&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;dlv&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; n
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and view the backtrace with &lt;code&gt;bt&lt;/code&gt;:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;dlv&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; bt
-&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  0x000000000049c8bb in main.doubleit
-   at ./main.go:7
-&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;  0x000000000046251f in debugCall256
-   at :0
-&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;  0x0000000000407484 in runtime.debugCallWrap2
-   at /usr/local/go/src/runtime/debugcall.go:251
-&lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;  0x00000000004073b3 in runtime.debugCallWrap1
-   at /usr/local/go/src/runtime/debugcall.go:203
-&lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;  0x0000000000464ca1 in runtime.goexit
-   at /usr/local/go/src/runtime/asm_amd64.s:1594
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;To view the code around the current point of execution just press &lt;code&gt;l&lt;/code&gt;:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;dlv&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; l
-&amp;gt; main.doubleit&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt; ./main.go:7 &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;hits goroutine&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;6&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;:3 total:4&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;PC: 0x49c8bb&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-     2:	package main
-     3:
-     4:	import &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
-     5:
-     6:	func doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;val int&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; int &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
-&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&amp;gt;   7:		&lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; val * &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt; // should be * &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
-     8:	&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
-     9:
-    10:	func main&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
-    11:		fmt.Printf&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 2: %d\n&amp;#34;&lt;/span&gt;, doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;2&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;
-    12:		fmt.Printf&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 4: %d\n&amp;#34;&lt;/span&gt;, doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;4&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Which of course shows our very hard to find logic error, &lt;code&gt;* 3&lt;/code&gt; instead of &lt;code&gt;* 2&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;dlv&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; n
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;gt; main.doubleit&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt; ./main.go:6 &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;PC: 0x49c8a0&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     1:	// main.go
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     2:	package main
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     3:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     4:	import &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     5:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&amp;gt;   6:	func doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;val int&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; int &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     7:		&lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; val * &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt; // should be * &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     8:	&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     9:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    10:	func main&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    11:		fmt.Printf&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 2: %d\n&amp;#34;&lt;/span&gt;, doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;2&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;dlv&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; n
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;gt; main.doubleit&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt; ./main.go:7 &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;hits goroutine&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;6&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;:2 total:3&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;PC: 0x49c8bb&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     2:	package main
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     3:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     4:	import &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     5:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     6:	func doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;val int&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; int &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&amp;gt;   7:		&lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; val * &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt; // should be * &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     8:	&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     9:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    10:	func main&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    11:		fmt.Printf&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 2: %d\n&amp;#34;&lt;/span&gt;, doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;2&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    12:		fmt.Printf&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 4: %d\n&amp;#34;&lt;/span&gt;, doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;4&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;dlv&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; n
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and view the backtrace with &lt;code&gt;bt&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;dlv&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; bt
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  0x000000000049c8bb in main.doubleit
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;   at ./main.go:7
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;  0x000000000046251f in debugCall256
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;   at :0
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;  0x0000000000407484 in runtime.debugCallWrap2
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;   at /usr/local/go/src/runtime/debugcall.go:251
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;  0x00000000004073b3 in runtime.debugCallWrap1
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;   at /usr/local/go/src/runtime/debugcall.go:203
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;  0x0000000000464ca1 in runtime.goexit
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;   at /usr/local/go/src/runtime/asm_amd64.s:1594
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;To view the code around the current point of execution just press &lt;code&gt;l&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;dlv&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; l
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;gt; main.doubleit&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt; ./main.go:7 &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;hits goroutine&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;6&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;:3 total:4&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;PC: 0x49c8bb&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     2:	package main
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     3:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     4:	import &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     5:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     6:	func doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;val int&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; int &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&amp;gt;   7:		&lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; val * &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt; // should be * &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     8:	&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     9:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    10:	func main&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    11:		fmt.Printf&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 2: %d\n&amp;#34;&lt;/span&gt;, doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;2&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    12:		fmt.Printf&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;doubleit 4: %d\n&amp;#34;&lt;/span&gt;, doubleit&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;4&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Which of course shows our very hard to find logic error, &lt;code&gt;* 3&lt;/code&gt; instead of &lt;code&gt;* 2&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;Note: you can also set breakpoints in the stdlib functions (paths will vary depending on your setup):&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;dlv&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; b src/net/http/request.go:899
-Breakpoint &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; set at 0x794599 &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; net/http.NewRequestWithContext&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt; /usr/local/go./net/http/request.go:899
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;summary&#34;&gt;summary&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;dlv&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; b src/net/http/request.go:899
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Breakpoint &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; set at 0x794599 &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; net/http.NewRequestWithContext&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt; /usr/local/go./net/http/request.go:899
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;summary&#34;&gt;summary&lt;/h2&gt;
 &lt;p&gt;The example above is extremely trivial - where &lt;code&gt;dlv&lt;/code&gt; and it&amp;rsquo;s ilk shine are on complex usecases where you may not even know what methods are between the input and output, such as debugging the stdlib. Just this week I used &lt;code&gt;dlv&lt;/code&gt; to identify why a &lt;code&gt;POST&lt;/code&gt; wasn&amp;rsquo;t honouring a &lt;code&gt;307&lt;/code&gt; temporary redirect - on inspection, using &lt;code&gt;dlv&lt;/code&gt;, I learned that the &lt;code&gt;body&lt;/code&gt; is disregarded if it is an unrecognised &lt;code&gt;type&lt;/code&gt; &lt;a href=&#34;https://github.com/golang/go/blob/master/src/net/http/request.go#L899&#34;&gt;https://github.com/golang/go/blob/master/src/net/http/request.go#L899&lt;/a&gt;. Having to do this without a debugger would have taken quite a bit of code hopping - the debugger took care of that for me and allowed me to validate argument values as I did it.&lt;/p&gt;
 &lt;h2 id=&#34;why-not-gdb&#34;&gt;why not gdb?&lt;/h2&gt;
 &lt;p&gt;I know some folk feel strongly that &lt;code&gt;gdb&lt;/code&gt; is the tool to use for debugging go code, but given the Golang docs itself encourage you to use Delve over GDB I personally stay away from it:&lt;/p&gt;
@@ -382,7 +382,7 @@ Firstly: let me qualify &amp;ldquo;basic&amp;rdquo;. I&amp;rsquo;m using this te
 &lt;p&gt;Secondly: there is no inventing being done here. I&amp;rsquo;m just surfacing information in this article which you can already find in the &lt;code&gt;man&lt;/code&gt; pages. I would strongly recommend you check the relevant man page for the tool you find of interest in this article.&lt;/p&gt;
 &lt;p&gt;Thirdly: for the curious, these tools generally get their information from existing counters and statistics in &lt;code&gt;/proc/&lt;/code&gt; and &lt;code&gt;/sys/&lt;/code&gt;. In the man pages for these tools you can see a &lt;code&gt;FILES&lt;/code&gt; section which details the data source for the given tool.&lt;/p&gt;
 &lt;h2 id=&#34;crisis-tools&#34;&gt;&amp;ldquo;crisis tools&amp;rdquo;&lt;/h2&gt;
-&lt;p&gt;This section is taken from Brendan Gregg&amp;rsquo;s book &lt;a href=&#34;https://amzn.to/3I9iU49%5D&#34;&gt;&amp;lsquo;System Performance&amp;rsquo; (4.1.2)&lt;/a&gt;. It covers not only where you can install some of the binaries mentioned in this article but also other useful tools for debugging. All credit to him for this list.&lt;/p&gt;
+&lt;p&gt;This section is taken from Brendan Gregg&amp;rsquo;s book &lt;a href=&#34;https://amzn.to/3I9iU49]&#34;&gt;&amp;lsquo;System Performance&amp;rsquo; (4.1.2)&lt;/a&gt;. It covers not only where you can install some of the binaries mentioned in this article but also other useful tools for debugging. All credit to him for this list.&lt;/p&gt;
 &lt;table&gt;
 &lt;thead&gt;
 &lt;tr&gt;
@@ -470,89 +470,89 @@ Firstly: let me qualify &amp;ldquo;basic&amp;rdquo;. I&amp;rsquo;m using this te
 &lt;p&gt;From the output you can identify some performance issues with your system. For example, if a single process is consuming a large amount of CPU or memory resources, it could be causing performance issues for your system. Similarly, if multiple processes are consuming high amounts of resources, it could indicate that your system is struggling to keep up with demand and may be a bottleneck.&lt;/p&gt;
 &lt;p&gt;One common problem that &lt;code&gt;top&lt;/code&gt; can help identify is resource contention which occurs when multiple processes or applications are competing for the same system resources.&lt;/p&gt;
 &lt;p&gt;I suspect this tool is familiar to many of you already:&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/top.jpg&#34; alt=&#34;top example&#34; title=&#34;top example&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;top example&#34; src=&#34;https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/top.jpg&#34; title=&#34;top example&#34;&gt;&lt;/p&gt;
 &lt;p&gt;However what you may not realise is that you can pull much more data from it. Press &amp;lsquo;f&amp;rsquo; when in top to access the fields management view and select other columns to display:&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/top_fields.jpg&#34; alt=&#34;top fields management&#34; title=&#34;top fields management view&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;top fields management&#34; src=&#34;https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/top_fields.jpg&#34; title=&#34;top fields management view&#34;&gt;&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;htop&lt;/code&gt; is a visually prettier alternative to &lt;code&gt;top&lt;/code&gt; and that can make understanding the system at a glance easier.&lt;/p&gt;
 &lt;h2 id=&#34;mpstat&#34;&gt;mpstat&lt;/h2&gt;
 &lt;p&gt;When: you think there&amp;rsquo;s an issue with the CPU utilization.&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;mpstat&lt;/code&gt; is a command-line tool that is used to monitor the performance of a Linux system by displaying the CPU usage of each processor and the overall system.&lt;/p&gt;
 &lt;p&gt;Imagine that you are the system administrator of a web server that is experiencing slow performance and perhaps even downtime. You check the web server logs but nothing obvious is standing out so you begin to suspect there&amp;rsquo;s something else wrong with the system. One general check we can do is on the CPU cores - this is where &lt;code&gt;mpstat&lt;/code&gt; comes in.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;mpstat -P ALL
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This will display the CPU usage statistics for all CPU cores on the system. The output will look something like this:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;Linux 4.9.0-8-amd64 &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;server.petermcconnell.com&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;  01/01/2023  _x86_64_    &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; CPU&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-
-02:34:56 AM  CPU    %usr   %nice    %sys %iowait    %irq   %soft  %steal  %guest  %gnice   %idle
-02:34:56 AM  all    20.00    0.00    5.00    0.00    0.00    0.00    0.00    0.00    0.00   75.00
-02:34:56 AM    &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;    22.50    0.00    6.25    0.00    0.00    0.00    0.00    0.00    0.00   71.25
-02:34:56 AM    &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;     7.50    0.00    3.75    0.00    0.00    0.00    0.00    0.00    0.00   88.75
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The first line shows the Linux version, hostname, and CPU architecture. The second line displays the column headers, which show the various metrics that are being measured. The third line, labeled &amp;ldquo;all,&amp;rdquo; shows the overall CPU usage for all CPU cores combined. The fourth and fifth lines show the CPU usage for each individual CPU core.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;mpstat -P ALL
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This will display the CPU usage statistics for all CPU cores on the system. The output will look something like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Linux 4.9.0-8-amd64 &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;server.petermcconnell.com&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;  01/01/2023  _x86_64_    &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; CPU&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;02:34:56 AM  CPU    %usr   %nice    %sys %iowait    %irq   %soft  %steal  %guest  %gnice   %idle
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;02:34:56 AM  all    20.00    0.00    5.00    0.00    0.00    0.00    0.00    0.00    0.00   75.00
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;02:34:56 AM    &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;    22.50    0.00    6.25    0.00    0.00    0.00    0.00    0.00    0.00   71.25
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;02:34:56 AM    &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;     7.50    0.00    3.75    0.00    0.00    0.00    0.00    0.00    0.00   88.75
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The first line shows the Linux version, hostname, and CPU architecture. The second line displays the column headers, which show the various metrics that are being measured. The third line, labeled &amp;ldquo;all,&amp;rdquo; shows the overall CPU usage for all CPU cores combined. The fourth and fifth lines show the CPU usage for each individual CPU core.&lt;/p&gt;
 &lt;p&gt;In this example, we can see that CPU 0 is running at a higher utilization than CPU 1. This could indicate that there is an issue with CPU 0 that is causing it to work harder than it should. To further investigate the issue we can opt to print these statistics every second by adding a &amp;ldquo;1&amp;rdquo; to the end of the command:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;mpstat -P ALL &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This will print statistics from each core every second, showing the current CPU usage. By watching the output over time, we can see if there are any patterns or spikes in the usage of a particular CPU core.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;mpstat -P ALL &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This will print statistics from each core every second, showing the current CPU usage. By watching the output over time, we can see if there are any patterns or spikes in the usage of a particular CPU core.&lt;/p&gt;
 &lt;p&gt;If we notice that one of the CPU cores is consistently running at a higher utilization than the others, we can try to identify the cause of the problem. One way to do this is by using the &lt;code&gt;top&lt;/code&gt; command to see which processes are using the most CPU resources. It could be that the program itself is misconfigured and not properly distributing load over the available cores.&lt;/p&gt;
 &lt;h2 id=&#34;iostat&#34;&gt;iostat&lt;/h2&gt;
 &lt;p&gt;When: you think there&amp;rsquo;s an issue with IO.&lt;/p&gt;
 &lt;p&gt;The &lt;code&gt;iostat&lt;/code&gt; tool is a command-line utility in Linux that allows users to monitor input/output (I/O) statistics for devices, partitions, and network filesystems. It can be used to identify performance bottlenecks and track the usage of system resources by I/O operations.&lt;/p&gt;
 &lt;p&gt;To use &lt;code&gt;iostat&lt;/code&gt;, you need to specify the interval at which you want to collect data, as well as the devices or partitions you want to monitor. For example, the following command will display I/O statistics for all devices every 2 seconds, 5 times:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ iostat -p ALL &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;
-Linux 5.4.0-72-generic &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;myputer&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; 	30/12/22 	_x86_64_	&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt; CPU&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-
-avg-cpu:  %user   %nice %system %iowait  %steal   %idle
-           1.40   15.48    4.48    0.99    0.00   77.66
-
-Device             tps    kB_read/s    kB_wrtn/s    kB_dscd/s    kB_read    kB_wrtn    kB_dscd
-loop0             0.00         0.00         0.00         0.00          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
-loop1             0.00         0.00         0.00         0.00          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
-loop2             0.00         0.00         0.00         0.00          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
-loop3             0.00         0.00         0.00         0.00          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
-loop4             0.00         0.00         0.00         0.00          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
-loop5             0.00         0.00         0.00         0.00          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
-loop6             0.00         0.00         0.00         0.00          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
-loop7             0.00         0.00         0.00         0.00          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
-sda               4.83        79.27       106.76         0.00     &lt;span style=&#34;color:#ae81ff&#34;&gt;858983&lt;/span&gt;    &lt;span style=&#34;color:#ae81ff&#34;&gt;1156820&lt;/span&gt;          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
-
-... repeat
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;You can also get more simple summaries - for example, CPU utilization report:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ iostat -c
-Linux 5.4.0-72-generic &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;urputer&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; 	30/12/22 	_x86_64_	&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt; CPU&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-
-avg-cpu:  %user   %nice %system %iowait  %steal   %idle
-           1.36   15.09    4.37    0.95    0.00   78.22
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Or a device utilization report:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;iostat -d -h -p ALL
-Linux 5.4.0-72-generic &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;xerxes&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; 	30/12/22 	_x86_64_	&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt; CPU&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-
-      tps    kB_read/s    kB_wrtn/s    kB_dscd/s    kB_read    kB_wrtn    kB_dscd Device
-     0.00         0.0k         0.0k         0.0k       0.0k       0.0k       0.0k loop0
-     0.00         0.0k         0.0k         0.0k       0.0k       0.0k       0.0k loop1
-     0.00         0.0k         0.0k         0.0k       0.0k       0.0k       0.0k loop2
-     0.00         0.0k         0.0k         0.0k       0.0k       0.0k       0.0k loop3
-     0.00         0.0k         0.0k         0.0k       0.0k       0.0k       0.0k loop4
-     0.00         0.0k         0.0k         0.0k       0.0k       0.0k       0.0k loop5
-     0.00         0.0k         0.0k         0.0k       0.0k       0.0k       0.0k loop6
-     0.00         0.0k         0.0k         0.0k       0.0k       0.0k       0.0k loop7
-     4.82        73.5k       103.6k         0.0k     841.2M       1.2G       0.0k sda
-     0.01         0.3k         0.0k         0.0k       3.1M       0.5k       0.0k sda1
-     0.00         0.0k         0.0k         0.0k       2.0k       0.0k       0.0k sda2
-     4.71        73.1k       103.6k         0.0k     836.0M       1.2G       0.0k sda5
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We&amp;rsquo;re seeing a lot of devices here which are showing to be inactive. We can easily hide those from view - rarely when debugging an issue do you want to see statistics for a device that isn&amp;rsquo;t being used. To hide these, pass &lt;code&gt;-z&lt;/code&gt;:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;iostat -d -h -p ALL -z
-Linux 5.4.0-72-generic &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;xerxes&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; 	30/12/22 	_x86_64_	&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt; CPU&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-
-      tps    kB_read/s    kB_wrtn/s    kB_dscd/s    kB_read    kB_wrtn    kB_dscd Device
-     4.84        72.1k       103.1k         0.0k     841.2M       1.2G       0.0k sda
-     0.01         0.3k         0.0k         0.0k       3.1M       0.5k       0.0k sda1
-     0.00         0.0k         0.0k         0.0k       2.0k       0.0k       0.0k sda2
-     4.73        71.7k       103.1k         0.0k     836.0M       1.2G       0.0k sda5
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;By analyzing this data, you can identify performance issues with your devices or partitions. For example, if the number of read or write operations is consistently high, it could indicate that the device or partition is heavily used and may be a bottleneck. Similarly, if the average time taken for each I/O operation is consistently high, it could indicate that the device or partition is struggling to keep up with demand.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ iostat -p ALL &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Linux 5.4.0-72-generic &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;myputer&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; 	30/12/22 	_x86_64_	&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt; CPU&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;avg-cpu:  %user   %nice %system %iowait  %steal   %idle
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;           1.40   15.48    4.48    0.99    0.00   77.66
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Device             tps    kB_read/s    kB_wrtn/s    kB_dscd/s    kB_read    kB_wrtn    kB_dscd
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;loop0             0.00         0.00         0.00         0.00          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;loop1             0.00         0.00         0.00         0.00          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;loop2             0.00         0.00         0.00         0.00          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;loop3             0.00         0.00         0.00         0.00          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;loop4             0.00         0.00         0.00         0.00          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;loop5             0.00         0.00         0.00         0.00          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;loop6             0.00         0.00         0.00         0.00          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;loop7             0.00         0.00         0.00         0.00          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sda               4.83        79.27       106.76         0.00     &lt;span style=&#34;color:#ae81ff&#34;&gt;858983&lt;/span&gt;    &lt;span style=&#34;color:#ae81ff&#34;&gt;1156820&lt;/span&gt;          &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;... repeat
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;You can also get more simple summaries - for example, CPU utilization report:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ iostat -c
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Linux 5.4.0-72-generic &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;urputer&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; 	30/12/22 	_x86_64_	&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt; CPU&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;avg-cpu:  %user   %nice %system %iowait  %steal   %idle
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;           1.36   15.09    4.37    0.95    0.00   78.22
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Or a device utilization report:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;iostat -d -h -p ALL
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Linux 5.4.0-72-generic &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;xerxes&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; 	30/12/22 	_x86_64_	&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt; CPU&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      tps    kB_read/s    kB_wrtn/s    kB_dscd/s    kB_read    kB_wrtn    kB_dscd Device
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     0.00         0.0k         0.0k         0.0k       0.0k       0.0k       0.0k loop0
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     0.00         0.0k         0.0k         0.0k       0.0k       0.0k       0.0k loop1
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     0.00         0.0k         0.0k         0.0k       0.0k       0.0k       0.0k loop2
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     0.00         0.0k         0.0k         0.0k       0.0k       0.0k       0.0k loop3
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     0.00         0.0k         0.0k         0.0k       0.0k       0.0k       0.0k loop4
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     0.00         0.0k         0.0k         0.0k       0.0k       0.0k       0.0k loop5
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     0.00         0.0k         0.0k         0.0k       0.0k       0.0k       0.0k loop6
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     0.00         0.0k         0.0k         0.0k       0.0k       0.0k       0.0k loop7
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     4.82        73.5k       103.6k         0.0k     841.2M       1.2G       0.0k sda
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     0.01         0.3k         0.0k         0.0k       3.1M       0.5k       0.0k sda1
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     0.00         0.0k         0.0k         0.0k       2.0k       0.0k       0.0k sda2
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     4.71        73.1k       103.6k         0.0k     836.0M       1.2G       0.0k sda5
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We&amp;rsquo;re seeing a lot of devices here which are showing to be inactive. We can easily hide those from view - rarely when debugging an issue do you want to see statistics for a device that isn&amp;rsquo;t being used. To hide these, pass &lt;code&gt;-z&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;iostat -d -h -p ALL -z
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Linux 5.4.0-72-generic &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;xerxes&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; 	30/12/22 	_x86_64_	&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt; CPU&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      tps    kB_read/s    kB_wrtn/s    kB_dscd/s    kB_read    kB_wrtn    kB_dscd Device
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     4.84        72.1k       103.1k         0.0k     841.2M       1.2G       0.0k sda
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     0.01         0.3k         0.0k         0.0k       3.1M       0.5k       0.0k sda1
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     0.00         0.0k         0.0k         0.0k       2.0k       0.0k       0.0k sda2
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     4.73        71.7k       103.1k         0.0k     836.0M       1.2G       0.0k sda5
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;By analyzing this data, you can identify performance issues with your devices or partitions. For example, if the number of read or write operations is consistently high, it could indicate that the device or partition is heavily used and may be a bottleneck. Similarly, if the average time taken for each I/O operation is consistently high, it could indicate that the device or partition is struggling to keep up with demand.&lt;/p&gt;
 &lt;p&gt;A common problem that &lt;code&gt;iostat&lt;/code&gt; can help identify is disk saturation, which occurs when a disk is being used to its maximum capacity and can&amp;rsquo;t keep up with the demand for I/O operations. This can lead to slow performance and potential data loss. In &lt;code&gt;iostat&lt;/code&gt; output this problem may manifest as a consistently high percentage of time the device is busy with I/O operations and a high average time taken for each I/O operation.&lt;/p&gt;
 &lt;h2 id=&#34;sar&#34;&gt;sar&lt;/h2&gt;
 &lt;p&gt;When: general purpose. you think there&amp;rsquo;s an issue with CPU, Memory, Network or Block devices. Can record findings to files on disk for comparisson later (which is the main selling point of &lt;code&gt;sar&lt;/code&gt; over, say &lt;code&gt;vmstat&lt;/code&gt;)&lt;/p&gt;
 &lt;p&gt;The &lt;code&gt;sar&lt;/code&gt; (System Activity Report) tool is a command-line utility in Linux that allows users to monitor various system performance metrics over time. It can be used to identify performance bottlenecks, track the usage of system resources, and troubleshoot issues on a Linux system.&lt;/p&gt;
 &lt;p&gt;To use &lt;code&gt;sar&lt;/code&gt;, you need to specify the interval at which you want to collect data and the system performance metrics you want to monitor. For example, the following command will display CPU utilization statistics every 2 seconds:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;sar &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The output of sar will include various performance metrics, depending on the options you specify. Some of the metrics that sar can monitor include:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sar &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The output of sar will include various performance metrics, depending on the options you specify. Some of the metrics that sar can monitor include:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;CPU utilization&lt;/li&gt;
 &lt;li&gt;Memory usage&lt;/li&gt;
@@ -562,35 +562,35 @@ Linux 5.4.0-72-generic &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;x
 &lt;/ul&gt;
 &lt;p&gt;By analyzing this data, you can identify any performance issues with your system. For example, if the CPU utilization is consistently high, it could indicate that your system is struggling to keep up with demand and may be a bottleneck. Similarly, if the memory usage is consistently high, it could indicate that your system is running out of available memory.&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;sar&lt;/code&gt; stores its reports in &lt;code&gt;/var/log/sysstat/&lt;/code&gt; by default and will look for files in this directory when you ask it for some reports. The file it looks for changes depending on the INTERVAL value passed to it. This can result in an error if a report isn&amp;rsquo;t available from yesterday:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# -B tells sar to create a report on paging statistics&lt;/span&gt;
-sar -B
-Cannot open /var/log/sysstat/sa30: No such file or directory
-Please check &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; data collecting is enabled
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;You can specify &lt;code&gt;0&lt;/code&gt; as the interval time which tells &lt;code&gt;sar&lt;/code&gt; to use statistics for the time since the system was started:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;sar &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -B
-Linux 5.4.0-72-generic &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;herputer&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; 	30/12/22 	_x86_64_	&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt; CPU&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-
-17:51:10     pgpgin/s pgpgout/s   fault/s  majflt/s  pgfree/s pgscank/s pgscand/s pgsteal/s    %vmeff
-17:51:10        66.01     99.20   3074.99      0.38   1853.06      0.00      0.00      0.00      0.00
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;code&gt;sar&lt;/code&gt; can also be used to report on I/O and transfer rate statistics:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;sar &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -b
-Linux 5.4.0-72-generic &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;hisputer&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; 	30/12/22 	_x86_64_	&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt; CPU&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-
-17:53:49          tps      rtps      wtps      dtps   bread/s   bwrtn/s   bdscd/s
-17:53:49         4.64      1.32      3.32      0.00    130.43    196.40      0.00
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&amp;hellip; and block devices:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;sar &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -d
-Linux 5.4.0-72-generic &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;ourputer&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; 	30/12/22 	_x86_64_	&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt; CPU&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-
-17:55:12          DEV       tps     rkB/s     wkB/s     dkB/s   areq-sz    aqu-sz     await     %util
-17:55:12       dev8-0      4.63     64.81     97.66      0.00     35.13      0.05     11.69      2.11
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&amp;hellip; and more. &lt;code&gt;sar&lt;/code&gt; is a very powerful tool - please check out the man page for more info.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# -B tells sar to create a report on paging statistics&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sar -B
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Cannot open /var/log/sysstat/sa30: No such file or directory
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Please check &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; data collecting is enabled
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;You can specify &lt;code&gt;0&lt;/code&gt; as the interval time which tells &lt;code&gt;sar&lt;/code&gt; to use statistics for the time since the system was started:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sar &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -B
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Linux 5.4.0-72-generic &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;herputer&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; 	30/12/22 	_x86_64_	&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt; CPU&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;17:51:10     pgpgin/s pgpgout/s   fault/s  majflt/s  pgfree/s pgscank/s pgscand/s pgsteal/s    %vmeff
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;17:51:10        66.01     99.20   3074.99      0.38   1853.06      0.00      0.00      0.00      0.00
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;code&gt;sar&lt;/code&gt; can also be used to report on I/O and transfer rate statistics:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sar &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -b
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Linux 5.4.0-72-generic &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;hisputer&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; 	30/12/22 	_x86_64_	&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt; CPU&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;17:53:49          tps      rtps      wtps      dtps   bread/s   bwrtn/s   bdscd/s
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;17:53:49         4.64      1.32      3.32      0.00    130.43    196.40      0.00
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&amp;hellip; and block devices:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sar &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -d
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Linux 5.4.0-72-generic &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;ourputer&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; 	30/12/22 	_x86_64_	&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt; CPU&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;17:55:12          DEV       tps     rkB/s     wkB/s     dkB/s   areq-sz    aqu-sz     await     %util
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;17:55:12       dev8-0      4.63     64.81     97.66      0.00     35.13      0.05     11.69      2.11
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&amp;hellip; and more. &lt;code&gt;sar&lt;/code&gt; is a very powerful tool - please check out the man page for more info.&lt;/p&gt;
 &lt;h2 id=&#34;vmstat&#34;&gt;vmstat&lt;/h2&gt;
 &lt;p&gt;When: you think there&amp;rsquo;s an issue with memory usage or I/O activity.&lt;/p&gt;
 &lt;p&gt;The &lt;code&gt;vmstat&lt;/code&gt; (Virtual Memory Statistics) tool is a command-line utility in Linux that allows users to monitor various system performance metrics, including memory usage and I/O activity. It can be used to identify performance bottlenecks, track the usage of system resources, and troubleshoot issues on a Linux system.&lt;/p&gt;
 &lt;p&gt;To use &lt;code&gt;vmstat&lt;/code&gt; you need to specify the interval at which you want to collect data. For example, the following command will display system performance statistics every 2 seconds:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;vmstat &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The output of vmstat will include the following information:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;vmstat &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The output of vmstat will include the following information:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;The number of processes in various states (e.g. running, waiting, blocked)&lt;/li&gt;
 &lt;li&gt;The amount of memory being used, including the amount of available memory&lt;/li&gt;
@@ -599,11 +599,11 @@ Linux 5.4.0-72-generic &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;o
 &lt;/ul&gt;
 &lt;h2 id=&#34;free&#34;&gt;free&lt;/h2&gt;
 &lt;p&gt;When: you want to assess the state of memory on a machine.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;free -w -h
-              total        used        free      shared     buffers       cache   available
-Mem:           15Gi       1.1Gi        12Gi       224Mi        95Mi       1.4Gi        13Gi
-Swap:         2.0Gi          0B       2.0Gi
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Here we see:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;free -w -h
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;              total        used        free      shared     buffers       cache   available
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Mem:           15Gi       1.1Gi        12Gi       224Mi        95Mi       1.4Gi        13Gi
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Swap:         2.0Gi          0B       2.0Gi
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Here we see:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;The total amount of available and used memory&lt;/li&gt;
 &lt;li&gt;The amount of used and available swap space (virtual memory on disk used to store data when the system&amp;rsquo;s physical memory is full)&lt;/li&gt;
@@ -613,13 +613,13 @@ Swap:         2.0Gi          0B       2.0Gi
 &lt;p&gt;When: you assume there&amp;rsquo;s an issue with the block devices and want to first check everything is in place.&lt;/p&gt;
 &lt;p&gt;The &lt;code&gt;lsblk&lt;/code&gt; (List Block Devices) command is a command-line utility in Linux that allows users to view a list of block devices (e.g. hard drives, SSDs, USB drives) attached to their system. It can be used to view the available block devices, their mount points, and their partition layouts. You may want to use this tool to validate if block devices are available and mounted.&lt;/p&gt;
 &lt;p&gt;To use &lt;code&gt;lsblk&lt;/code&gt;, you simply need to enter the command followed by any desired options. The following command will display a list of all block devices on the system:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ lsblk -f
-NAME   FSTYPE LABEL UUID                                 FSAVAIL FSUSE% MOUNTPOINT
-sda
-├─sda1 vfat         29C1-1F85                               511M     0% /boot/efi
-├─sda2
-└─sda5 ext4         e3a6ec94-05ab-4e15-a310-e5797a2c55e9    419G     3% /
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The output of lsblk will include the following information for each block device:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ lsblk -f
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;NAME   FSTYPE LABEL UUID                                 FSAVAIL FSUSE% MOUNTPOINT
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sda
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;├─sda1 vfat         29C1-1F85                               511M     0% /boot/efi
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;├─sda2
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;└─sda5 ext4         e3a6ec94-05ab-4e15-a310-e5797a2c55e9    419G     3% /
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The output of lsblk will include the following information for each block device:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;The device name (e.g. sda, sdb)&lt;/li&gt;
 &lt;li&gt;The device type (e.g. disk, partition)&lt;/li&gt;
@@ -631,10 +631,10 @@ sda
 &lt;p&gt;When: you&amp;rsquo;re aware of disk space issues and want to check the current availability.&lt;/p&gt;
 &lt;p&gt;The &lt;code&gt;df&lt;/code&gt; (Disk Free) command is a command-line utility in Linux that allows users to view the amount of available and used disk space on their system. It can be used to identify if a disk is approaching or at capacity.&lt;/p&gt;
 &lt;p&gt;To use &lt;code&gt;df&lt;/code&gt;, you simply need to enter the command followed by any desired options. The following command will display the total amount of available and used disk space on the system:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;df -h /
-Filesystem      Size  Used Avail Use% Mounted on
-/dev/sda5       457G   15G  420G   4% /
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The output of df will include the following information for each file system:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;df -h /
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Filesystem      Size  Used Avail Use% Mounted on
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;/dev/sda5       457G   15G  420G   4% /
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The output of df will include the following information for each file system:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;The file system name (e.g. /dev/sda1)&lt;/li&gt;
 &lt;li&gt;The total size of the file system&lt;/li&gt;
@@ -646,22 +646,22 @@ Filesystem      Size  Used Avail Use% Mounted on
 &lt;p&gt;When: you are aware of a processing issue and want to understand which process it&amp;rsquo;s coming from, or you want to drill into the process to understand why it&amp;rsquo;s not performing to the expected standard.&lt;/p&gt;
 &lt;p&gt;This tool allows users to monitor various performance metrics and events on their system. It can be used to identify performance bottlenecks, track the usage of system resources, and troubleshoot issues on a Linux system. Unlike the other tools in this article &lt;code&gt;perf&lt;/code&gt; allows us to actually peek into the running program to see which parts of it are consuming cpu cycles. This is an incredibly valuable tool to have for those wanting to performance engineer on Linux and I have a practical example of this detailed in &lt;a href=&#34;https://www.petermcconnell.com/posts/perf_eng_with_py12/&#34;&gt;https://www.petermcconnell.com/posts/perf_eng_with_py12/&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;To use &lt;code&gt;perf&lt;/code&gt;, you need to specify the type of performance data you want to collect, as well as the specific events or metrics you want to monitor. To get general cpu profiling you can run:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;perf top -a
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_top.jpg&#34; alt=&#34;perf top example&#34; title=&#34;perf top example&#34;&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;perf top -a
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img alt=&#34;perf top example&#34; src=&#34;https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_top.jpg&#34; title=&#34;perf top example&#34;&gt;&lt;/p&gt;
 &lt;p&gt;Perf also allows you to gather performance statistics. For example, the following command will collect CPU performance data for the cpu-clock event:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;perf stat -e cpu-clock
-^C
- Performance counter stats &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;system wide&amp;#39;&lt;/span&gt;:
-
-         11,633.97 msec cpu-clock                 &lt;span style=&#34;color:#75715e&#34;&gt;#    3.998 CPUs utilized&lt;/span&gt;
-
-       2.909972618 seconds time elapsed
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The scope of what you can do with &lt;code&gt;perf&lt;/code&gt; is huge - too large for this article, but I couldn&amp;rsquo;t leave it off the list. Perhaps a &lt;code&gt;perf&lt;/code&gt; deep dive article will come here soon &amp;hellip;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;perf stat -e cpu-clock
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;^C
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; Performance counter stats &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;system wide&amp;#39;&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;         11,633.97 msec cpu-clock                 &lt;span style=&#34;color:#75715e&#34;&gt;#    3.998 CPUs utilized&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;       2.909972618 seconds time elapsed
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The scope of what you can do with &lt;code&gt;perf&lt;/code&gt; is huge - too large for this article, but I couldn&amp;rsquo;t leave it off the list. Perhaps a &lt;code&gt;perf&lt;/code&gt; deep dive article will come here soon &amp;hellip;&lt;/p&gt;
 &lt;h2 id=&#34;uptime&#34;&gt;uptime&lt;/h2&gt;
 &lt;p&gt;When: you want to get a quick understanding of system load over the past 1, 5, 15 minutes or want to see how long the machine has been up for.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;uptime
-19:26:35 up  5:12,  &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; user,  load average: 0.33, 0.37, 0.37
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;further-reading&#34;&gt;further reading&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;uptime
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;19:26:35 up  5:12,  &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; user,  load average: 0.33, 0.37, 0.37
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;further-reading&#34;&gt;further reading&lt;/h2&gt;
 &lt;p&gt;The Linux Programming Interface book is a fantastic book to learn the Linux fundamentals. In particular it breaks down virtual memory into understandable chunks and also introduces some of the debugging tools mentioned in this article:&lt;/p&gt;
 
 
@@ -676,7 +676,7 @@ Filesystem      Size  Used Avail Use% Mounted on
 
 &lt;p&gt;I&amp;rsquo;d also recommend checking out Branden Gregg&amp;rsquo;s website - lots of solid content in there: &lt;a href=&#34;https://www.brendangregg.com/&#34;&gt;https://www.brendangregg.com/&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;In particular the USE method article should be of interest (&lt;a href=&#34;https://www.brendangregg.com/usemethod.html&#34;&gt;https://www.brendangregg.com/usemethod.html&lt;/a&gt;)&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://www.brendangregg.com/Perf/linux_observability_tools.png&#34; alt=&#34;linux observability tools&#34; title=&#34;linux observability tools&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;linux observability tools&#34; src=&#34;https://www.brendangregg.com/Perf/linux_observability_tools.png&#34; title=&#34;linux observability tools&#34;&gt;&lt;/p&gt;
 </content>
     </item>
     

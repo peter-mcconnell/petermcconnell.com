@@ -240,7 +240,7 @@ Network namespaces are a powerful feature in Linux that allows for the isolation
     <li><a href="#simple-docker-run">simple docker run</a></li>
     <li><a href="#docker-compose">docker compose</a>
       <ul>
-        <li><a href="#a-quick-note-on-the-links-property">a quick note on the &lsquo;links:&rsquo; property</a></li>
+        <li><a href="#a-quick-note-on-the-links-property">a quick note on the &rsquo;links:&rsquo; property</a></li>
         <li><a href="#dockers-internal-dns-server">dockers internal DNS server</a></li>
         <li><a href="#virtual-network-interfaces">virtual network interfaces</a></li>
         <li><a href="#exploring-the-namespace">exploring the namespace</a></li>
@@ -259,249 +259,248 @@ Network namespaces are a powerful feature in Linux that allows for the isolation
 <p>Network namespaces are a powerful feature in Linux that allows for the isolation of network stacks, creating multiple virtual networks on a single host. This concept is particularly useful for scenarios such as containerization, where each container needs its own independent network stack. In this article we&rsquo;ll take a look at how <code>docker</code> / <code>docker compose</code> utilize this technology to grant containers network isolation and also take a look at how docker handles cross-container networking.</p>
 <h2 id="simple-docker-run">simple docker run<a href="#simple-docker-run" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>To see network namespaces in action, we&rsquo;ll run a simple container (without the <code>--network=host</code> flag):</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#75715e"># run nginx in detached mode on host port 8080</span>
-docker run --name dummynginx -p 8080:80 -d nginx
-</code></pre></div><p>If we ran this with <code>--network=host</code> it would share the network namespace of the host and therefore would not have it&rsquo;s own network namespace.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#75715e"># run nginx in detached mode on host port 8080</span>
+</span></span><span style="display:flex;"><span>docker run --name dummynginx -p 8080:80 -d nginx
+</span></span></code></pre></div><p>If we ran this with <code>--network=host</code> it would share the network namespace of the host and therefore would not have it&rsquo;s own network namespace.</p>
 <p>Now we can check to see if we any network namespaces were created for this container:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ sudo lsns -t net | grep nginx
-<span style="color:#f92672">[</span>sudo<span style="color:#f92672">]</span> password <span style="color:#66d9ef">for</span> pete: 
-        NS TYPE NPROCS   PID USER     NETNSID NSFS                           COMMAND
-...
-<span style="color:#ae81ff">4026533009</span> net      <span style="color:#ae81ff">17</span> <span style="color:#ae81ff">52981</span> root           <span style="color:#ae81ff">0</span> /run/docker/netns/3161e4b47f76 nginx: master process nginx -g daemon off;
-</code></pre></div><p>In the output above we can see a network namespace was created for a docker <code>nsfs</code> with the command <code>nginx</code>. This seems like a likely culprit. We could confirm this by checking for the <code>nsfs</code> in <code>docker inspect &lt;container id&gt;</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ sudo lsns -t net | grep nginx
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>sudo<span style="color:#f92672">]</span> password <span style="color:#66d9ef">for</span> pete: 
+</span></span><span style="display:flex;"><span>        NS TYPE NPROCS   PID USER     NETNSID NSFS                           COMMAND
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">4026533009</span> net      <span style="color:#ae81ff">17</span> <span style="color:#ae81ff">52981</span> root           <span style="color:#ae81ff">0</span> /run/docker/netns/3161e4b47f76 nginx: master process nginx -g daemon off;
+</span></span></code></pre></div><p>In the output above we can see a network namespace was created for a docker <code>nsfs</code> with the command <code>nginx</code>. This seems like a likely culprit. We could confirm this by checking for the <code>nsfs</code> in <code>docker inspect &lt;container id&gt;</code>.</p>
 <p>Each container runs in its own network namespace, which means it has its own set of network interfaces, IP addresses, and routing tables. This isolation allows each container to have its own network configuration, without interfering with the host&rsquo;s network or other containers. You can view these resources from the network namespace by using the <code>ip</code> command with <code>nsenter</code>.</p>
 <p>In addition, the isolation also allows you to use the same port on the host for different services running in different containers. This is useful when you want to run multiple instances of the same service on a single host, each with its own IP address and port.</p>
 <p>Also, this isolation helps in providing security boundaries between different containers, as they can&rsquo;t see or interact with each other&rsquo;s network stack unless explicitly configured to do so.</p>
 <h2 id="docker-compose">docker compose<a href="#docker-compose" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>Let&rsquo;s remove that container and see how things look with <code>docker compose</code> which can allow multiple containers to communicate with eachother:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#75715e"># remove the old nginx container</span>
-docker rm -f dummynginx
-</code></pre></div><p>Now we&rsquo;ll create a simple <code>docker-compose.yaml</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">---
-<span style="color:#f92672">version</span>: <span style="color:#e6db74">&#39;3.1&#39;</span>
-<span style="color:#f92672">services</span>:
-  <span style="color:#f92672">nginx_a</span>:
-    <span style="color:#f92672">image</span>: <span style="color:#e6db74">&#39;nginx:latest&#39;</span>
-    <span style="color:#f92672">ports</span>:
-      - <span style="color:#e6db74">&#39;8080:80&#39;</span>
-  <span style="color:#f92672">nginx_b</span>:
-    <span style="color:#f92672">image</span>: <span style="color:#e6db74">&#39;nginx:latest&#39;</span>
-</code></pre></div><p>With this file stored as <code>docker-compose.yaml</code> we&rsquo;ll spin it up then check <code>lsns</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ docker compose up -d
-<span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> Running 3/3
- ⠿  Network linuxnetworks_default      Created  0.0s
- ⠿ Container linuxnetworks-nginx_b-1   Started  0.3s
- ⠿ Container linuxnetworks-nginx_a-1   Started  0.6s
-$ sudo lsns -t net | grep nginx
-<span style="color:#f92672">[</span>sudo<span style="color:#f92672">]</span> password <span style="color:#66d9ef">for</span> pete: 
-        NS TYPE NPROCS   PID USER     NETNSID NSFS                           COMMAND
-...
-<span style="color:#ae81ff">4026533008</span> net      <span style="color:#ae81ff">17</span> <span style="color:#ae81ff">57327</span> root           <span style="color:#ae81ff">0</span> /run/docker/netns/20790e4f73be nginx: master process nginx -g daemon off;
-<span style="color:#ae81ff">4026533108</span> net      <span style="color:#ae81ff">17</span> <span style="color:#ae81ff">57501</span> root           <span style="color:#ae81ff">1</span> /run/docker/netns/11b21af68bd5 nginx: master process nginx -g daemon off;
-</code></pre></div><p>Two network namespaces; one for each container. It&rsquo;s worth noting if we had replicas in each service, each container within that service would get their own network namespace. So how does <code>docker compose</code> allow <code>nginx_a</code> to speak to <code>nginx_b</code> given each container has it&rsquo;s own network namespace?</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#75715e"># remove the old nginx container</span>
+</span></span><span style="display:flex;"><span>docker rm -f dummynginx
+</span></span></code></pre></div><p>Now we&rsquo;ll create a simple <code>docker-compose.yaml</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">version</span>: <span style="color:#e6db74">&#39;3.1&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">services</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">nginx_a</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">image</span>: <span style="color:#e6db74">&#39;nginx:latest&#39;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#39;8080:80&#39;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">nginx_b</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">image</span>: <span style="color:#e6db74">&#39;nginx:latest&#39;</span>
+</span></span></code></pre></div><p>With this file stored as <code>docker-compose.yaml</code> we&rsquo;ll spin it up then check <code>lsns</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ docker compose up -d
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> Running 3/3
+</span></span><span style="display:flex;"><span> ⠿  Network linuxnetworks_default      Created  0.0s
+</span></span><span style="display:flex;"><span> ⠿ Container linuxnetworks-nginx_b-1   Started  0.3s
+</span></span><span style="display:flex;"><span> ⠿ Container linuxnetworks-nginx_a-1   Started  0.6s
+</span></span><span style="display:flex;"><span>$ sudo lsns -t net | grep nginx
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>sudo<span style="color:#f92672">]</span> password <span style="color:#66d9ef">for</span> pete: 
+</span></span><span style="display:flex;"><span>        NS TYPE NPROCS   PID USER     NETNSID NSFS                           COMMAND
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">4026533008</span> net      <span style="color:#ae81ff">17</span> <span style="color:#ae81ff">57327</span> root           <span style="color:#ae81ff">0</span> /run/docker/netns/20790e4f73be nginx: master process nginx -g daemon off;
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">4026533108</span> net      <span style="color:#ae81ff">17</span> <span style="color:#ae81ff">57501</span> root           <span style="color:#ae81ff">1</span> /run/docker/netns/11b21af68bd5 nginx: master process nginx -g daemon off;
+</span></span></code></pre></div><p>Two network namespaces; one for each container. It&rsquo;s worth noting if we had replicas in each service, each container within that service would get their own network namespace. So how does <code>docker compose</code> allow <code>nginx_a</code> to speak to <code>nginx_b</code> given each container has it&rsquo;s own network namespace?</p>
 <p>Firstly lets clarify the mystery we&rsquo;re trying to solve:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">docker compose exec nginx_a curl nginx_b
-&lt;!DOCTYPE html&gt;
-&lt;html&gt;
-&lt;head&gt;
-&lt;title&gt;Welcome to nginx!&lt;/title&gt;
-&lt;style&gt;
-html <span style="color:#f92672">{</span> color-scheme: light dark; <span style="color:#f92672">}</span>
-body <span style="color:#f92672">{</span> width: 35em; margin: <span style="color:#ae81ff">0</span> auto;
-font-family: Tahoma, Verdana, Arial, sans-serif; <span style="color:#f92672">}</span>
-&lt;/style&gt;
-&lt;/head&gt;
-&lt;body&gt;
-&lt;h1&gt;Welcome to nginx!&lt;/h1&gt;
-&lt;p&gt;If you see this page, the nginx web server is successfully installed and
-working. Further configuration is required.&lt;/p&gt;
-
-&lt;p&gt;For online documentation and support please refer to
-&lt;a href<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;http://nginx.org/&#34;</span>&gt;nginx.org&lt;/a&gt;.&lt;br/&gt;
-Commercial support is available at
-&lt;a href<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;http://nginx.com/&#34;</span>&gt;nginx.com&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;em&gt;Thank you <span style="color:#66d9ef">for</span> using nginx.&lt;/em&gt;&lt;/p&gt;
-&lt;/body&gt;
-&lt;/html&gt;
-</code></pre></div><p>We connected to the <code>nginx_a</code> container, then curl&rsquo;ed <code>nginx_b</code>. How does it work? We&rsquo;ll dig in over the next few sections to understand how Docker makes this possible.</p>
-<h3 id="a-quick-note-on-the-links-property">a quick note on the &lsquo;links:&rsquo; property<a href="#a-quick-note-on-the-links-property" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>docker compose exec nginx_a curl nginx_b
+</span></span><span style="display:flex;"><span>&lt;!DOCTYPE html&gt;
+</span></span><span style="display:flex;"><span>&lt;html&gt;
+</span></span><span style="display:flex;"><span>&lt;head&gt;
+</span></span><span style="display:flex;"><span>&lt;title&gt;Welcome to nginx!&lt;/title&gt;
+</span></span><span style="display:flex;"><span>&lt;style&gt;
+</span></span><span style="display:flex;"><span>html <span style="color:#f92672">{</span> color-scheme: light dark; <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>body <span style="color:#f92672">{</span> width: 35em; margin: <span style="color:#ae81ff">0</span> auto;
+</span></span><span style="display:flex;"><span>font-family: Tahoma, Verdana, Arial, sans-serif; <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>&lt;/style&gt;
+</span></span><span style="display:flex;"><span>&lt;/head&gt;
+</span></span><span style="display:flex;"><span>&lt;body&gt;
+</span></span><span style="display:flex;"><span>&lt;h1&gt;Welcome to nginx!&lt;/h1&gt;
+</span></span><span style="display:flex;"><span>&lt;p&gt;If you see this page, the nginx web server is successfully installed and
+</span></span><span style="display:flex;"><span>working. Further configuration is required.&lt;/p&gt;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>&lt;p&gt;For online documentation and support please refer to
+</span></span><span style="display:flex;"><span>&lt;a href<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;http://nginx.org/&#34;</span>&gt;nginx.org&lt;/a&gt;.&lt;br/&gt;
+</span></span><span style="display:flex;"><span>Commercial support is available at
+</span></span><span style="display:flex;"><span>&lt;a href<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;http://nginx.com/&#34;</span>&gt;nginx.com&lt;/a&gt;.&lt;/p&gt;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>&lt;p&gt;&lt;em&gt;Thank you <span style="color:#66d9ef">for</span> using nginx.&lt;/em&gt;&lt;/p&gt;
+</span></span><span style="display:flex;"><span>&lt;/body&gt;
+</span></span><span style="display:flex;"><span>&lt;/html&gt;
+</span></span></code></pre></div><p>We connected to the <code>nginx_a</code> container, then curl&rsquo;ed <code>nginx_b</code>. How does it work? We&rsquo;ll dig in over the next few sections to understand how Docker makes this possible.</p>
+<h3 id="a-quick-note-on-the-links-property">a quick note on the &rsquo;links:&rsquo; property<a href="#a-quick-note-on-the-links-property" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
 <p><code>docker compose</code> supports a <code>links:</code> property. This <em>is not</em> required to allow services to speak to each other. It&rsquo;s main purpose is to allow you to create aliases or to use hostname resolution, linking between containers in different docker compose files.</p>
 <p>more info: <a href="https://docs.docker.com/compose/compose-file/#links">https://docs.docker.com/compose/compose-file/#links</a></p>
 <h3 id="dockers-internal-dns-server">dockers internal DNS server<a href="#dockers-internal-dns-server" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
 <p>Docker runs its own internal DNS server at <code>127.0.0.11</code>. How do we know this? We can see it:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">docker compose exec -ti nginx_a bash
-root@b315617ce0dd:/# cat /etc/resolv.conf 
-nameserver 127.0.0.11
-options ndots:0
-root@b315617ce0dd:/# 
-</code></pre></div><p>We can query this from <code>nginx_a</code> by installing <code>dnsutils</code> and using <code>nslookup</code> or <code>dig</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">docker compose exec -ti nginx_a bash
-root@b315617ce0dd:/# apt update <span style="color:#f92672">&amp;&amp;</span> apt install dnsutils
-root@b315617ce0dd:/# nslookup nginx_b 127.0.0.11
-Server:         127.0.0.11
-Address:        127.0.0.11#53
-
-Non-authoritative answer:
-Name:   nginx_b
-Address: 172.21.0.2
-
-root@b315617ce0dd:/#
-</code></pre></div><p>Just to be sure that IP is correct we can validate the IP for <code>nginx_b</code> with <code>docker inspect</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">docker inspect <span style="color:#66d9ef">$(</span>docker ps -f <span style="color:#e6db74">&#39;Name=nginx_b&#39;</span> -q<span style="color:#66d9ef">)</span> -f <span style="color:#e6db74">&#39;{{.NetworkSettings.Networks.linuxnetworks_default.IPAddress}}&#39;</span>
-172.21.0.2
-</code></pre></div><p>Looks good.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>docker compose exec -ti nginx_a bash
+</span></span><span style="display:flex;"><span>root@b315617ce0dd:/# cat /etc/resolv.conf 
+</span></span><span style="display:flex;"><span>nameserver 127.0.0.11
+</span></span><span style="display:flex;"><span>options ndots:0
+</span></span><span style="display:flex;"><span>root@b315617ce0dd:/# 
+</span></span></code></pre></div><p>We can query this from <code>nginx_a</code> by installing <code>dnsutils</code> and using <code>nslookup</code> or <code>dig</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>docker compose exec -ti nginx_a bash
+</span></span><span style="display:flex;"><span>root@b315617ce0dd:/# apt update <span style="color:#f92672">&amp;&amp;</span> apt install dnsutils
+</span></span><span style="display:flex;"><span>root@b315617ce0dd:/# nslookup nginx_b 127.0.0.11
+</span></span><span style="display:flex;"><span>Server:         127.0.0.11
+</span></span><span style="display:flex;"><span>Address:        127.0.0.11#53
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Non-authoritative answer:
+</span></span><span style="display:flex;"><span>Name:   nginx_b
+</span></span><span style="display:flex;"><span>Address: 172.21.0.2
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>root@b315617ce0dd:/#
+</span></span></code></pre></div><p>Just to be sure that IP is correct we can validate the IP for <code>nginx_b</code> with <code>docker inspect</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>docker inspect <span style="color:#66d9ef">$(</span>docker ps -f <span style="color:#e6db74">&#39;Name=nginx_b&#39;</span> -q<span style="color:#66d9ef">)</span> -f <span style="color:#e6db74">&#39;{{.NetworkSettings.Networks.linuxnetworks_default.IPAddress}}&#39;</span>
+</span></span><span style="display:flex;"><span>172.21.0.2
+</span></span></code></pre></div><p>Looks good.</p>
 <p>When a container is created and connected to a network, Docker automatically creates a DNS record for that container, using the container name as the hostname and the IP address of the container as the record&rsquo;s value. This enables other containers on the same network to access each other by name, rather than needing to know the IP address of the target container.</p>
 <h3 id="virtual-network-interfaces">virtual network interfaces<a href="#virtual-network-interfaces" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
 <p>When we ran <code>docker compose</code> it created a virtual network interface inside each containers network namespace. To look at the resources in a network namespace we first need to know where the <code>nsfs</code> is. Looking at the example output above from <code>lsns</code> above we seen this line:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#ae81ff">4026533008</span> net      <span style="color:#ae81ff">17</span> <span style="color:#ae81ff">57327</span> root           <span style="color:#ae81ff">0</span> /run/docker/netns/20790e4f73be nginx: master process nginx -g daemon off;
-</code></pre></div><p>You&rsquo;ll see in the <code>nsfs</code> column we have: <code>/run/docker/netns/20790e4f73be</code>. With this we can enter the namespace and run some commands from that namespace.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#ae81ff">4026533008</span> net      <span style="color:#ae81ff">17</span> <span style="color:#ae81ff">57327</span> root           <span style="color:#ae81ff">0</span> /run/docker/netns/20790e4f73be nginx: master process nginx -g daemon off;
+</span></span></code></pre></div><p>You&rsquo;ll see in the <code>nsfs</code> column we have: <code>/run/docker/netns/20790e4f73be</code>. With this we can enter the namespace and run some commands from that namespace.</p>
 <p>You can also get this from <code>docker</code> itself. Running <code>docker ps</code> you can get the CONTAINER ID:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">docker ps
-CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS          PORTS                                   NAMES
-b315617ce0dd   nginx:latest   <span style="color:#e6db74">&#34;/docker-entrypoint.…&#34;</span>   <span style="color:#ae81ff">16</span> minutes ago   Up <span style="color:#ae81ff">16</span> minutes   0.0.0.0:8080-&gt;80/tcp, :::8080-&gt;80/tcp   linuxnetworks-nginx_a-1
-da9caf14c90c   nginx:latest   <span style="color:#e6db74">&#34;/docker-entrypoint.…&#34;</span>   <span style="color:#ae81ff">16</span> minutes ago   Up <span style="color:#ae81ff">16</span> minutes   80/tcp                                  linuxnetworks-nginx_b-1
-</code></pre></div><p>Then you can run <code>inspect</code> to see the network settings:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">docker inspect b315617ce0dd -f <span style="color:#e6db74">&#39;{{.NetworkSettings.SandboxKey}}&#39;</span>
-/var/run/docker/netns/11b21af68bd5
-</code></pre></div><p>Or the terribly ugly:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">docker inspect <span style="color:#66d9ef">$(</span>docker ps -q -f <span style="color:#e6db74">&#39;Name=nginx_a&#39;</span><span style="color:#66d9ef">)</span> -f <span style="color:#e6db74">&#39;{{.NetworkSettings.SandboxKey}}&#39;</span>
-</code></pre></div><p>Armed with the <code>nsfs</code> path we can enter the namespace and run commands. Lets take a quick look at what interfaces are available in this namespace:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">sudo nsenter --net<span style="color:#f92672">=</span>/run/docker/netns/11b21af68bd5 ip link
-1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu <span style="color:#ae81ff">65536</span> qdisc noqueue state UNKNOWN mode DEFAULT group default qlen <span style="color:#ae81ff">1000</span>
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-47: eth0@if48: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span style="color:#ae81ff">1500</span> qdisc noqueue state UP mode DEFAULT group default 
-    link/ether 02:42:ac:15:00:03 brd ff:ff:ff:ff:ff:ff link-netnsid <span style="color:#ae81ff">0</span>
-</code></pre></div><p>Cool! We&rsquo;re finally peaking behind the curtain.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>docker ps
+</span></span><span style="display:flex;"><span>CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS          PORTS                                   NAMES
+</span></span><span style="display:flex;"><span>b315617ce0dd   nginx:latest   <span style="color:#e6db74">&#34;/docker-entrypoint.…&#34;</span>   <span style="color:#ae81ff">16</span> minutes ago   Up <span style="color:#ae81ff">16</span> minutes   0.0.0.0:8080-&gt;80/tcp, :::8080-&gt;80/tcp   linuxnetworks-nginx_a-1
+</span></span><span style="display:flex;"><span>da9caf14c90c   nginx:latest   <span style="color:#e6db74">&#34;/docker-entrypoint.…&#34;</span>   <span style="color:#ae81ff">16</span> minutes ago   Up <span style="color:#ae81ff">16</span> minutes   80/tcp                                  linuxnetworks-nginx_b-1
+</span></span></code></pre></div><p>Then you can run <code>inspect</code> to see the network settings:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>docker inspect b315617ce0dd -f <span style="color:#e6db74">&#39;{{.NetworkSettings.SandboxKey}}&#39;</span>
+</span></span><span style="display:flex;"><span>/var/run/docker/netns/11b21af68bd5
+</span></span></code></pre></div><p>Or the terribly ugly:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>docker inspect <span style="color:#66d9ef">$(</span>docker ps -q -f <span style="color:#e6db74">&#39;Name=nginx_a&#39;</span><span style="color:#66d9ef">)</span> -f <span style="color:#e6db74">&#39;{{.NetworkSettings.SandboxKey}}&#39;</span>
+</span></span></code></pre></div><p>Armed with the <code>nsfs</code> path we can enter the namespace and run commands. Lets take a quick look at what interfaces are available in this namespace:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>sudo nsenter --net<span style="color:#f92672">=</span>/run/docker/netns/11b21af68bd5 ip link
+</span></span><span style="display:flex;"><span>1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu <span style="color:#ae81ff">65536</span> qdisc noqueue state UNKNOWN mode DEFAULT group default qlen <span style="color:#ae81ff">1000</span>
+</span></span><span style="display:flex;"><span>    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+</span></span><span style="display:flex;"><span>47: eth0@if48: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span style="color:#ae81ff">1500</span> qdisc noqueue state UP mode DEFAULT group default 
+</span></span><span style="display:flex;"><span>    link/ether 02:42:ac:15:00:03 brd ff:ff:ff:ff:ff:ff link-netnsid <span style="color:#ae81ff">0</span>
+</span></span></code></pre></div><p>Cool! We&rsquo;re finally peaking behind the curtain.</p>
 <h3 id="exploring-the-namespace">exploring the namespace<a href="#exploring-the-namespace" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
 <p>Now that we have the ability to run commands from the namespace we can request some more information about this interface with <code>ip addr show</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">sudo nsenter --net<span style="color:#f92672">=</span>/run/docker/netns/11b21af68bd5 ip addr show eth0
-47: eth0@if48: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span style="color:#ae81ff">1500</span> qdisc noqueue state UP group default 
-    link/ether 02:42:ac:15:00:03 brd ff:ff:ff:ff:ff:ff link-netnsid <span style="color:#ae81ff">0</span>
-    inet 172.21.0.3/16 brd 172.21.255.255 scope global eth0
-       valid_lft forever preferred_lft forever
-</code></pre></div><p>We can also get the route table information with <code>ip route show</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">sudo nsenter --net<span style="color:#f92672">=</span>/run/docker/netns/11b21af68bd5 ip route show
-default via 172.21.0.1 dev eth0 
-172.21.0.0/16 dev eth0 proto kernel scope link src 172.21.0.3
-</code></pre></div><p>And we can even run good old faithful <code>netstat</code> to check out which ports we&rsquo;re listening on:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">sudo nsenter --net<span style="color:#f92672">=</span>/run/docker/netns/11b21af68bd5 netstat -tulnp
-Active Internet connections <span style="color:#f92672">(</span>only servers<span style="color:#f92672">)</span>
-Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name    
-tcp        <span style="color:#ae81ff">0</span>      <span style="color:#ae81ff">0</span> 127.0.0.11:32889        0.0.0.0:*               LISTEN      16568/dockerd       
-tcp        <span style="color:#ae81ff">0</span>      <span style="color:#ae81ff">0</span> 0.0.0.0:80              0.0.0.0:*               LISTEN      57501/nginx: master 
-tcp6       <span style="color:#ae81ff">0</span>      <span style="color:#ae81ff">0</span> :::80                   :::*                    LISTEN      57501/nginx: master 
-udp        <span style="color:#ae81ff">0</span>      <span style="color:#ae81ff">0</span> 127.0.0.11:51543        0.0.0.0:*                           16568/dockerd
-</code></pre></div><h3 id="docker-bridge">docker bridge<a href="#docker-bridge" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>sudo nsenter --net<span style="color:#f92672">=</span>/run/docker/netns/11b21af68bd5 ip addr show eth0
+</span></span><span style="display:flex;"><span>47: eth0@if48: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span style="color:#ae81ff">1500</span> qdisc noqueue state UP group default 
+</span></span><span style="display:flex;"><span>    link/ether 02:42:ac:15:00:03 brd ff:ff:ff:ff:ff:ff link-netnsid <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>    inet 172.21.0.3/16 brd 172.21.255.255 scope global eth0
+</span></span><span style="display:flex;"><span>       valid_lft forever preferred_lft forever
+</span></span></code></pre></div><p>We can also get the route table information with <code>ip route show</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>sudo nsenter --net<span style="color:#f92672">=</span>/run/docker/netns/11b21af68bd5 ip route show
+</span></span><span style="display:flex;"><span>default via 172.21.0.1 dev eth0 
+</span></span><span style="display:flex;"><span>172.21.0.0/16 dev eth0 proto kernel scope link src 172.21.0.3
+</span></span></code></pre></div><p>And we can even run good old faithful <code>netstat</code> to check out which ports we&rsquo;re listening on:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>sudo nsenter --net<span style="color:#f92672">=</span>/run/docker/netns/11b21af68bd5 netstat -tulnp
+</span></span><span style="display:flex;"><span>Active Internet connections <span style="color:#f92672">(</span>only servers<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name    
+</span></span><span style="display:flex;"><span>tcp        <span style="color:#ae81ff">0</span>      <span style="color:#ae81ff">0</span> 127.0.0.11:32889        0.0.0.0:*               LISTEN      16568/dockerd       
+</span></span><span style="display:flex;"><span>tcp        <span style="color:#ae81ff">0</span>      <span style="color:#ae81ff">0</span> 0.0.0.0:80              0.0.0.0:*               LISTEN      57501/nginx: master 
+</span></span><span style="display:flex;"><span>tcp6       <span style="color:#ae81ff">0</span>      <span style="color:#ae81ff">0</span> :::80                   :::*                    LISTEN      57501/nginx: master 
+</span></span><span style="display:flex;"><span>udp        <span style="color:#ae81ff">0</span>      <span style="color:#ae81ff">0</span> 127.0.0.11:51543        0.0.0.0:*                           16568/dockerd
+</span></span></code></pre></div><h3 id="docker-bridge">docker bridge<a href="#docker-bridge" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
 <p>Using the <code>ip route</code> command above we seen:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">sudo nsenter --net<span style="color:#f92672">=</span>/run/docker/netns/11b21af68bd5 ip route show
-default via 172.21.0.1 dev eth0 
-172.21.0.0/16 dev eth0 proto kernel scope link src 172.21.0.3
-</code></pre></div><p>So what is <code>172.21.0.1</code>? That is the default gateway, the docker bridge. How can we know? Well, firstly we can list <code>docker</code> networks with:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ docker network ls
-NETWORK ID     NAME                    DRIVER    SCOPE
-a52a287eb9f2   bridge                  bridge    local
-8f5afced6d3f   host                    host      local
-19508f629e30   none                    null      local
-</code></pre></div><p>And then we can <code>inspect</code> the networks, like so:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ docker network inspect bridge
-<span style="color:#f92672">[</span>
-    <span style="color:#f92672">{</span>
-        <span style="color:#e6db74">&#34;Name&#34;</span>: <span style="color:#e6db74">&#34;bridge&#34;</span>,
-        <span style="color:#e6db74">&#34;Id&#34;</span>: <span style="color:#e6db74">&#34;a52a287eb9f2af463e14ac4a97583b96a9dc66e28b5ac67967321386834e4e24&#34;</span>,
-        <span style="color:#e6db74">&#34;Created&#34;</span>: <span style="color:#e6db74">&#34;2023-01-18T20:00:03.09775174Z&#34;</span>,
-        <span style="color:#e6db74">&#34;Scope&#34;</span>: <span style="color:#e6db74">&#34;local&#34;</span>,
-        <span style="color:#e6db74">&#34;Driver&#34;</span>: <span style="color:#e6db74">&#34;bridge&#34;</span>,
-        <span style="color:#e6db74">&#34;EnableIPv6&#34;</span>: false,
-        <span style="color:#e6db74">&#34;IPAM&#34;</span>: <span style="color:#f92672">{</span>
-            <span style="color:#e6db74">&#34;Driver&#34;</span>: <span style="color:#e6db74">&#34;default&#34;</span>,
-            <span style="color:#e6db74">&#34;Options&#34;</span>: null,
-            <span style="color:#e6db74">&#34;Config&#34;</span>: <span style="color:#f92672">[</span>
-                <span style="color:#f92672">{</span>
-                    <span style="color:#e6db74">&#34;Subnet&#34;</span>: <span style="color:#e6db74">&#34;172.17.0.0/16&#34;</span>,
-                    <span style="color:#e6db74">&#34;Gateway&#34;</span>: <span style="color:#e6db74">&#34;172.17.0.1&#34;</span>
-                <span style="color:#f92672">}</span>
-            <span style="color:#f92672">]</span>
-        <span style="color:#f92672">}</span>,
-        <span style="color:#e6db74">&#34;Internal&#34;</span>: false,
-        <span style="color:#e6db74">&#34;Attachable&#34;</span>: false,
-        <span style="color:#e6db74">&#34;Ingress&#34;</span>: false,
-        <span style="color:#e6db74">&#34;ConfigFrom&#34;</span>: <span style="color:#f92672">{</span>
-            <span style="color:#e6db74">&#34;Network&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span>
-        <span style="color:#f92672">}</span>,
-        <span style="color:#e6db74">&#34;ConfigOnly&#34;</span>: false,
-        <span style="color:#e6db74">&#34;Containers&#34;</span>: <span style="color:#f92672">{}</span>,
-        <span style="color:#e6db74">&#34;Options&#34;</span>: <span style="color:#f92672">{</span>
-            <span style="color:#e6db74">&#34;com.docker.network.bridge.default_bridge&#34;</span>: <span style="color:#e6db74">&#34;true&#34;</span>,
-            <span style="color:#e6db74">&#34;com.docker.network.bridge.enable_icc&#34;</span>: <span style="color:#e6db74">&#34;true&#34;</span>,
-            <span style="color:#e6db74">&#34;com.docker.network.bridge.enable_ip_masquerade&#34;</span>: <span style="color:#e6db74">&#34;true&#34;</span>,
-            <span style="color:#e6db74">&#34;com.docker.network.bridge.host_binding_ipv4&#34;</span>: <span style="color:#e6db74">&#34;0.0.0.0&#34;</span>,
-            <span style="color:#e6db74">&#34;com.docker.network.bridge.name&#34;</span>: <span style="color:#e6db74">&#34;docker0&#34;</span>,
-            <span style="color:#e6db74">&#34;com.docker.network.driver.mtu&#34;</span>: <span style="color:#e6db74">&#34;1500&#34;</span>
-        <span style="color:#f92672">}</span>,
-        <span style="color:#e6db74">&#34;Labels&#34;</span>: <span style="color:#f92672">{}</span>
-    <span style="color:#f92672">}</span>
-<span style="color:#f92672">]</span>
-</code></pre></div><p>We can see the Gateway for <code>bridge</code> is set to <code>172.17.0.1</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>sudo nsenter --net<span style="color:#f92672">=</span>/run/docker/netns/11b21af68bd5 ip route show
+</span></span><span style="display:flex;"><span>default via 172.21.0.1 dev eth0 
+</span></span><span style="display:flex;"><span>172.21.0.0/16 dev eth0 proto kernel scope link src 172.21.0.3
+</span></span></code></pre></div><p>So what is <code>172.21.0.1</code>? That is the default gateway, the docker bridge. How can we know? Well, firstly we can list <code>docker</code> networks with:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ docker network ls
+</span></span><span style="display:flex;"><span>NETWORK ID     NAME                    DRIVER    SCOPE
+</span></span><span style="display:flex;"><span>a52a287eb9f2   bridge                  bridge    local
+</span></span><span style="display:flex;"><span>8f5afced6d3f   host                    host      local
+</span></span><span style="display:flex;"><span>19508f629e30   none                    null      local
+</span></span></code></pre></div><p>And then we can <code>inspect</code> the networks, like so:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ docker network inspect bridge
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;Name&#34;</span>: <span style="color:#e6db74">&#34;bridge&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;Id&#34;</span>: <span style="color:#e6db74">&#34;a52a287eb9f2af463e14ac4a97583b96a9dc66e28b5ac67967321386834e4e24&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;Created&#34;</span>: <span style="color:#e6db74">&#34;2023-01-18T20:00:03.09775174Z&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;Scope&#34;</span>: <span style="color:#e6db74">&#34;local&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;Driver&#34;</span>: <span style="color:#e6db74">&#34;bridge&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;EnableIPv6&#34;</span>: false,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;IPAM&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;Driver&#34;</span>: <span style="color:#e6db74">&#34;default&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;Options&#34;</span>: null,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;Config&#34;</span>: <span style="color:#f92672">[</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#34;Subnet&#34;</span>: <span style="color:#e6db74">&#34;172.17.0.0/16&#34;</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#34;Gateway&#34;</span>: <span style="color:#e6db74">&#34;172.17.0.1&#34;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;Internal&#34;</span>: false,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;Attachable&#34;</span>: false,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;Ingress&#34;</span>: false,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;ConfigFrom&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;Network&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;ConfigOnly&#34;</span>: false,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;Containers&#34;</span>: <span style="color:#f92672">{}</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;Options&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;com.docker.network.bridge.default_bridge&#34;</span>: <span style="color:#e6db74">&#34;true&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;com.docker.network.bridge.enable_icc&#34;</span>: <span style="color:#e6db74">&#34;true&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;com.docker.network.bridge.enable_ip_masquerade&#34;</span>: <span style="color:#e6db74">&#34;true&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;com.docker.network.bridge.host_binding_ipv4&#34;</span>: <span style="color:#e6db74">&#34;0.0.0.0&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;com.docker.network.bridge.name&#34;</span>: <span style="color:#e6db74">&#34;docker0&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;com.docker.network.driver.mtu&#34;</span>: <span style="color:#e6db74">&#34;1500&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;Labels&#34;</span>: <span style="color:#f92672">{}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">]</span>
+</span></span></code></pre></div><p>We can see the Gateway for <code>bridge</code> is set to <code>172.17.0.1</code>.</p>
 <p>The Docker bridge default gateway is responsible for connecting containers running in separate network namespaces, using the IP addresses and MAC addresses of the containers connected to it to forward packets to the correct container. When a packet is received by the bridge, it checks the destination IP address of the packet and compares it to the IP addresses of the connected containers. If a match is found, the packet is then forwarded to the corresponding container using the container&rsquo;s MAC address. Additionally, the bridge also uses network address translation (NAT) to rewrite the source IP address of the packet to that of the bridge, allowing the containers to communicate with external networks.</p>
 <h3 id="so--how-does-nginx_a-speak-to-nginx_b-recap">so &hellip; how does nginx_a speak to nginx_b? (recap)<a href="#so--how-does-nginx_a-speak-to-nginx_b-recap" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
 <p>The request starts from <code>nginx_a</code> with <code>curl nginx_a</code>. <code>nginx_a</code> is configured to resolve DNS with Dockers internal DNS, as defined in its <code>/etc/resolv.conf</code> file. Dockers Internal DNS resolves <code>nginx_b</code> to <code>172.21.0.2</code> which is within the range of the default gateway in, the docker bridge, as defined in this containers route table. The Docker Bridge acts as a gateway and rewrites the source IP of the packet to the NAT to allow for return traffic using NAT, then forwards the request onto the desired destination at <code>172.21.0.2</code>. The request then works its way back to the real source, via the default gateway once more.</p>
 <h3 id="network_mode">network_mode<a href="#network_mode" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
 <p><code>docker compose</code> supports another interesting property that we&rsquo;ll take a quick look at: <code>network_mode:</code>. With this setting we can tell services to share the same network resources. As we&rsquo;re using <code>nginx</code> in both services currently they will both try to bind on port <code>80</code> which will cause problems if they are sharing the same resources so for <code>nginx_b</code> we&rsquo;ll create a unique nginx config file <code>netsvc.conf</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-txt" data-lang="txt">server {
-    listen       9080;
-    server_name  localhost;
-    location / {
-        root   /usr/share/nginx/html;
-        index  index.html index.htm;
-    }
-}
-</code></pre></div><p>This is as simple an nginx config as you can get. Notably we&rsquo;re telling it to listen on <code>9080</code> instead of the default <code>80</code> so that they can run in the same network namespace without colliding.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-txt" data-lang="txt"><span style="display:flex;"><span>server {
+</span></span><span style="display:flex;"><span>    listen       9080;
+</span></span><span style="display:flex;"><span>    server_name  localhost;
+</span></span><span style="display:flex;"><span>    location / {
+</span></span><span style="display:flex;"><span>        root   /usr/share/nginx/html;
+</span></span><span style="display:flex;"><span>        index  index.html index.htm;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>This is as simple an nginx config as you can get. Notably we&rsquo;re telling it to listen on <code>9080</code> instead of the default <code>80</code> so that they can run in the same network namespace without colliding.</p>
 <p>Now we&rsquo;ll create an updated <code>docker-compose-netsvc.yaml</code> file:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">---
-<span style="color:#f92672">version</span>: <span style="color:#e6db74">&#39;3.1&#39;</span>
-<span style="color:#f92672">services</span>:
-  <span style="color:#f92672">nginx_a</span>:
-    <span style="color:#f92672">image</span>: <span style="color:#e6db74">&#39;nginx:latest&#39;</span>
-    <span style="color:#f92672">ports</span>:
-      - <span style="color:#e6db74">&#39;8080:80&#39;</span>
-      - <span style="color:#e6db74">&#39;9080:9080&#39;</span>
-  <span style="color:#f92672">nginx_b</span>:
-    <span style="color:#f92672">image</span>: <span style="color:#e6db74">&#39;nginx:latest&#39;</span>
-    <span style="color:#f92672">volumes</span>:
-      - <span style="color:#ae81ff">./netsvc.conf:/etc/nginx/conf.d/default.conf:ro</span>
-    <span style="color:#f92672">network_mode</span>: <span style="color:#e6db74">&#34;service:nginx_a&#34;</span>
-</code></pre></div><p>See how we put our port-mapping for <code>nginx_b</code> (to <code>:9080</code>) in <code>nginx_a</code>? With this file in place we&rsquo;ll run our new compose:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">docker compose -f docker-compose-netsvc.yaml up -d
-<span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> Running 2/2
- ⠿ Container linuxnetworks-nginx_a-1  Started  0.4s
- ⠿ Container linuxnetworks-nginx_b-1  Started  0.6s
-</code></pre></div><p>Running <code>lsns</code> this time we can see that we only have one network namespace (compared to two that we seen with the original <code>docker-compose.yaml</code> file):</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">sudo lsns -t net | grep nginx
-<span style="color:#ae81ff">4026533007</span> net      <span style="color:#ae81ff">34</span> <span style="color:#ae81ff">148278</span> root           <span style="color:#ae81ff">0</span> /run/docker/netns/1e55105e0804 nginx: master process nginx -g daemon off;
-</code></pre></div><p>We do still have two containers of course:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">docker compose ps
-NAME                      IMAGE               COMMAND                  SERVICE             CREATED             STATUS              PORTS
-linuxnetworks-nginx_a-1   nginx:latest        <span style="color:#e6db74">&#34;/docker-entrypoint.…&#34;</span>   nginx_a             <span style="color:#ae81ff">5</span> minutes ago       Up <span style="color:#ae81ff">5</span> minutes        0.0.0.0:8080-&gt;80/tcp, :::8080-&gt;80/tcp, 0.0.0.0:9080-&gt;9080/tcp, :::9080-&gt;9080/tcp
-linuxnetworks-nginx_b-1   nginx:latest        <span style="color:#e6db74">&#34;/docker-entrypoint.…&#34;</span>   nginx_b             <span style="color:#ae81ff">5</span> minutes ago       Up <span style="color:#ae81ff">5</span> minutes        
-</code></pre></div><p>We can see from <code>docker inspect</code> the <code>nginx_b</code> container has no visible network settings:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ docker inspect <span style="color:#66d9ef">$(</span>docker ps -f <span style="color:#e6db74">&#39;Name=nginx_b&#39;</span> -q<span style="color:#66d9ef">)</span> -f <span style="color:#e6db74">&#39;{{.NetworkSettings.Networks.linuxnetworks_default.IPAddress}}&#39;</span>
-&lt;no value&gt;
-
-$ docker inspect <span style="color:#66d9ef">$(</span>docker ps -f <span style="color:#e6db74">&#39;Name=nginx_b&#39;</span> -q<span style="color:#66d9ef">)</span> -f <span style="color:#e6db74">&#39;{{.NetworkSettings.SandboxKey}}&#39;</span>
-
-</code></pre></div><p>We can check the <code>nginx_a</code> network settings and see that all looks good there:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ docker inspect <span style="color:#66d9ef">$(</span>docker ps -f <span style="color:#e6db74">&#39;Name=nginx_a&#39;</span> -q<span style="color:#66d9ef">)</span> -f <span style="color:#e6db74">&#39;{{.NetworkSettings.Networks.linuxnetworks_default.IPAddress}}&#39;</span>
-172.22.0.2
-$ docker inspect <span style="color:#66d9ef">$(</span>docker ps -f <span style="color:#e6db74">&#39;Name=nginx_a&#39;</span> -q<span style="color:#66d9ef">)</span> -f <span style="color:#e6db74">&#39;{{.NetworkSettings.SandboxKey}}&#39;</span>
-/var/run/docker/netns/1e55105e0804
-
-sudo nsenter --net<span style="color:#f92672">=</span>/var/run/docker/netns/1e55105e0804 ip link
-1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu <span style="color:#ae81ff">65536</span> qdisc noqueue state UNKNOWN mode DEFAULT group default qlen <span style="color:#ae81ff">1000</span>
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-80: eth0@if81: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span style="color:#ae81ff">1500</span> qdisc noqueue state UP mode DEFAULT group default 
-    link/ether 02:42:ac:16:00:02 brd ff:ff:ff:ff:ff:ff link-netnsid <span style="color:#ae81ff">0</span>
-</code></pre></div><p>You can imagine, say, running a VPN as a service and then forcing all other services to use that network namespace and resources. Super cool.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">version</span>: <span style="color:#e6db74">&#39;3.1&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">services</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">nginx_a</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">image</span>: <span style="color:#e6db74">&#39;nginx:latest&#39;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#39;8080:80&#39;</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#39;9080:9080&#39;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">nginx_b</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">image</span>: <span style="color:#e6db74">&#39;nginx:latest&#39;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">volumes</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">./netsvc.conf:/etc/nginx/conf.d/default.conf:ro</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">network_mode</span>: <span style="color:#e6db74">&#34;service:nginx_a&#34;</span>
+</span></span></code></pre></div><p>See how we put our port-mapping for <code>nginx_b</code> (to <code>:9080</code>) in <code>nginx_a</code>? With this file in place we&rsquo;ll run our new compose:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>docker compose -f docker-compose-netsvc.yaml up -d
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> Running 2/2
+</span></span><span style="display:flex;"><span> ⠿ Container linuxnetworks-nginx_a-1  Started  0.4s
+</span></span><span style="display:flex;"><span> ⠿ Container linuxnetworks-nginx_b-1  Started  0.6s
+</span></span></code></pre></div><p>Running <code>lsns</code> this time we can see that we only have one network namespace (compared to two that we seen with the original <code>docker-compose.yaml</code> file):</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>sudo lsns -t net | grep nginx
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">4026533007</span> net      <span style="color:#ae81ff">34</span> <span style="color:#ae81ff">148278</span> root           <span style="color:#ae81ff">0</span> /run/docker/netns/1e55105e0804 nginx: master process nginx -g daemon off;
+</span></span></code></pre></div><p>We do still have two containers of course:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>docker compose ps
+</span></span><span style="display:flex;"><span>NAME                      IMAGE               COMMAND                  SERVICE             CREATED             STATUS              PORTS
+</span></span><span style="display:flex;"><span>linuxnetworks-nginx_a-1   nginx:latest        <span style="color:#e6db74">&#34;/docker-entrypoint.…&#34;</span>   nginx_a             <span style="color:#ae81ff">5</span> minutes ago       Up <span style="color:#ae81ff">5</span> minutes        0.0.0.0:8080-&gt;80/tcp, :::8080-&gt;80/tcp, 0.0.0.0:9080-&gt;9080/tcp, :::9080-&gt;9080/tcp
+</span></span><span style="display:flex;"><span>linuxnetworks-nginx_b-1   nginx:latest        <span style="color:#e6db74">&#34;/docker-entrypoint.…&#34;</span>   nginx_b             <span style="color:#ae81ff">5</span> minutes ago       Up <span style="color:#ae81ff">5</span> minutes        
+</span></span></code></pre></div><p>We can see from <code>docker inspect</code> the <code>nginx_b</code> container has no visible network settings:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ docker inspect <span style="color:#66d9ef">$(</span>docker ps -f <span style="color:#e6db74">&#39;Name=nginx_b&#39;</span> -q<span style="color:#66d9ef">)</span> -f <span style="color:#e6db74">&#39;{{.NetworkSettings.Networks.linuxnetworks_default.IPAddress}}&#39;</span>
+</span></span><span style="display:flex;"><span>&lt;no value&gt;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ docker inspect <span style="color:#66d9ef">$(</span>docker ps -f <span style="color:#e6db74">&#39;Name=nginx_b&#39;</span> -q<span style="color:#66d9ef">)</span> -f <span style="color:#e6db74">&#39;{{.NetworkSettings.SandboxKey}}&#39;</span>
+</span></span></code></pre></div><p>We can check the <code>nginx_a</code> network settings and see that all looks good there:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ docker inspect <span style="color:#66d9ef">$(</span>docker ps -f <span style="color:#e6db74">&#39;Name=nginx_a&#39;</span> -q<span style="color:#66d9ef">)</span> -f <span style="color:#e6db74">&#39;{{.NetworkSettings.Networks.linuxnetworks_default.IPAddress}}&#39;</span>
+</span></span><span style="display:flex;"><span>172.22.0.2
+</span></span><span style="display:flex;"><span>$ docker inspect <span style="color:#66d9ef">$(</span>docker ps -f <span style="color:#e6db74">&#39;Name=nginx_a&#39;</span> -q<span style="color:#66d9ef">)</span> -f <span style="color:#e6db74">&#39;{{.NetworkSettings.SandboxKey}}&#39;</span>
+</span></span><span style="display:flex;"><span>/var/run/docker/netns/1e55105e0804
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>sudo nsenter --net<span style="color:#f92672">=</span>/var/run/docker/netns/1e55105e0804 ip link
+</span></span><span style="display:flex;"><span>1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu <span style="color:#ae81ff">65536</span> qdisc noqueue state UNKNOWN mode DEFAULT group default qlen <span style="color:#ae81ff">1000</span>
+</span></span><span style="display:flex;"><span>    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+</span></span><span style="display:flex;"><span>80: eth0@if81: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span style="color:#ae81ff">1500</span> qdisc noqueue state UP mode DEFAULT group default 
+</span></span><span style="display:flex;"><span>    link/ether 02:42:ac:16:00:02 brd ff:ff:ff:ff:ff:ff link-netnsid <span style="color:#ae81ff">0</span>
+</span></span></code></pre></div><p>You can imagine, say, running a VPN as a service and then forcing all other services to use that network namespace and resources. Super cool.</p>
 <p>I hope this article has taught you a little about network namespaces and Dockers networking. Happy Hacking o/</p>
 
       </div></div>

@@ -5,11 +5,11 @@
     <link>https://www.petermcconnell.com/es/tags/</link>
     <description>Recent content in Tags on Peter McConnell :: Reflexiones de un ingeniero de sistemas Linux</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
+    <language>es</language>
     <copyright>&amp;copy; Peter McConnell 2023</copyright>
     <lastBuildDate>Mon, 26 Dec 2022 22:54:29 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/es/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>linux</title>
+      <title>Linux</title>
       <link>https://www.petermcconnell.com/es/tags/linux/</link>
       <pubDate>Mon, 26 Dec 2022 22:54:29 +0000</pubDate>
       
@@ -19,7 +19,7 @@
     </item>
     
     <item>
-      <title>perf</title>
+      <title>Perf</title>
       <link>https://www.petermcconnell.com/es/tags/perf/</link>
       <pubDate>Mon, 26 Dec 2022 22:54:29 +0000</pubDate>
       
@@ -39,7 +39,7 @@
     </item>
     
     <item>
-      <title>chatGPT</title>
+      <title>ChatGPT</title>
       <link>https://www.petermcconnell.com/es/tags/chatgpt/</link>
       <pubDate>Thu, 08 Dec 2022 11:41:50 +0000</pubDate>
       

@@ -17,6 +17,10 @@ A talk on Automation tooling, with Rundeck (around the 5:15:00 mark):
 
 {{< youtube hvtZnbDXpzM >}}
 
+Search 5.0 podcast (general / cultural):
+
+{{< youtube OPTsuqY7An0 >}}
+
 Terraform introduction:
 
 {{< youtube FvOHfsTmBfo >}}

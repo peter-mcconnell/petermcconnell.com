@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>chaos-engineering on Peter McConnell :: Ponderings from a Linux Systems engineer</title>
+    <title>Chaos-Engineering on Peter McConnell :: Ponderings from a Linux Systems engineer</title>
     <link>https://www.petermcconnell.com/tags/chaos-engineering/</link>
-    <description>Recent content in chaos-engineering on Peter McConnell :: Ponderings from a Linux Systems engineer</description>
+    <description>Recent content in Chaos-Engineering on Peter McConnell :: Ponderings from a Linux Systems engineer</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
+    <language>en</language>
     <copyright>&amp;copy; Peter McConnell 2023</copyright>
     <lastBuildDate>Wed, 17 May 2023 15:31:43 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/chaos-engineering/index.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -43,8 +43,8 @@
 &lt;p&gt;Install Project Dependencies&lt;/p&gt;
 &lt;p&gt;&lt;em&gt;go dependencies&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;Navigate to the project&amp;rsquo;s root directory and install the required Golang dependencies by running the following command:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;go mod download
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This command will fetch and install the necessary Golang packages defined in the project&amp;rsquo;s go.mod file.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;go mod download
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This command will fetch and install the necessary Golang packages defined in the project&amp;rsquo;s go.mod file.&lt;/p&gt;
 &lt;p&gt;&lt;em&gt;libbpf&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;We are going to use libbpf in our C code. In the dilih repo we added this as a git submodule but you can choose to manage it elsewhere if you like. When we build our C program later we&amp;rsquo;ll include libbpf with &lt;code&gt;-I../libbpf/src&lt;/code&gt;&lt;/p&gt;
 &lt;/li&gt;
@@ -60,7 +60,7 @@
 &lt;ol&gt;
 &lt;li&gt;
 &lt;p&gt;Understanding the Program Logic&lt;/p&gt;
-&lt;p&gt;Before diving into the code, let&amp;rsquo;s understand the logic of our XDP program. The goal is to randomly drop ~50% of packets on a given network interface. We will use a randomization mechanism to decide whether to drop or pass each packet (&amp;ldquo;is random number even?&amp;quot;). The program will also collect statistics and measure the processing time for dropped and passed packets using eBPF&amp;rsquo;s perf event mechanism. Our BPF program runs in kernel space but we&amp;rsquo;ll want to expose data to userspace, so we&amp;rsquo;ll use BPF maps to expose data to our Go program.&lt;/p&gt;
+&lt;p&gt;Before diving into the code, let&amp;rsquo;s understand the logic of our XDP program. The goal is to randomly drop ~50% of packets on a given network interface. We will use a randomization mechanism to decide whether to drop or pass each packet (&amp;ldquo;is random number even?&amp;rdquo;). The program will also collect statistics and measure the processing time for dropped and passed packets using eBPF&amp;rsquo;s perf event mechanism. Our BPF program runs in kernel space but we&amp;rsquo;ll want to expose data to userspace, so we&amp;rsquo;ll use BPF maps to expose data to our Go program.&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;Creating the Program Source File&lt;/p&gt;
@@ -75,66 +75,65 @@
 &lt;li&gt;
 &lt;p&gt;Defining Data Structures and Maps&lt;/p&gt;
 &lt;p&gt;Next, define the necessary data structures and maps that our XDP program will utilize. We will use a struct to represent the perf event data, and a BPF_MAP_TYPE_PERF_EVENT_ARRAY map to store the perf events. Define the following structures and maps:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; perf_trace_event {
-    __u64 timestamp;
-    __u32 processing_time_ns;
-    __u8 type;
-};
-
-&lt;span style=&#34;color:#75715e&#34;&gt;#define TYPE_ENTER 1
-&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#define TYPE_DROP 2
-&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#define TYPE_PASS 3
-&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;
-&lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; {
-    __uint(type, BPF_MAP_TYPE_PERF_EVENT_ARRAY);
-    __uint(key_size, &lt;span style=&#34;color:#66d9ef&#34;&gt;sizeof&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt;));
-    __uint(value_size, &lt;span style=&#34;color:#66d9ef&#34;&gt;sizeof&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; perf_trace_event));
-    __uint(max_entries, &lt;span style=&#34;color:#ae81ff&#34;&gt;1024&lt;/span&gt;);
-} output_map SEC(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;.maps&amp;#34;&lt;/span&gt;);
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The output_map map will be used to store the perf events generated by our XDP program. The TYPE_* definitions will make our code more readable later.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; perf_trace_event {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    __u64 timestamp;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    __u32 processing_time_ns;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    __u8 type;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;};
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#define TYPE_ENTER 1
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#define TYPE_DROP 2
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#define TYPE_PASS 3
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#a6e22e&#34;&gt;__uint&lt;/span&gt;(type, BPF_MAP_TYPE_PERF_EVENT_ARRAY);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#a6e22e&#34;&gt;__uint&lt;/span&gt;(key_size, &lt;span style=&#34;color:#66d9ef&#34;&gt;sizeof&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt;));
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#a6e22e&#34;&gt;__uint&lt;/span&gt;(value_size, &lt;span style=&#34;color:#66d9ef&#34;&gt;sizeof&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; perf_trace_event));
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#a6e22e&#34;&gt;__uint&lt;/span&gt;(max_entries, &lt;span style=&#34;color:#ae81ff&#34;&gt;1024&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;} output_map &lt;span style=&#34;color:#a6e22e&#34;&gt;SEC&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;.maps&amp;#34;&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The output_map map will be used to store the perf events generated by our XDP program. The TYPE_* definitions will make our code more readable later.&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;Implementing the XDP Program Function&lt;/p&gt;
 &lt;p&gt;Now, it&amp;rsquo;s time to implement the XDP program function itself. Begin by declaring the XDP function with the appropriate signature:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;SEC(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;xdp&amp;#34;&lt;/span&gt;)
-&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; xdp_dilih(&lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; xdp_md &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;ctx)
-{
-    &lt;span style=&#34;color:#75715e&#34;&gt;// Add program logic here ... detailed in the next step
-&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The xdp_dilih function will serve as our XDP eBPF program entry point. It will be called for every incoming packet.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;SEC&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;xdp&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;xdp_dilih&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; xdp_md &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;ctx)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;// Add program logic here ... detailed in the next step
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The xdp_dilih function will serve as our XDP eBPF program entry point. It will be called for every incoming packet.&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;Handling Perf Events and Collecting Data&lt;/p&gt;
 &lt;p&gt;Inside the xdp_dilih function, we can handle perf events to collect data and measure processing time. We have already defined the output_map to store these events. Use the bpf_perf_event_output helper function to emit perf events to the map.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; perf_trace_event e &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; {};
-
-&lt;span style=&#34;color:#75715e&#34;&gt;// Perf event for entering xdp program
-&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;e.timestamp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; bpf_ktime_get_ns();
-e.type &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; TYPE_ENTER;
-e.processing_time_ns &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
-bpf_perf_event_output(ctx, &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;output_map, BPF_F_CURRENT_CPU, &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;e, &lt;span style=&#34;color:#66d9ef&#34;&gt;sizeof&lt;/span&gt;(e));
-
-&lt;span style=&#34;color:#75715e&#34;&gt;// Packet dropping logic
-&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (bpf_get_prandom_u32() &lt;span style=&#34;color:#f92672&#34;&gt;%&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;) {
-    &lt;span style=&#34;color:#75715e&#34;&gt;// Perf event for dropping packet
-&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    e.type &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; TYPE_DROP;
-    __u64 ts &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; bpf_ktime_get_ns();
-    e.processing_time_ns &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; ts &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; e.timestamp;
-    e.timestamp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; ts;
-    bpf_perf_event_output(ctx, &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;output_map, BPF_F_CURRENT_CPU, &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;e, &lt;span style=&#34;color:#66d9ef&#34;&gt;sizeof&lt;/span&gt;(e));
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; XDP_DROP;
-}
-
-&lt;span style=&#34;color:#75715e&#34;&gt;// Perf event for passing packet
-&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;e.type &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; TYPE_PASS;
-__u64 ts &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; bpf_ktime_get_ns();
-e.processing_time_ns &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; ts &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; e.timestamp;
-e.timestamp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; ts;
-bpf_perf_event_output(ctx, &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;output_map, BPF_F_CURRENT_CPU, &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;e, &lt;span style=&#34;color:#66d9ef&#34;&gt;sizeof&lt;/span&gt;(e));
-
-&lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; XDP_PASS;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In this section of the code, we handle the perf events to collect data and measure the processing time of dropped and passed packets. We first emit a perf event when entering the XDP program (type 1). Then, we use a randomization mechanism to decide whether to drop or pass the packet. If the packet is dropped, we emit a perf event with type 2 and return XDP_DROP. If the packet is passed, we emit a perf event with type 3 and return XDP_PASS.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; perf_trace_event e &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; {};
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// Perf event for entering xdp program
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;e.timestamp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;bpf_ktime_get_ns&lt;/span&gt;();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;e.type &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; TYPE_ENTER;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;e.processing_time_ns &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;bpf_perf_event_output&lt;/span&gt;(ctx, &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;output_map, BPF_F_CURRENT_CPU, &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;e, &lt;span style=&#34;color:#66d9ef&#34;&gt;sizeof&lt;/span&gt;(e));
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// Packet dropping logic
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (&lt;span style=&#34;color:#a6e22e&#34;&gt;bpf_get_prandom_u32&lt;/span&gt;() &lt;span style=&#34;color:#f92672&#34;&gt;%&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;// Perf event for dropping packet
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    e.type &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; TYPE_DROP;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    __u64 ts &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;bpf_ktime_get_ns&lt;/span&gt;();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    e.processing_time_ns &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; ts &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; e.timestamp;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    e.timestamp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; ts;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#a6e22e&#34;&gt;bpf_perf_event_output&lt;/span&gt;(ctx, &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;output_map, BPF_F_CURRENT_CPU, &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;e, &lt;span style=&#34;color:#66d9ef&#34;&gt;sizeof&lt;/span&gt;(e));
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; XDP_DROP;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// Perf event for passing packet
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;e.type &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; TYPE_PASS;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;__u64 ts &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;bpf_ktime_get_ns&lt;/span&gt;();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;e.processing_time_ns &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; ts &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; e.timestamp;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;e.timestamp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; ts;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;bpf_perf_event_output&lt;/span&gt;(ctx, &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;output_map, BPF_F_CURRENT_CPU, &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;e, &lt;span style=&#34;color:#66d9ef&#34;&gt;sizeof&lt;/span&gt;(e));
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; XDP_PASS;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In this section of the code, we handle the perf events to collect data and measure the processing time of dropped and passed packets. We first emit a perf event when entering the XDP program (type 1). Then, we use a randomization mechanism to decide whether to drop or pass the packet. If the packet is dropped, we emit a perf event with type 2 and return XDP_DROP. If the packet is passed, we emit a perf event with type 3 and return XDP_PASS.&lt;/p&gt;
 &lt;p&gt;The bpf_ktime_get_ns() function is used to measure the timestamp (nanoseconds since system boot, excluding suspend time) and processing time of the packet. The bpf_get_prandom_u32() function generates a random value that helps in deciding whether to drop or pass the packet - the &amp;ldquo;is this random number even?&amp;rdquo; part.&lt;/p&gt;
 &lt;p&gt;Additionally, we use bpf_printk() to print debug messages that can be accessed through the kernel&amp;rsquo;s trace buffer.&lt;/p&gt;
 &lt;/li&gt;
@@ -144,14 +143,14 @@ bpf_perf_event_output(ctx, &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&l
 &lt;p&gt;Once we have written the XDP eBPF program in C, the next step is to compile it and load it into the kernel. In this section, we will walk through the steps to compile and load the XDP eBPF program.&lt;/p&gt;
 &lt;h3 id=&#34;compiling-the-xdp-program&#34;&gt;Compiling the XDP Program&lt;/h3&gt;
 &lt;p&gt;To compile the XDP program, we will use the LLVM Clang compiler with the appropriate flags. Open a terminal and navigate to the bpf directory where the dilih_kern.c file is located. Then, run the following command:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;clang -S &lt;span style=&#34;color:#ae81ff&#34;&gt;\
-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;    -g &lt;span style=&#34;color:#ae81ff&#34;&gt;\
-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;    -target bpf &lt;span style=&#34;color:#ae81ff&#34;&gt;\
-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;    -I../libbpf/src&lt;span style=&#34;color:#ae81ff&#34;&gt;\
-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;    -Wall &lt;span style=&#34;color:#ae81ff&#34;&gt;\
-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;    -Werror &lt;span style=&#34;color:#ae81ff&#34;&gt;\
-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;    -O2 -emit-llvm -c -o dilih_kern.ll dilih_kern.c
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Let me explain the flags:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;clang -S &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;    -g &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;    -target bpf &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;    -I../libbpf/src&lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;    -Wall &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;    -Werror &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;    -O2 -emit-llvm -c -o dilih_kern.ll dilih_kern.c
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Let me explain the flags:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;code&gt;-S&lt;/code&gt; Emit an intermediate representation (IR) assembly code file instead of generating object code. This step is used to generate LLVM IR code.&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;-g&lt;/code&gt; Include BTF information&lt;/li&gt;
@@ -164,8 +163,8 @@ bpf_perf_event_output(ctx, &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&l
 &lt;li&gt;&lt;code&gt;-o&lt;/code&gt; dilih_kern.ll: Specify the output file name for the generated LLVM IR code as dilih_kern.ll.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;Now we use the llc command is used to further process the LLVM IR code and generate the final object file:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;llc -march&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;bpf -filetype&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;obj -O2 -o dilih_kern.o dilih_kern.ll
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Let me explain the flags:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;llc -march&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;bpf -filetype&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;obj -O2 -o dilih_kern.o dilih_kern.ll
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Let me explain the flags:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;code&gt;-march=bpf&lt;/code&gt; Specify the target architecture as &amp;ldquo;bpf&amp;rdquo; for the code generation stage.&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;-filetype=obj&lt;/code&gt; Specify the desired output file type as an object file.&lt;/li&gt;
@@ -180,205 +179,205 @@ bpf_perf_event_output(ctx, &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&l
 &lt;p&gt;This command loads the dilih_kern.o object file and pins it into the /sys/fs/bpf/dilih location. Adjust the path as necessary based on your system configuration. The bpftool utility will handle the loading process and verify the program&amp;rsquo;s validity.&lt;/p&gt;
 &lt;h3 id=&#34;attaching-the-xdp-program&#34;&gt;Attaching the XDP Program&lt;/h3&gt;
 &lt;p&gt;After loading the XDP program, we need to attach it to a network interface to start intercepting packets. To attach the XDP program, run the following command:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;sudo bpftool net attach xdp pinned /sys/fs/bpf/dilih dev &amp;lt;interface&amp;gt;
-&lt;span style=&#34;color:#75715e&#34;&gt;# you can get &amp;lt;interface&amp;gt; by running `ip link&amp;#39;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Replace &lt;!-- raw HTML omitted --&gt; with the name of the network interface you want to attach the XDP program to. For example, eth0. This command attaches the XDP program to the specified interface, enabling it to intercept incoming packets.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo bpftool net attach xdp pinned /sys/fs/bpf/dilih dev &amp;lt;interface&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# you can get &amp;lt;interface&amp;gt; by running `ip link&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Replace &lt;!-- raw HTML omitted --&gt; with the name of the network interface you want to attach the XDP program to. For example, eth0. This command attaches the XDP program to the specified interface, enabling it to intercept incoming packets.&lt;/p&gt;
 &lt;h3 id=&#34;makefile&#34;&gt;Makefile&lt;/h3&gt;
 &lt;p&gt;For convenience, lets throw some of what we learned above into a Makefile at &lt;code&gt;./bpf/Makefile&lt;/code&gt;. I&amp;rsquo;ll not go into depths about how Makefiles work in this article but will summarise the functionality after the code snippet:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Makefile&#34; data-lang=&#34;Makefile&#34;&gt;TARGET &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; dilih
-BPF_TARGET &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;TARGET:=_kern&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;
-BPF_C &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;BPF_TARGET:=.c&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;
-BPF_OBJ &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;BPF_C:.c=.o&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;
-
-BPF_PINNED_PATH &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; /sys/fs/bpf/&lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;TARGET&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
-XDP_NAME &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; dilih
-DEV &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; ens160
-
-&lt;span style=&#34;color:#a6e22e&#34;&gt;xdp&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;BPF_OBJ&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
-        -bpftool net detach xdpgeneric dev &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;DEV&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
-        rm -f &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;BPF_PINNED_PATH&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
-        bpftool prog load &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;BPF_OBJ&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;BPF_PINNED_PATH&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
-        bpftool net attach xdpgeneric pinned &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;BPF_PINNED_PATH&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt; dev &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;DEV&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
-
-&lt;span style=&#34;color:#a6e22e&#34;&gt;$(BPF_OBJ)&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; %.o: %.c
-        clang -S &lt;span style=&#34;color:#ae81ff&#34;&gt;\
-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;                -g &lt;span style=&#34;color:#ae81ff&#34;&gt;\
-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;                -target bpf &lt;span style=&#34;color:#ae81ff&#34;&gt;\
-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;          -I../libbpf/src&lt;span style=&#34;color:#ae81ff&#34;&gt;\
-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;                -Wall &lt;span style=&#34;color:#ae81ff&#34;&gt;\
-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;                -Werror &lt;span style=&#34;color:#ae81ff&#34;&gt;\
-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;                -O2 -emit-llvm -c -o &lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;@:.o=.ll&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt; $&amp;lt;
-        llc -march&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;bpf -filetype&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;obj -O2 -o $@ &lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;@:.o=.ll&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;
-
-&lt;span style=&#34;color:#a6e22e&#34;&gt;clean&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;
-        -bpftool net detach xdpgeneric dev &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;DEV&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
-        sudo rm -f &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;BPF_PINNED_PATH&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
-        rm -f &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;BPF_OBJ&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
-        rm -f &lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;BPF_OBJ:.o=.ll&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;With this file in place and &lt;code&gt;make&lt;/code&gt; installed you can run something like &lt;code&gt;DEV=eth0 make&lt;/code&gt; to compile and load the eBPF program and &lt;code&gt;DEV=eth0 make clean&lt;/code&gt; to remove the files and unload the eBPF program.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-Makefile&#34; data-lang=&#34;Makefile&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;TARGET &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; dilih
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;BPF_TARGET &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;TARGET:=_kern&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;BPF_C &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;BPF_TARGET:=.c&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;BPF_OBJ &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;BPF_C:.c=.o&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;BPF_PINNED_PATH &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; /sys/fs/bpf/&lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;TARGET&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;XDP_NAME &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; dilih
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;DEV &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; ens160
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;xdp&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;BPF_OBJ&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        -bpftool net detach xdpgeneric dev &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;DEV&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        rm -f &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;BPF_PINNED_PATH&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        bpftool prog load &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;BPF_OBJ&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;BPF_PINNED_PATH&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        bpftool net attach xdpgeneric pinned &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;BPF_PINNED_PATH&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt; dev &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;DEV&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;$(BPF_OBJ)&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; %.o: %.c
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        clang -S &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;                -g &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;                -target bpf &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;          -I../libbpf/src&lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;                -Wall &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;                -Werror &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;                -O2 -emit-llvm -c -o &lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;@:.o=.ll&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt; $&amp;lt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        llc -march&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;bpf -filetype&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;obj -O2 -o $@ &lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;@:.o=.ll&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;clean&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        -bpftool net detach xdpgeneric dev &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;DEV&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        sudo rm -f &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;BPF_PINNED_PATH&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        rm -f &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;BPF_OBJ&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        rm -f &lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;BPF_OBJ:.o=.ll&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;With this file in place and &lt;code&gt;make&lt;/code&gt; installed you can run something like &lt;code&gt;DEV=eth0 make&lt;/code&gt; to compile and load the eBPF program and &lt;code&gt;DEV=eth0 make clean&lt;/code&gt; to remove the files and unload the eBPF program.&lt;/p&gt;
 &lt;p&gt;Congratulations! You have successfully compiled and loaded the XDP eBPF program into the kernel and attached it to a network interface. The program is now ready to intercept and process packets based on your defined logic.&lt;/p&gt;
 &lt;p&gt;Please note that the compilation and loading process may vary slightly depending on your system configuration and specific requirements. Make sure to adjust the commands accordingly and refer to the documentation of the tools and utilities used.&lt;/p&gt;
 &lt;h2 id=&#34;writing-the-golang-application&#34;&gt;Writing the Golang Application&lt;/h2&gt;
 &lt;p&gt;In this section, we will write a Golang application that interacts with the XDP eBPF program and collects metrics. The Golang application will communicate with the loaded XDP program, read the perf events, and display statistics based on the collected data.&lt;/p&gt;
 &lt;h3 id=&#34;writing-the-golang-application-code&#34;&gt;Writing the Golang Application Code&lt;/h3&gt;
 &lt;p&gt;Let&amp;rsquo;s create a new file named &lt;code&gt;main.go&lt;/code&gt; and open it in a text editor. This file will contain the code for our Golang application. Copy and paste the following code into main.go:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;package&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;
-
-&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; (
-        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;encoding/binary&amp;#34;&lt;/span&gt;
-        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
-        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;net&amp;#34;&lt;/span&gt;
-        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;os&amp;#34;&lt;/span&gt;
-        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;os/signal&amp;#34;&lt;/span&gt;
-        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;syscall&amp;#34;&lt;/span&gt;
-
-        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;github.com/cilium/ebpf&amp;#34;&lt;/span&gt;
-        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;github.com/cilium/ebpf/link&amp;#34;&lt;/span&gt;
-        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;github.com/cilium/ebpf/perf&amp;#34;&lt;/span&gt;
-)
-
-&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; (
-        &lt;span style=&#34;color:#a6e22e&#34;&gt;TYPE_ENTER&lt;/span&gt; = &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;
-        &lt;span style=&#34;color:#a6e22e&#34;&gt;TYPE_DROP&lt;/span&gt;  = &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
-        &lt;span style=&#34;color:#a6e22e&#34;&gt;TYPE_PASS&lt;/span&gt;  = &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;
-)
-
-&lt;span style=&#34;color:#66d9ef&#34;&gt;type&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;event&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; {
-        &lt;span style=&#34;color:#a6e22e&#34;&gt;TimeSinceBoot&lt;/span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;uint64&lt;/span&gt;
-        &lt;span style=&#34;color:#a6e22e&#34;&gt;ProcessingTime&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;uint32&lt;/span&gt;
-        &lt;span style=&#34;color:#a6e22e&#34;&gt;Type&lt;/span&gt;           &lt;span style=&#34;color:#66d9ef&#34;&gt;uint8&lt;/span&gt;
-}
-
-&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;ringBufferSize&lt;/span&gt; = &lt;span style=&#34;color:#ae81ff&#34;&gt;128&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;// size of ring buffer used to calculate average processing times
-&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;type&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;ringBuffer&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; {
-        &lt;span style=&#34;color:#a6e22e&#34;&gt;data&lt;/span&gt;   [&lt;span style=&#34;color:#a6e22e&#34;&gt;ringBufferSize&lt;/span&gt;]&lt;span style=&#34;color:#66d9ef&#34;&gt;uint32&lt;/span&gt;
-        &lt;span style=&#34;color:#a6e22e&#34;&gt;start&lt;/span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt;
-        &lt;span style=&#34;color:#a6e22e&#34;&gt;pointer&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt;
-        &lt;span style=&#34;color:#a6e22e&#34;&gt;filled&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;bool&lt;/span&gt;
-}
-
-&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; (&lt;span style=&#34;color:#a6e22e&#34;&gt;rb&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;ringBuffer&lt;/span&gt;) &lt;span style=&#34;color:#a6e22e&#34;&gt;add&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;val&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;uint32&lt;/span&gt;) {
-        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;rb&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;pointer&lt;/span&gt; &amp;lt; &lt;span style=&#34;color:#a6e22e&#34;&gt;ringBufferSize&lt;/span&gt; {
-                &lt;span style=&#34;color:#a6e22e&#34;&gt;rb&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;pointer&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt;
-        } &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt; {
-                &lt;span style=&#34;color:#a6e22e&#34;&gt;rb&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;filled&lt;/span&gt; = &lt;span style=&#34;color:#66d9ef&#34;&gt;true&lt;/span&gt;
-                &lt;span style=&#34;color:#a6e22e&#34;&gt;rb&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;pointer&lt;/span&gt;= &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;
-        }
-        &lt;span style=&#34;color:#a6e22e&#34;&gt;rb&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;data&lt;/span&gt;[&lt;span style=&#34;color:#a6e22e&#34;&gt;rb&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;pointer&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;] = &lt;span style=&#34;color:#a6e22e&#34;&gt;val&lt;/span&gt;
-}
-
-&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; (&lt;span style=&#34;color:#a6e22e&#34;&gt;rb&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;ringBuffer&lt;/span&gt;) &lt;span style=&#34;color:#a6e22e&#34;&gt;avg&lt;/span&gt;() &lt;span style=&#34;color:#66d9ef&#34;&gt;float32&lt;/span&gt; {
-        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;rb&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;pointer&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; {
-                &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
-        }
-        &lt;span style=&#34;color:#a6e22e&#34;&gt;sum&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; uint32(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;)
-        &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;_&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;val&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;range&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;rb&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;data&lt;/span&gt; {
-                &lt;span style=&#34;color:#a6e22e&#34;&gt;sum&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+=&lt;/span&gt; uint32(&lt;span style=&#34;color:#a6e22e&#34;&gt;val&lt;/span&gt;)
-        }
-        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;rb&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;filled&lt;/span&gt; {
-                &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; float32(&lt;span style=&#34;color:#a6e22e&#34;&gt;sum&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt; float32(&lt;span style=&#34;color:#a6e22e&#34;&gt;ringBufferSize&lt;/span&gt;)
-        }
-        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; float32(&lt;span style=&#34;color:#a6e22e&#34;&gt;sum&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt; float32(&lt;span style=&#34;color:#a6e22e&#34;&gt;rb&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;pointer&lt;/span&gt;)
-}
-
-&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;() {
-        &lt;span style=&#34;color:#a6e22e&#34;&gt;spec&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;ebpf&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;LoadCollectionSpec&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;bpf/dilih_kern.o&amp;#34;&lt;/span&gt;)
-        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt; {
-                panic(&lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt;)
-        }
-
-        &lt;span style=&#34;color:#a6e22e&#34;&gt;coll&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;ebpf&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;NewCollection&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;spec&lt;/span&gt;)
-        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt; {
-                panic(&lt;span style=&#34;color:#a6e22e&#34;&gt;fmt&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Sprintf&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Failed to create new collection: %v\n&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt;))
-        }
-        &lt;span style=&#34;color:#66d9ef&#34;&gt;defer&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;coll&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Close&lt;/span&gt;()
-
-        &lt;span style=&#34;color:#a6e22e&#34;&gt;prog&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;coll&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Programs&lt;/span&gt;[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;xdp_dilih&amp;#34;&lt;/span&gt;]
-        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;prog&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt; {
-                panic(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;No program named &amp;#39;xdp_dilih&amp;#39; found in collection&amp;#34;&lt;/span&gt;)
-        }
-
-        &lt;span style=&#34;color:#a6e22e&#34;&gt;iface&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;os&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Getenv&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;INTERFACE&amp;#34;&lt;/span&gt;)
-        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;iface&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt; {
-                panic(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;No interface specified. Please set the INTERFACE environment variable to the name of the interface to be use&amp;#34;&lt;/span&gt;)
-        }
-        &lt;span style=&#34;color:#a6e22e&#34;&gt;iface_idx&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;net&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;InterfaceByName&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;iface&lt;/span&gt;)
-        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt; {
-                panic(&lt;span style=&#34;color:#a6e22e&#34;&gt;fmt&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Sprintf&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Failed to get interface %s: %v\n&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;iface&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt;))
-        }
-        &lt;span style=&#34;color:#a6e22e&#34;&gt;opts&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;link&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;XDPOptions&lt;/span&gt;{
-                &lt;span style=&#34;color:#a6e22e&#34;&gt;Program&lt;/span&gt;:   &lt;span style=&#34;color:#a6e22e&#34;&gt;prog&lt;/span&gt;,
-                &lt;span style=&#34;color:#a6e22e&#34;&gt;Interface&lt;/span&gt;: &lt;span style=&#34;color:#a6e22e&#34;&gt;iface_idx&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Index&lt;/span&gt;,
-                &lt;span style=&#34;color:#75715e&#34;&gt;// Flags is one of XDPAttachFlags (optional).
-&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        }
-        &lt;span style=&#34;color:#a6e22e&#34;&gt;lnk&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;link&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;AttachXDP&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;opts&lt;/span&gt;)
-        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt; {
-                panic(&lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt;)
-        }
-        &lt;span style=&#34;color:#66d9ef&#34;&gt;defer&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;lnk&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Close&lt;/span&gt;()
-
-        &lt;span style=&#34;color:#a6e22e&#34;&gt;fmt&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Println&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Successfully loaded and attached BPF program.&amp;#34;&lt;/span&gt;)
-
-        &lt;span style=&#34;color:#75715e&#34;&gt;// handle perf events
-&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        &lt;span style=&#34;color:#a6e22e&#34;&gt;outputMap&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;ok&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;coll&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Maps&lt;/span&gt;[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;output_map&amp;#34;&lt;/span&gt;]
-        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; !&lt;span style=&#34;color:#a6e22e&#34;&gt;ok&lt;/span&gt; {
-                panic(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;No map named &amp;#39;output_map&amp;#39; found in collection&amp;#34;&lt;/span&gt;)
-        }
-        &lt;span style=&#34;color:#a6e22e&#34;&gt;perfEvent&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;perf&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;NewReader&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;outputMap&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;4096&lt;/span&gt;)
-        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt; {
-                panic(&lt;span style=&#34;color:#a6e22e&#34;&gt;fmt&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Sprintf&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Failed to create perf event reader: %v\n&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt;))
-        }
-        &lt;span style=&#34;color:#66d9ef&#34;&gt;defer&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;perfEvent&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Close&lt;/span&gt;()
-        &lt;span style=&#34;color:#a6e22e&#34;&gt;buckets&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;map&lt;/span&gt;[&lt;span style=&#34;color:#66d9ef&#34;&gt;uint8&lt;/span&gt;]&lt;span style=&#34;color:#66d9ef&#34;&gt;uint32&lt;/span&gt;{
-                &lt;span style=&#34;color:#a6e22e&#34;&gt;TYPE_ENTER&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#75715e&#34;&gt;// bpf program entered
-&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;                &lt;span style=&#34;color:#a6e22e&#34;&gt;TYPE_DROP&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#75715e&#34;&gt;// bpf program dropped
-&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;                &lt;span style=&#34;color:#a6e22e&#34;&gt;TYPE_PASS&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#75715e&#34;&gt;// bpf program passed
-&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        }
-
-        &lt;span style=&#34;color:#a6e22e&#34;&gt;processingTimePassed&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;ringBuffer&lt;/span&gt;{}
-        &lt;span style=&#34;color:#a6e22e&#34;&gt;processingTimeDropped&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;ringBuffer&lt;/span&gt;{}
-
-        &lt;span style=&#34;color:#66d9ef&#34;&gt;go&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt;() {
-                &lt;span style=&#34;color:#75715e&#34;&gt;// var event event
-&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;                &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; {
-                        &lt;span style=&#34;color:#a6e22e&#34;&gt;record&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;perfEvent&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Read&lt;/span&gt;()
-                        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt; {
-                                &lt;span style=&#34;color:#a6e22e&#34;&gt;fmt&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Println&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt;)
-                                &lt;span style=&#34;color:#66d9ef&#34;&gt;continue&lt;/span&gt;
-                        }
-
-                        &lt;span style=&#34;color:#66d9ef&#34;&gt;var&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;e&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;event&lt;/span&gt;
-                        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; len(&lt;span style=&#34;color:#a6e22e&#34;&gt;record&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;RawSample&lt;/span&gt;) &amp;lt; &lt;span style=&#34;color:#ae81ff&#34;&gt;12&lt;/span&gt; {
-                                &lt;span style=&#34;color:#a6e22e&#34;&gt;fmt&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Println&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Invalid sample size&amp;#34;&lt;/span&gt;)
-                                &lt;span style=&#34;color:#66d9ef&#34;&gt;continue&lt;/span&gt;
-                        }
-                        &lt;span style=&#34;color:#75715e&#34;&gt;// time since boot in the first 8 bytes
-&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;                        &lt;span style=&#34;color:#a6e22e&#34;&gt;e&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;TimeSinceBoot&lt;/span&gt; = &lt;span style=&#34;color:#a6e22e&#34;&gt;binary&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;LittleEndian&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Uint64&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;record&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;RawSample&lt;/span&gt;[:&lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt;])
-                        &lt;span style=&#34;color:#75715e&#34;&gt;// processing time in the next 4 bytes
-&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;                        &lt;span style=&#34;color:#a6e22e&#34;&gt;e&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;ProcessingTime&lt;/span&gt; = &lt;span style=&#34;color:#a6e22e&#34;&gt;binary&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;LittleEndian&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Uint32&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;record&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;RawSample&lt;/span&gt;[&lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt;:&lt;span style=&#34;color:#ae81ff&#34;&gt;12&lt;/span&gt;])
-                        &lt;span style=&#34;color:#75715e&#34;&gt;// type in the last byte
-&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;                        &lt;span style=&#34;color:#a6e22e&#34;&gt;e&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Type&lt;/span&gt; = uint8(&lt;span style=&#34;color:#a6e22e&#34;&gt;record&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;RawSample&lt;/span&gt;[&lt;span style=&#34;color:#ae81ff&#34;&gt;12&lt;/span&gt;])
-                        &lt;span style=&#34;color:#a6e22e&#34;&gt;buckets&lt;/span&gt;[&lt;span style=&#34;color:#a6e22e&#34;&gt;e&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Type&lt;/span&gt;]&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt;
-
-                        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;e&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Type&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;TYPE_ENTER&lt;/span&gt; {
-                                &lt;span style=&#34;color:#66d9ef&#34;&gt;continue&lt;/span&gt;
-                        }
-                        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;e&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Type&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;TYPE_DROP&lt;/span&gt; {
-                                &lt;span style=&#34;color:#a6e22e&#34;&gt;processingTimeDropped&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;add&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;e&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;ProcessingTime&lt;/span&gt;)
-                        } &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;e&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Type&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;TYPE_PASS&lt;/span&gt; {
-                                &lt;span style=&#34;color:#a6e22e&#34;&gt;processingTimePassed&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;add&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;e&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;ProcessingTime&lt;/span&gt;)
-                        }
-
-                        &lt;span style=&#34;color:#a6e22e&#34;&gt;fmt&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Print&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;\033[H\033[2J&amp;#34;&lt;/span&gt;)
-                        &lt;span style=&#34;color:#a6e22e&#34;&gt;fmt&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Printf&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;total: %d. passed: %d. dropped: %d. passed processing time avg (ns): %f. dropped processing time avg (ns): %f\n&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;buckets&lt;/span&gt;[&lt;span style=&#34;color:#a6e22e&#34;&gt;TYPE_ENTER&lt;/span&gt;], &lt;span style=&#34;color:#a6e22e&#34;&gt;buckets&lt;/span&gt;[&lt;span style=&#34;color:#a6e22e&#34;&gt;TYPE_PASS&lt;/span&gt;], &lt;span style=&#34;color:#a6e22e&#34;&gt;buckets&lt;/span&gt;[&lt;span style=&#34;color:#a6e22e&#34;&gt;TYPE_DROP&lt;/span&gt;], &lt;span style=&#34;color:#a6e22e&#34;&gt;processingTimePassed&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;avg&lt;/span&gt;(), &lt;span style=&#34;color:#a6e22e&#34;&gt;processingTimeDropped&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;avg&lt;/span&gt;())
-                }
-        }()
-
-        &lt;span style=&#34;color:#a6e22e&#34;&gt;c&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; make(&lt;span style=&#34;color:#66d9ef&#34;&gt;chan&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;os&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Signal&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;)
-        &lt;span style=&#34;color:#a6e22e&#34;&gt;signal&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Notify&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;c&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;os&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Interrupt&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;syscall&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;SIGTERM&lt;/span&gt;)
-        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;c&lt;/span&gt;
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;You may need to run &lt;code&gt;go mod init &amp;amp;&amp;amp; go mod tidy&lt;/code&gt; if you haven&amp;rsquo;t already done so.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;package&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; (
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;encoding/binary&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;net&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;os&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;os/signal&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;syscall&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;github.com/cilium/ebpf&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;github.com/cilium/ebpf/link&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;github.com/cilium/ebpf/perf&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; (
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#a6e22e&#34;&gt;TYPE_ENTER&lt;/span&gt; = &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#a6e22e&#34;&gt;TYPE_DROP&lt;/span&gt;  = &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#a6e22e&#34;&gt;TYPE_PASS&lt;/span&gt;  = &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;type&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;event&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#a6e22e&#34;&gt;TimeSinceBoot&lt;/span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;uint64&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#a6e22e&#34;&gt;ProcessingTime&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;uint32&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#a6e22e&#34;&gt;Type&lt;/span&gt;           &lt;span style=&#34;color:#66d9ef&#34;&gt;uint8&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;ringBufferSize&lt;/span&gt; = &lt;span style=&#34;color:#ae81ff&#34;&gt;128&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;// size of ring buffer used to calculate average processing times
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;type&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;ringBuffer&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#a6e22e&#34;&gt;data&lt;/span&gt;   [&lt;span style=&#34;color:#a6e22e&#34;&gt;ringBufferSize&lt;/span&gt;]&lt;span style=&#34;color:#66d9ef&#34;&gt;uint32&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#a6e22e&#34;&gt;start&lt;/span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#a6e22e&#34;&gt;pointer&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#a6e22e&#34;&gt;filled&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;bool&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; (&lt;span style=&#34;color:#a6e22e&#34;&gt;rb&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;ringBuffer&lt;/span&gt;) &lt;span style=&#34;color:#a6e22e&#34;&gt;add&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;val&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;uint32&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;rb&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;pointer&lt;/span&gt; &amp;lt; &lt;span style=&#34;color:#a6e22e&#34;&gt;ringBufferSize&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                &lt;span style=&#34;color:#a6e22e&#34;&gt;rb&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;pointer&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        } &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                &lt;span style=&#34;color:#a6e22e&#34;&gt;rb&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;filled&lt;/span&gt; = &lt;span style=&#34;color:#66d9ef&#34;&gt;true&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                &lt;span style=&#34;color:#a6e22e&#34;&gt;rb&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;pointer&lt;/span&gt;= &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#a6e22e&#34;&gt;rb&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;data&lt;/span&gt;[&lt;span style=&#34;color:#a6e22e&#34;&gt;rb&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;pointer&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;] = &lt;span style=&#34;color:#a6e22e&#34;&gt;val&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; (&lt;span style=&#34;color:#a6e22e&#34;&gt;rb&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;ringBuffer&lt;/span&gt;) &lt;span style=&#34;color:#a6e22e&#34;&gt;avg&lt;/span&gt;() &lt;span style=&#34;color:#66d9ef&#34;&gt;float32&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;rb&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;pointer&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#a6e22e&#34;&gt;sum&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; uint32(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;_&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;val&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;range&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;rb&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;data&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                &lt;span style=&#34;color:#a6e22e&#34;&gt;sum&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+=&lt;/span&gt; uint32(&lt;span style=&#34;color:#a6e22e&#34;&gt;val&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;rb&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;filled&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; float32(&lt;span style=&#34;color:#a6e22e&#34;&gt;sum&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt; float32(&lt;span style=&#34;color:#a6e22e&#34;&gt;ringBufferSize&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; float32(&lt;span style=&#34;color:#a6e22e&#34;&gt;sum&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt; float32(&lt;span style=&#34;color:#a6e22e&#34;&gt;rb&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;pointer&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;() {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#a6e22e&#34;&gt;spec&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;ebpf&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;LoadCollectionSpec&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;bpf/dilih_kern.o&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                panic(&lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#a6e22e&#34;&gt;coll&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;ebpf&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;NewCollection&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;spec&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                panic(&lt;span style=&#34;color:#a6e22e&#34;&gt;fmt&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Sprintf&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Failed to create new collection: %v\n&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt;))
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;defer&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;coll&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Close&lt;/span&gt;()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#a6e22e&#34;&gt;prog&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;coll&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Programs&lt;/span&gt;[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;xdp_dilih&amp;#34;&lt;/span&gt;]
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;prog&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                panic(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;No program named &amp;#39;xdp_dilih&amp;#39; found in collection&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#a6e22e&#34;&gt;iface&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;os&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Getenv&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;INTERFACE&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;iface&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                panic(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;No interface specified. Please set the INTERFACE environment variable to the name of the interface to be use&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#a6e22e&#34;&gt;iface_idx&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;net&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;InterfaceByName&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;iface&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                panic(&lt;span style=&#34;color:#a6e22e&#34;&gt;fmt&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Sprintf&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Failed to get interface %s: %v\n&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;iface&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt;))
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#a6e22e&#34;&gt;opts&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;link&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;XDPOptions&lt;/span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                &lt;span style=&#34;color:#a6e22e&#34;&gt;Program&lt;/span&gt;:   &lt;span style=&#34;color:#a6e22e&#34;&gt;prog&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                &lt;span style=&#34;color:#a6e22e&#34;&gt;Interface&lt;/span&gt;: &lt;span style=&#34;color:#a6e22e&#34;&gt;iface_idx&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Index&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                &lt;span style=&#34;color:#75715e&#34;&gt;// Flags is one of XDPAttachFlags (optional).
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#a6e22e&#34;&gt;lnk&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;link&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;AttachXDP&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;opts&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                panic(&lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;defer&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;lnk&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Close&lt;/span&gt;()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#a6e22e&#34;&gt;fmt&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Println&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Successfully loaded and attached BPF program.&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#75715e&#34;&gt;// handle perf events
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        &lt;span style=&#34;color:#a6e22e&#34;&gt;outputMap&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;ok&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;coll&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Maps&lt;/span&gt;[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;output_map&amp;#34;&lt;/span&gt;]
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; !&lt;span style=&#34;color:#a6e22e&#34;&gt;ok&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                panic(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;No map named &amp;#39;output_map&amp;#39; found in collection&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#a6e22e&#34;&gt;perfEvent&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;perf&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;NewReader&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;outputMap&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;4096&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                panic(&lt;span style=&#34;color:#a6e22e&#34;&gt;fmt&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Sprintf&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Failed to create perf event reader: %v\n&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt;))
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;defer&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;perfEvent&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Close&lt;/span&gt;()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#a6e22e&#34;&gt;buckets&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;map&lt;/span&gt;[&lt;span style=&#34;color:#66d9ef&#34;&gt;uint8&lt;/span&gt;]&lt;span style=&#34;color:#66d9ef&#34;&gt;uint32&lt;/span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                &lt;span style=&#34;color:#a6e22e&#34;&gt;TYPE_ENTER&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#75715e&#34;&gt;// bpf program entered
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;                &lt;span style=&#34;color:#a6e22e&#34;&gt;TYPE_DROP&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#75715e&#34;&gt;// bpf program dropped
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;                &lt;span style=&#34;color:#a6e22e&#34;&gt;TYPE_PASS&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#75715e&#34;&gt;// bpf program passed
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#a6e22e&#34;&gt;processingTimePassed&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;ringBuffer&lt;/span&gt;{}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#a6e22e&#34;&gt;processingTimeDropped&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;ringBuffer&lt;/span&gt;{}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;go&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt;() {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                &lt;span style=&#34;color:#75715e&#34;&gt;// var event event
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;                &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                        &lt;span style=&#34;color:#a6e22e&#34;&gt;record&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;perfEvent&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Read&lt;/span&gt;()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;nil&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                                &lt;span style=&#34;color:#a6e22e&#34;&gt;fmt&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Println&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;err&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                                &lt;span style=&#34;color:#66d9ef&#34;&gt;continue&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                        }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                        &lt;span style=&#34;color:#66d9ef&#34;&gt;var&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;e&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;event&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; len(&lt;span style=&#34;color:#a6e22e&#34;&gt;record&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;RawSample&lt;/span&gt;) &amp;lt; &lt;span style=&#34;color:#ae81ff&#34;&gt;12&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                                &lt;span style=&#34;color:#a6e22e&#34;&gt;fmt&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Println&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Invalid sample size&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                                &lt;span style=&#34;color:#66d9ef&#34;&gt;continue&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                        }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                        &lt;span style=&#34;color:#75715e&#34;&gt;// time since boot in the first 8 bytes
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;                        &lt;span style=&#34;color:#a6e22e&#34;&gt;e&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;TimeSinceBoot&lt;/span&gt; = &lt;span style=&#34;color:#a6e22e&#34;&gt;binary&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;LittleEndian&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Uint64&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;record&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;RawSample&lt;/span&gt;[:&lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt;])
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                        &lt;span style=&#34;color:#75715e&#34;&gt;// processing time in the next 4 bytes
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;                        &lt;span style=&#34;color:#a6e22e&#34;&gt;e&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;ProcessingTime&lt;/span&gt; = &lt;span style=&#34;color:#a6e22e&#34;&gt;binary&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;LittleEndian&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Uint32&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;record&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;RawSample&lt;/span&gt;[&lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt;:&lt;span style=&#34;color:#ae81ff&#34;&gt;12&lt;/span&gt;])
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                        &lt;span style=&#34;color:#75715e&#34;&gt;// type in the last byte
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;                        &lt;span style=&#34;color:#a6e22e&#34;&gt;e&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Type&lt;/span&gt; = uint8(&lt;span style=&#34;color:#a6e22e&#34;&gt;record&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;RawSample&lt;/span&gt;[&lt;span style=&#34;color:#ae81ff&#34;&gt;12&lt;/span&gt;])
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                        &lt;span style=&#34;color:#a6e22e&#34;&gt;buckets&lt;/span&gt;[&lt;span style=&#34;color:#a6e22e&#34;&gt;e&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Type&lt;/span&gt;]&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;e&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Type&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;TYPE_ENTER&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                                &lt;span style=&#34;color:#66d9ef&#34;&gt;continue&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                        }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;e&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Type&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;TYPE_DROP&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                                &lt;span style=&#34;color:#a6e22e&#34;&gt;processingTimeDropped&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;add&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;e&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;ProcessingTime&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                        } &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;e&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Type&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;TYPE_PASS&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                                &lt;span style=&#34;color:#a6e22e&#34;&gt;processingTimePassed&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;add&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;e&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;ProcessingTime&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                        }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                        &lt;span style=&#34;color:#a6e22e&#34;&gt;fmt&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Print&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;\033[H\033[2J&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                        &lt;span style=&#34;color:#a6e22e&#34;&gt;fmt&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Printf&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;total: %d. passed: %d. dropped: %d. passed processing time avg (ns): %f. dropped processing time avg (ns): %f\n&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;buckets&lt;/span&gt;[&lt;span style=&#34;color:#a6e22e&#34;&gt;TYPE_ENTER&lt;/span&gt;], &lt;span style=&#34;color:#a6e22e&#34;&gt;buckets&lt;/span&gt;[&lt;span style=&#34;color:#a6e22e&#34;&gt;TYPE_PASS&lt;/span&gt;], &lt;span style=&#34;color:#a6e22e&#34;&gt;buckets&lt;/span&gt;[&lt;span style=&#34;color:#a6e22e&#34;&gt;TYPE_DROP&lt;/span&gt;], &lt;span style=&#34;color:#a6e22e&#34;&gt;processingTimePassed&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;avg&lt;/span&gt;(), &lt;span style=&#34;color:#a6e22e&#34;&gt;processingTimeDropped&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;avg&lt;/span&gt;())
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        }()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#a6e22e&#34;&gt;c&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; make(&lt;span style=&#34;color:#66d9ef&#34;&gt;chan&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;os&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Signal&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#a6e22e&#34;&gt;signal&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Notify&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;c&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;os&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Interrupt&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;syscall&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;SIGTERM&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;c&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;You may need to run &lt;code&gt;go mod init &amp;amp;&amp;amp; go mod tidy&lt;/code&gt; if you haven&amp;rsquo;t already done so.&lt;/p&gt;
 &lt;p&gt;The code sets up the necessary components for the Golang application. It loads the BPF program, attaches it to the specified network interface, and initializes the perf event reader. However, the code to read and process the perf events is yet to be implemented.&lt;/p&gt;
 &lt;p&gt;That concludes the content for the &amp;ldquo;Writing the Golang Application&amp;rdquo; section. Feel free to modify and customize the content according to your needs.&lt;/p&gt;
 &lt;h2 id=&#34;building-and-running-the-project&#34;&gt;Building and Running the Project&lt;/h2&gt;
@@ -387,22 +386,22 @@ DEV &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; ens160
 &lt;p&gt;You can skip this step if you have already compiled the dilih_kern.o from the steps above.&lt;/p&gt;
 &lt;p&gt;Before building the XDP eBPF program, ensure that you have the necessary build tools and dependencies installed on your system. You can refer to the project&amp;rsquo;s README or documentation for the specific requirements.&lt;/p&gt;
 &lt;p&gt;To build the XDP eBPF program, navigate to the bpf directory and run the following command:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;make
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This command will compile the C code and generate the dilih_kern.o object file.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;make
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This command will compile the C code and generate the dilih_kern.o object file.&lt;/p&gt;
 &lt;h3 id=&#34;building-the-golang-application&#34;&gt;Building the Golang Application&lt;/h3&gt;
 &lt;p&gt;To build the Golang application, make sure you are in the root directory of the project. Run the following command:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;CGO_ENABLED&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; go build
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This command will compile the Golang code and generate an executable binary file. Note: we do not need CGO for our application. We could leave it enabled if we wish, but I like to use CGO_ENABLED=0 when I can as it results in a statically compiled binary that I can easily load into containers.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;CGO_ENABLED&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; go build
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This command will compile the Golang code and generate an executable binary file. Note: we do not need CGO for our application. We could leave it enabled if we wish, but I like to use CGO_ENABLED=0 when I can as it results in a statically compiled binary that I can easily load into containers.&lt;/p&gt;
 &lt;h3 id=&#34;running-the-go-project&#34;&gt;Running the Go Project&lt;/h3&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;sudo ./dilih
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;You should start to see a summary of the packets processed on the given interface:&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://github.com/peter-mcconnell/petermcconnell.com/blob/main/assets/dilih_run.png?raw=true&#34; alt=&#34;sample output&#34; title=&#34;sample output&#34;&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo ./dilih
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;You should start to see a summary of the packets processed on the given interface:&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;sample output&#34; src=&#34;https://github.com/peter-mcconnell/petermcconnell.com/blob/main/assets/dilih_run.png?raw=true&#34; title=&#34;sample output&#34;&gt;&lt;/p&gt;
 &lt;p&gt;Make sure to run the application with elevated privileges (sudo) to access the necessary resources.&lt;/p&gt;
 &lt;p&gt;The Golang application will start collecting data from the XDP program and display statistics based on the received perf events.&lt;/p&gt;
 &lt;p&gt;Cleaning Up
 To clean up the project and remove the XDP program from the network interface, run the following command:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;sudo make clean
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This command will detach the XDP program from the network interface and remove any associated artifacts.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo make clean
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This command will detach the XDP program from the network interface and remove any associated artifacts.&lt;/p&gt;
 &lt;p&gt;That&amp;rsquo;s it! You have successfully built and run the project. Experiment with different network interfaces and observe the packet drop statistics displayed by the Golang application.&lt;/p&gt;
 &lt;p&gt;Feel free to explore additional features and modifications to enhance the project further.&lt;/p&gt;
 &lt;h2 id=&#34;testing-and-verifying-the-xdp-ebpf-program&#34;&gt;Testing and Verifying the XDP eBPF Program&lt;/h2&gt;
@@ -411,23 +410,23 @@ To clean up the project and remove the XDP program from the network interface, r
 &lt;p&gt;To create a suitable test environment, we&amp;rsquo;ll utilize virtual network interfaces (veth devices) to simulate network traffic and observe the behavior of the XDP program.&lt;/p&gt;
 &lt;p&gt;Install the iproute2 package if it&amp;rsquo;s not already installed on your system. This package provides the necessary tools to manage network interfaces.&lt;/p&gt;
 &lt;p&gt;Create a pair of veth devices using the following commands:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;sudo ip link add veth0 type veth peer name veth1
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This command will create two virtual network interfaces (veth0 and veth1) that are connected to each other.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo ip link add veth0 type veth peer name veth1
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This command will create two virtual network interfaces (veth0 and veth1) that are connected to each other.&lt;/p&gt;
 &lt;p&gt;Set the interfaces up and assign IP addresses to them:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;sudo ip link set veth0 up
-sudo ip link set veth1 up
-sudo ip addr add 10.0.0.1/24 dev veth0
-sudo ip addr add 10.0.0.2/24 dev veth1
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This will bring up the interfaces and assign IP addresses (10.0.0.1 and 10.0.0.2) to them.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo ip link set veth0 up
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo ip link set veth1 up
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo ip addr add 10.0.0.1/24 dev veth0
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo ip addr add 10.0.0.2/24 dev veth1
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This will bring up the interfaces and assign IP addresses (10.0.0.1 and 10.0.0.2) to them.&lt;/p&gt;
 &lt;p&gt;With the veth devices set up, we can proceed to test and verify the XDP eBPF program&amp;rsquo;s functionality.&lt;/p&gt;
 &lt;h3 id=&#34;packet-drop-verification&#34;&gt;Packet Drop Verification&lt;/h3&gt;
 &lt;p&gt;One of the primary functionalities of the XDP program is to drop a certain percentage of packets. We can verify this behavior by sending packets between the veth devices and observing the packet drop rate.&lt;/p&gt;
 &lt;p&gt;Open two terminal windows and navigate to the project directory in both of them.&lt;/p&gt;
 &lt;p&gt;In the first terminal, run the following command to listen for ICMP echo requests (ping):&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;sudo tcpdump -i veth1 icmp
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In the second terminal, send ICMP echo requests (ping) from veth0 to veth1 using the following command:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;sudo ip netns exec veth0 ping 10.0.0.2
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Observe the output in the first terminal. You should see the ICMP echo requests being captured.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo tcpdump -i veth1 icmp
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In the second terminal, send ICMP echo requests (ping) from veth0 to veth1 using the following command:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo ip netns exec veth0 ping 10.0.0.2
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Observe the output in the first terminal. You should see the ICMP echo requests being captured.&lt;/p&gt;
 &lt;p&gt;Analyze the packet capture to verify the packet drop rate. If the XDP program is working correctly, approximately 50% of the ICMP echo requests should be dropped, resulting in a reduced number of captured packets.&lt;/p&gt;
 &lt;p&gt;By performing packet drop verification tests, you can ensure that the XDP program is functioning as expected and dropping packets according to the specified percentage.&lt;/p&gt;
 &lt;h3 id=&#34;performance-analysis&#34;&gt;Performance Analysis&lt;/h3&gt;
@@ -480,7 +479,7 @@ To ensure the proper integration of the XDP eBPF program into the overall system
 &lt;p&gt;eBPF.io: eBPF.io is a community-driven website dedicated to providing resources, tutorials, and news about eBPF. It features articles, case studies, and a curated list of tools and libraries related to eBPF. Explore the website at ebpf.io to stay up-to-date with the latest developments in the eBPF ecosystem.&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
-&lt;p&gt;Linux Kernel Documentation: The Linux kernel documentation includes a comprehensive section on eBPF and XDP, covering various aspects, including API references, usage examples, and implementation details. Access the documentation at &lt;a href=&#34;http://www.kernel.org/doc/html/latest/bpf&#34;&gt;www.kernel.org/doc/html/latest/bpf&lt;/a&gt; to gain a deep understanding of the underlying mechanisms.&lt;/p&gt;
+&lt;p&gt;Linux Kernel Documentation: The Linux kernel documentation includes a comprehensive section on eBPF and XDP, covering various aspects, including API references, usage examples, and implementation details. Access the documentation at &lt;a href=&#34;https://www.kernel.org/doc/html/latest/bpf&#34;&gt;www.kernel.org/doc/html/latest/bpf&lt;/a&gt; to gain a deep understanding of the underlying mechanisms.&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;These resources serve as valuable references and provide opportunities for further learning and exploration. Delve into the world of XDP, eBPF, and network programming, and unlock the full potential of these technologies in your networking projects.&lt;/p&gt;

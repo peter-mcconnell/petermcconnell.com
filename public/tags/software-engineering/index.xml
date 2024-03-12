@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>software engineering on Peter McConnell :: Ponderings from a Linux Systems engineer</title>
+    <title>Software Engineering on Peter McConnell :: Ponderings from a Linux Systems engineer</title>
     <link>https://www.petermcconnell.com/tags/software-engineering/</link>
-    <description>Recent content in software engineering on Peter McConnell :: Ponderings from a Linux Systems engineer</description>
+    <description>Recent content in Software Engineering on Peter McConnell :: Ponderings from a Linux Systems engineer</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
+    <language>en</language>
     <copyright>&amp;copy; Peter McConnell 2023</copyright>
     <lastBuildDate>Tue, 10 Jan 2023 08:41:50 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/software-engineering/index.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -28,7 +28,7 @@
 &lt;p&gt;It&amp;rsquo;s a craft: So, build on it. That means deliberately doing the things you don&amp;rsquo;t enjoy too. If you don&amp;rsquo;t understand a part of the stack that affects your job, don&amp;rsquo;t ignore it. Force yourself to learn the hard things. Getting better and learning things you don&amp;rsquo;t want to learn is possibly the hardest, yet most important skill I can recommend developing. Being able to deeply understand the work you&amp;rsquo;re doing gives you the confidence to do so much more.&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
-&lt;p&gt;Be someone that&amp;rsquo;s easy to work with: You spend 40+ hours a week with your colleagues, so be someone they want to have around. Being kind, easy to work with, fun, dependable, diligent, a great communicator and having their backs are all extremely important for your career. Sadly, this is an area where some people lack. I&amp;rsquo;ve seen technically brilliant individuals held back due to issues with soft skills. I found Simon Sinek&amp;rsquo;s talk on Performance vs. Trust a good example of this: &lt;a href=&#34;https://www.youtube.com/watch?v=kJdXjtSnZTI&amp;amp;ab_channel=MikeKnight&#34;&gt;https://www.youtube.com/watch?v=kJdXjtSnZTI&amp;amp;ab_channel=MikeKnight&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Be someone that&amp;rsquo;s easy to work with: You spend 40+ hours a week with your colleagues, so be someone they want to have around. Being kind, easy to work with, fun, dependable, diligent, a great communicator and having their backs are all extremely important for your career. Sadly, this is an area where some people lack. I&amp;rsquo;ve seen technically brilliant individuals held back due to issues with soft skills. I found Simon Sinek&amp;rsquo;s talk on Performance vs. Trust a good example of this: &lt;a href=&#34;https://www.youtube.com/watch?v=kJdXjtSnZTI&amp;ab_channel=MikeKnight&#34;&gt;https://www.youtube.com/watch?v=kJdXjtSnZTI&amp;ab_channel=MikeKnight&lt;/a&gt;.&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;You&amp;rsquo;re a service: To state the obvious, an employment is a contract an employer creates in exchange for a service (that&amp;rsquo;s the work that you do). If you want to raise your price, it had better be a good deal for the employer. So, what are they getting? Consider this:&lt;/p&gt;

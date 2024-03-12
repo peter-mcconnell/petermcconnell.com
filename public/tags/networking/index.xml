@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>networking on Peter McConnell :: Ponderings from a Linux Systems engineer</title>
+    <title>Networking on Peter McConnell :: Ponderings from a Linux Systems engineer</title>
     <link>https://www.petermcconnell.com/tags/networking/</link>
-    <description>Recent content in networking on Peter McConnell :: Ponderings from a Linux Systems engineer</description>
+    <description>Recent content in Networking on Peter McConnell :: Ponderings from a Linux Systems engineer</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
+    <language>en</language>
     <copyright>&amp;copy; Peter McConnell 2023</copyright>
     <lastBuildDate>Wed, 18 Jan 2023 19:48:46 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/networking/index.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -20,249 +20,248 @@ Network namespaces are a powerful feature in Linux that allows for the isolation
 &lt;p&gt;Network namespaces are a powerful feature in Linux that allows for the isolation of network stacks, creating multiple virtual networks on a single host. This concept is particularly useful for scenarios such as containerization, where each container needs its own independent network stack. In this article we&amp;rsquo;ll take a look at how &lt;code&gt;docker&lt;/code&gt; / &lt;code&gt;docker compose&lt;/code&gt; utilize this technology to grant containers network isolation and also take a look at how docker handles cross-container networking.&lt;/p&gt;
 &lt;h2 id=&#34;simple-docker-run&#34;&gt;simple docker run&lt;/h2&gt;
 &lt;p&gt;To see network namespaces in action, we&amp;rsquo;ll run a simple container (without the &lt;code&gt;--network=host&lt;/code&gt; flag):&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# run nginx in detached mode on host port 8080&lt;/span&gt;
-docker run --name dummynginx -p 8080:80 -d nginx
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;If we ran this with &lt;code&gt;--network=host&lt;/code&gt; it would share the network namespace of the host and therefore would not have it&amp;rsquo;s own network namespace.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# run nginx in detached mode on host port 8080&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker run --name dummynginx -p 8080:80 -d nginx
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;If we ran this with &lt;code&gt;--network=host&lt;/code&gt; it would share the network namespace of the host and therefore would not have it&amp;rsquo;s own network namespace.&lt;/p&gt;
 &lt;p&gt;Now we can check to see if we any network namespaces were created for this container:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ sudo lsns -t net | grep nginx
-&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;sudo&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; password &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; pete: 
-        NS TYPE NPROCS   PID USER     NETNSID NSFS                           COMMAND
-...
-&lt;span style=&#34;color:#ae81ff&#34;&gt;4026533009&lt;/span&gt; net      &lt;span style=&#34;color:#ae81ff&#34;&gt;17&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;52981&lt;/span&gt; root           &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; /run/docker/netns/3161e4b47f76 nginx: master process nginx -g daemon off;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In the output above we can see a network namespace was created for a docker &lt;code&gt;nsfs&lt;/code&gt; with the command &lt;code&gt;nginx&lt;/code&gt;. This seems like a likely culprit. We could confirm this by checking for the &lt;code&gt;nsfs&lt;/code&gt; in &lt;code&gt;docker inspect &amp;lt;container id&amp;gt;&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ sudo lsns -t net | grep nginx
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;sudo&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; password &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; pete: 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        NS TYPE NPROCS   PID USER     NETNSID NSFS                           COMMAND
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;4026533009&lt;/span&gt; net      &lt;span style=&#34;color:#ae81ff&#34;&gt;17&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;52981&lt;/span&gt; root           &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; /run/docker/netns/3161e4b47f76 nginx: master process nginx -g daemon off;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In the output above we can see a network namespace was created for a docker &lt;code&gt;nsfs&lt;/code&gt; with the command &lt;code&gt;nginx&lt;/code&gt;. This seems like a likely culprit. We could confirm this by checking for the &lt;code&gt;nsfs&lt;/code&gt; in &lt;code&gt;docker inspect &amp;lt;container id&amp;gt;&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;Each container runs in its own network namespace, which means it has its own set of network interfaces, IP addresses, and routing tables. This isolation allows each container to have its own network configuration, without interfering with the host&amp;rsquo;s network or other containers. You can view these resources from the network namespace by using the &lt;code&gt;ip&lt;/code&gt; command with &lt;code&gt;nsenter&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;In addition, the isolation also allows you to use the same port on the host for different services running in different containers. This is useful when you want to run multiple instances of the same service on a single host, each with its own IP address and port.&lt;/p&gt;
 &lt;p&gt;Also, this isolation helps in providing security boundaries between different containers, as they can&amp;rsquo;t see or interact with each other&amp;rsquo;s network stack unless explicitly configured to do so.&lt;/p&gt;
 &lt;h2 id=&#34;docker-compose&#34;&gt;docker compose&lt;/h2&gt;
 &lt;p&gt;Let&amp;rsquo;s remove that container and see how things look with &lt;code&gt;docker compose&lt;/code&gt; which can allow multiple containers to communicate with eachother:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# remove the old nginx container&lt;/span&gt;
-docker rm -f dummynginx
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now we&amp;rsquo;ll create a simple &lt;code&gt;docker-compose.yaml&lt;/code&gt;:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;---
-&lt;span style=&#34;color:#f92672&#34;&gt;version&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;3.1&amp;#39;&lt;/span&gt;
-&lt;span style=&#34;color:#f92672&#34;&gt;services&lt;/span&gt;:
-  &lt;span style=&#34;color:#f92672&#34;&gt;nginx_a&lt;/span&gt;:
-    &lt;span style=&#34;color:#f92672&#34;&gt;image&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;nginx:latest&amp;#39;&lt;/span&gt;
-    &lt;span style=&#34;color:#f92672&#34;&gt;ports&lt;/span&gt;:
-      - &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;8080:80&amp;#39;&lt;/span&gt;
-  &lt;span style=&#34;color:#f92672&#34;&gt;nginx_b&lt;/span&gt;:
-    &lt;span style=&#34;color:#f92672&#34;&gt;image&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;nginx:latest&amp;#39;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;With this file stored as &lt;code&gt;docker-compose.yaml&lt;/code&gt; we&amp;rsquo;ll spin it up then check &lt;code&gt;lsns&lt;/code&gt;:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ docker compose up -d
-&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;+&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; Running 3/3
- ⠿  Network linuxnetworks_default      Created  0.0s
- ⠿ Container linuxnetworks-nginx_b-1   Started  0.3s
- ⠿ Container linuxnetworks-nginx_a-1   Started  0.6s
-$ sudo lsns -t net | grep nginx
-&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;sudo&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; password &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; pete: 
-        NS TYPE NPROCS   PID USER     NETNSID NSFS                           COMMAND
-...
-&lt;span style=&#34;color:#ae81ff&#34;&gt;4026533008&lt;/span&gt; net      &lt;span style=&#34;color:#ae81ff&#34;&gt;17&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;57327&lt;/span&gt; root           &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; /run/docker/netns/20790e4f73be nginx: master process nginx -g daemon off;
-&lt;span style=&#34;color:#ae81ff&#34;&gt;4026533108&lt;/span&gt; net      &lt;span style=&#34;color:#ae81ff&#34;&gt;17&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;57501&lt;/span&gt; root           &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; /run/docker/netns/11b21af68bd5 nginx: master process nginx -g daemon off;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Two network namespaces; one for each container. It&amp;rsquo;s worth noting if we had replicas in each service, each container within that service would get their own network namespace. So how does &lt;code&gt;docker compose&lt;/code&gt; allow &lt;code&gt;nginx_a&lt;/code&gt; to speak to &lt;code&gt;nginx_b&lt;/code&gt; given each container has it&amp;rsquo;s own network namespace?&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# remove the old nginx container&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker rm -f dummynginx
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now we&amp;rsquo;ll create a simple &lt;code&gt;docker-compose.yaml&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;---
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;version&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;3.1&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;services&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#f92672&#34;&gt;nginx_a&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#f92672&#34;&gt;image&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;nginx:latest&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#f92672&#34;&gt;ports&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      - &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;8080:80&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#f92672&#34;&gt;nginx_b&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#f92672&#34;&gt;image&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;nginx:latest&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;With this file stored as &lt;code&gt;docker-compose.yaml&lt;/code&gt; we&amp;rsquo;ll spin it up then check &lt;code&gt;lsns&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ docker compose up -d
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;+&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; Running 3/3
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; ⠿  Network linuxnetworks_default      Created  0.0s
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; ⠿ Container linuxnetworks-nginx_b-1   Started  0.3s
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; ⠿ Container linuxnetworks-nginx_a-1   Started  0.6s
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ sudo lsns -t net | grep nginx
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;sudo&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; password &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; pete: 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        NS TYPE NPROCS   PID USER     NETNSID NSFS                           COMMAND
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;4026533008&lt;/span&gt; net      &lt;span style=&#34;color:#ae81ff&#34;&gt;17&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;57327&lt;/span&gt; root           &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; /run/docker/netns/20790e4f73be nginx: master process nginx -g daemon off;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;4026533108&lt;/span&gt; net      &lt;span style=&#34;color:#ae81ff&#34;&gt;17&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;57501&lt;/span&gt; root           &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; /run/docker/netns/11b21af68bd5 nginx: master process nginx -g daemon off;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Two network namespaces; one for each container. It&amp;rsquo;s worth noting if we had replicas in each service, each container within that service would get their own network namespace. So how does &lt;code&gt;docker compose&lt;/code&gt; allow &lt;code&gt;nginx_a&lt;/code&gt; to speak to &lt;code&gt;nginx_b&lt;/code&gt; given each container has it&amp;rsquo;s own network namespace?&lt;/p&gt;
 &lt;p&gt;Firstly lets clarify the mystery we&amp;rsquo;re trying to solve:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;docker compose exec nginx_a curl nginx_b
-&amp;lt;!DOCTYPE html&amp;gt;
-&amp;lt;html&amp;gt;
-&amp;lt;head&amp;gt;
-&amp;lt;title&amp;gt;Welcome to nginx!&amp;lt;/title&amp;gt;
-&amp;lt;style&amp;gt;
-html &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt; color-scheme: light dark; &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
-body &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt; width: 35em; margin: &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; auto;
-font-family: Tahoma, Verdana, Arial, sans-serif; &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
-&amp;lt;/style&amp;gt;
-&amp;lt;/head&amp;gt;
-&amp;lt;body&amp;gt;
-&amp;lt;h1&amp;gt;Welcome to nginx!&amp;lt;/h1&amp;gt;
-&amp;lt;p&amp;gt;If you see this page, the nginx web server is successfully installed and
-working. Further configuration is required.&amp;lt;/p&amp;gt;
-
-&amp;lt;p&amp;gt;For online documentation and support please refer to
-&amp;lt;a href&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;http://nginx.org/&amp;#34;&lt;/span&gt;&amp;gt;nginx.org&amp;lt;/a&amp;gt;.&amp;lt;br/&amp;gt;
-Commercial support is available at
-&amp;lt;a href&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;http://nginx.com/&amp;#34;&lt;/span&gt;&amp;gt;nginx.com&amp;lt;/a&amp;gt;.&amp;lt;/p&amp;gt;
-
-&amp;lt;p&amp;gt;&amp;lt;em&amp;gt;Thank you &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; using nginx.&amp;lt;/em&amp;gt;&amp;lt;/p&amp;gt;
-&amp;lt;/body&amp;gt;
-&amp;lt;/html&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We connected to the &lt;code&gt;nginx_a&lt;/code&gt; container, then curl&amp;rsquo;ed &lt;code&gt;nginx_b&lt;/code&gt;. How does it work? We&amp;rsquo;ll dig in over the next few sections to understand how Docker makes this possible.&lt;/p&gt;
-&lt;h3 id=&#34;a-quick-note-on-the-links-property&#34;&gt;a quick note on the &amp;lsquo;links:&amp;rsquo; property&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker compose exec nginx_a curl nginx_b
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;lt;!DOCTYPE html&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;lt;html&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;lt;head&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;lt;title&amp;gt;Welcome to nginx!&amp;lt;/title&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;lt;style&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;html &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt; color-scheme: light dark; &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;body &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt; width: 35em; margin: &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; auto;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;font-family: Tahoma, Verdana, Arial, sans-serif; &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;lt;/style&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;lt;/head&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;lt;body&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;lt;h1&amp;gt;Welcome to nginx!&amp;lt;/h1&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;lt;p&amp;gt;If you see this page, the nginx web server is successfully installed and
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;working. Further configuration is required.&amp;lt;/p&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;lt;p&amp;gt;For online documentation and support please refer to
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;lt;a href&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;http://nginx.org/&amp;#34;&lt;/span&gt;&amp;gt;nginx.org&amp;lt;/a&amp;gt;.&amp;lt;br/&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Commercial support is available at
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;lt;a href&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;http://nginx.com/&amp;#34;&lt;/span&gt;&amp;gt;nginx.com&amp;lt;/a&amp;gt;.&amp;lt;/p&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;lt;p&amp;gt;&amp;lt;em&amp;gt;Thank you &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; using nginx.&amp;lt;/em&amp;gt;&amp;lt;/p&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;lt;/body&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;lt;/html&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We connected to the &lt;code&gt;nginx_a&lt;/code&gt; container, then curl&amp;rsquo;ed &lt;code&gt;nginx_b&lt;/code&gt;. How does it work? We&amp;rsquo;ll dig in over the next few sections to understand how Docker makes this possible.&lt;/p&gt;
+&lt;h3 id=&#34;a-quick-note-on-the-links-property&#34;&gt;a quick note on the &amp;rsquo;links:&amp;rsquo; property&lt;/h3&gt;
 &lt;p&gt;&lt;code&gt;docker compose&lt;/code&gt; supports a &lt;code&gt;links:&lt;/code&gt; property. This &lt;em&gt;is not&lt;/em&gt; required to allow services to speak to each other. It&amp;rsquo;s main purpose is to allow you to create aliases or to use hostname resolution, linking between containers in different docker compose files.&lt;/p&gt;
 &lt;p&gt;more info: &lt;a href=&#34;https://docs.docker.com/compose/compose-file/#links&#34;&gt;https://docs.docker.com/compose/compose-file/#links&lt;/a&gt;&lt;/p&gt;
 &lt;h3 id=&#34;dockers-internal-dns-server&#34;&gt;dockers internal DNS server&lt;/h3&gt;
 &lt;p&gt;Docker runs its own internal DNS server at &lt;code&gt;127.0.0.11&lt;/code&gt;. How do we know this? We can see it:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;docker compose exec -ti nginx_a bash
-root@b315617ce0dd:/# cat /etc/resolv.conf 
-nameserver 127.0.0.11
-options ndots:0
-root@b315617ce0dd:/# 
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can query this from &lt;code&gt;nginx_a&lt;/code&gt; by installing &lt;code&gt;dnsutils&lt;/code&gt; and using &lt;code&gt;nslookup&lt;/code&gt; or &lt;code&gt;dig&lt;/code&gt;:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;docker compose exec -ti nginx_a bash
-root@b315617ce0dd:/# apt update &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; apt install dnsutils
-root@b315617ce0dd:/# nslookup nginx_b 127.0.0.11
-Server:         127.0.0.11
-Address:        127.0.0.11#53
-
-Non-authoritative answer:
-Name:   nginx_b
-Address: 172.21.0.2
-
-root@b315617ce0dd:/#
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Just to be sure that IP is correct we can validate the IP for &lt;code&gt;nginx_b&lt;/code&gt; with &lt;code&gt;docker inspect&lt;/code&gt;:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;docker inspect &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;docker ps -f &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Name=nginx_b&amp;#39;&lt;/span&gt; -q&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt; -f &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;{{.NetworkSettings.Networks.linuxnetworks_default.IPAddress}}&amp;#39;&lt;/span&gt;
-172.21.0.2
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Looks good.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker compose exec -ti nginx_a bash
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;root@b315617ce0dd:/# cat /etc/resolv.conf 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;nameserver 127.0.0.11
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;options ndots:0
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;root@b315617ce0dd:/# 
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can query this from &lt;code&gt;nginx_a&lt;/code&gt; by installing &lt;code&gt;dnsutils&lt;/code&gt; and using &lt;code&gt;nslookup&lt;/code&gt; or &lt;code&gt;dig&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker compose exec -ti nginx_a bash
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;root@b315617ce0dd:/# apt update &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; apt install dnsutils
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;root@b315617ce0dd:/# nslookup nginx_b 127.0.0.11
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Server:         127.0.0.11
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Address:        127.0.0.11#53
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Non-authoritative answer:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Name:   nginx_b
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Address: 172.21.0.2
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;root@b315617ce0dd:/#
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Just to be sure that IP is correct we can validate the IP for &lt;code&gt;nginx_b&lt;/code&gt; with &lt;code&gt;docker inspect&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker inspect &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;docker ps -f &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Name=nginx_b&amp;#39;&lt;/span&gt; -q&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt; -f &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;{{.NetworkSettings.Networks.linuxnetworks_default.IPAddress}}&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;172.21.0.2
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Looks good.&lt;/p&gt;
 &lt;p&gt;When a container is created and connected to a network, Docker automatically creates a DNS record for that container, using the container name as the hostname and the IP address of the container as the record&amp;rsquo;s value. This enables other containers on the same network to access each other by name, rather than needing to know the IP address of the target container.&lt;/p&gt;
 &lt;h3 id=&#34;virtual-network-interfaces&#34;&gt;virtual network interfaces&lt;/h3&gt;
 &lt;p&gt;When we ran &lt;code&gt;docker compose&lt;/code&gt; it created a virtual network interface inside each containers network namespace. To look at the resources in a network namespace we first need to know where the &lt;code&gt;nsfs&lt;/code&gt; is. Looking at the example output above from &lt;code&gt;lsns&lt;/code&gt; above we seen this line:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;4026533008&lt;/span&gt; net      &lt;span style=&#34;color:#ae81ff&#34;&gt;17&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;57327&lt;/span&gt; root           &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; /run/docker/netns/20790e4f73be nginx: master process nginx -g daemon off;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;You&amp;rsquo;ll see in the &lt;code&gt;nsfs&lt;/code&gt; column we have: &lt;code&gt;/run/docker/netns/20790e4f73be&lt;/code&gt;. With this we can enter the namespace and run some commands from that namespace.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;4026533008&lt;/span&gt; net      &lt;span style=&#34;color:#ae81ff&#34;&gt;17&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;57327&lt;/span&gt; root           &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; /run/docker/netns/20790e4f73be nginx: master process nginx -g daemon off;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;You&amp;rsquo;ll see in the &lt;code&gt;nsfs&lt;/code&gt; column we have: &lt;code&gt;/run/docker/netns/20790e4f73be&lt;/code&gt;. With this we can enter the namespace and run some commands from that namespace.&lt;/p&gt;
 &lt;p&gt;You can also get this from &lt;code&gt;docker&lt;/code&gt; itself. Running &lt;code&gt;docker ps&lt;/code&gt; you can get the CONTAINER ID:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;docker ps
-CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS          PORTS                                   NAMES
-b315617ce0dd   nginx:latest   &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/docker-entrypoint.…&amp;#34;&lt;/span&gt;   &lt;span style=&#34;color:#ae81ff&#34;&gt;16&lt;/span&gt; minutes ago   Up &lt;span style=&#34;color:#ae81ff&#34;&gt;16&lt;/span&gt; minutes   0.0.0.0:8080-&amp;gt;80/tcp, :::8080-&amp;gt;80/tcp   linuxnetworks-nginx_a-1
-da9caf14c90c   nginx:latest   &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/docker-entrypoint.…&amp;#34;&lt;/span&gt;   &lt;span style=&#34;color:#ae81ff&#34;&gt;16&lt;/span&gt; minutes ago   Up &lt;span style=&#34;color:#ae81ff&#34;&gt;16&lt;/span&gt; minutes   80/tcp                                  linuxnetworks-nginx_b-1
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Then you can run &lt;code&gt;inspect&lt;/code&gt; to see the network settings:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;docker inspect b315617ce0dd -f &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;{{.NetworkSettings.SandboxKey}}&amp;#39;&lt;/span&gt;
-/var/run/docker/netns/11b21af68bd5
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Or the terribly ugly:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;docker inspect &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;docker ps -q -f &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Name=nginx_a&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt; -f &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;{{.NetworkSettings.SandboxKey}}&amp;#39;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Armed with the &lt;code&gt;nsfs&lt;/code&gt; path we can enter the namespace and run commands. Lets take a quick look at what interfaces are available in this namespace:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;sudo nsenter --net&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;/run/docker/netns/11b21af68bd5 ip link
-1: lo: &amp;lt;LOOPBACK,UP,LOWER_UP&amp;gt; mtu &lt;span style=&#34;color:#ae81ff&#34;&gt;65536&lt;/span&gt; qdisc noqueue state UNKNOWN mode DEFAULT group default qlen &lt;span style=&#34;color:#ae81ff&#34;&gt;1000&lt;/span&gt;
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-47: eth0@if48: &amp;lt;BROADCAST,MULTICAST,UP,LOWER_UP&amp;gt; mtu &lt;span style=&#34;color:#ae81ff&#34;&gt;1500&lt;/span&gt; qdisc noqueue state UP mode DEFAULT group default 
-    link/ether 02:42:ac:15:00:03 brd ff:ff:ff:ff:ff:ff link-netnsid &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Cool! We&amp;rsquo;re finally peaking behind the curtain.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker ps
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS          PORTS                                   NAMES
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;b315617ce0dd   nginx:latest   &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/docker-entrypoint.…&amp;#34;&lt;/span&gt;   &lt;span style=&#34;color:#ae81ff&#34;&gt;16&lt;/span&gt; minutes ago   Up &lt;span style=&#34;color:#ae81ff&#34;&gt;16&lt;/span&gt; minutes   0.0.0.0:8080-&amp;gt;80/tcp, :::8080-&amp;gt;80/tcp   linuxnetworks-nginx_a-1
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;da9caf14c90c   nginx:latest   &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/docker-entrypoint.…&amp;#34;&lt;/span&gt;   &lt;span style=&#34;color:#ae81ff&#34;&gt;16&lt;/span&gt; minutes ago   Up &lt;span style=&#34;color:#ae81ff&#34;&gt;16&lt;/span&gt; minutes   80/tcp                                  linuxnetworks-nginx_b-1
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Then you can run &lt;code&gt;inspect&lt;/code&gt; to see the network settings:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker inspect b315617ce0dd -f &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;{{.NetworkSettings.SandboxKey}}&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;/var/run/docker/netns/11b21af68bd5
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Or the terribly ugly:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker inspect &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;docker ps -q -f &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Name=nginx_a&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt; -f &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;{{.NetworkSettings.SandboxKey}}&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Armed with the &lt;code&gt;nsfs&lt;/code&gt; path we can enter the namespace and run commands. Lets take a quick look at what interfaces are available in this namespace:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo nsenter --net&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;/run/docker/netns/11b21af68bd5 ip link
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;1: lo: &amp;lt;LOOPBACK,UP,LOWER_UP&amp;gt; mtu &lt;span style=&#34;color:#ae81ff&#34;&gt;65536&lt;/span&gt; qdisc noqueue state UNKNOWN mode DEFAULT group default qlen &lt;span style=&#34;color:#ae81ff&#34;&gt;1000&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;47: eth0@if48: &amp;lt;BROADCAST,MULTICAST,UP,LOWER_UP&amp;gt; mtu &lt;span style=&#34;color:#ae81ff&#34;&gt;1500&lt;/span&gt; qdisc noqueue state UP mode DEFAULT group default 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    link/ether 02:42:ac:15:00:03 brd ff:ff:ff:ff:ff:ff link-netnsid &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Cool! We&amp;rsquo;re finally peaking behind the curtain.&lt;/p&gt;
 &lt;h3 id=&#34;exploring-the-namespace&#34;&gt;exploring the namespace&lt;/h3&gt;
 &lt;p&gt;Now that we have the ability to run commands from the namespace we can request some more information about this interface with &lt;code&gt;ip addr show&lt;/code&gt;:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;sudo nsenter --net&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;/run/docker/netns/11b21af68bd5 ip addr show eth0
-47: eth0@if48: &amp;lt;BROADCAST,MULTICAST,UP,LOWER_UP&amp;gt; mtu &lt;span style=&#34;color:#ae81ff&#34;&gt;1500&lt;/span&gt; qdisc noqueue state UP group default 
-    link/ether 02:42:ac:15:00:03 brd ff:ff:ff:ff:ff:ff link-netnsid &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
-    inet 172.21.0.3/16 brd 172.21.255.255 scope global eth0
-       valid_lft forever preferred_lft forever
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can also get the route table information with &lt;code&gt;ip route show&lt;/code&gt;:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;sudo nsenter --net&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;/run/docker/netns/11b21af68bd5 ip route show
-default via 172.21.0.1 dev eth0 
-172.21.0.0/16 dev eth0 proto kernel scope link src 172.21.0.3
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And we can even run good old faithful &lt;code&gt;netstat&lt;/code&gt; to check out which ports we&amp;rsquo;re listening on:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;sudo nsenter --net&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;/run/docker/netns/11b21af68bd5 netstat -tulnp
-Active Internet connections &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;only servers&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name    
-tcp        &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;      &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; 127.0.0.11:32889        0.0.0.0:*               LISTEN      16568/dockerd       
-tcp        &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;      &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; 0.0.0.0:80              0.0.0.0:*               LISTEN      57501/nginx: master 
-tcp6       &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;      &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; :::80                   :::*                    LISTEN      57501/nginx: master 
-udp        &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;      &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; 127.0.0.11:51543        0.0.0.0:*                           16568/dockerd
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;docker-bridge&#34;&gt;docker bridge&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo nsenter --net&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;/run/docker/netns/11b21af68bd5 ip addr show eth0
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;47: eth0@if48: &amp;lt;BROADCAST,MULTICAST,UP,LOWER_UP&amp;gt; mtu &lt;span style=&#34;color:#ae81ff&#34;&gt;1500&lt;/span&gt; qdisc noqueue state UP group default 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    link/ether 02:42:ac:15:00:03 brd ff:ff:ff:ff:ff:ff link-netnsid &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    inet 172.21.0.3/16 brd 172.21.255.255 scope global eth0
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;       valid_lft forever preferred_lft forever
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can also get the route table information with &lt;code&gt;ip route show&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo nsenter --net&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;/run/docker/netns/11b21af68bd5 ip route show
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;default via 172.21.0.1 dev eth0 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;172.21.0.0/16 dev eth0 proto kernel scope link src 172.21.0.3
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And we can even run good old faithful &lt;code&gt;netstat&lt;/code&gt; to check out which ports we&amp;rsquo;re listening on:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo nsenter --net&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;/run/docker/netns/11b21af68bd5 netstat -tulnp
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Active Internet connections &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;only servers&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name    
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;tcp        &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;      &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; 127.0.0.11:32889        0.0.0.0:*               LISTEN      16568/dockerd       
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;tcp        &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;      &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; 0.0.0.0:80              0.0.0.0:*               LISTEN      57501/nginx: master 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;tcp6       &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;      &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; :::80                   :::*                    LISTEN      57501/nginx: master 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;udp        &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;      &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; 127.0.0.11:51543        0.0.0.0:*                           16568/dockerd
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;docker-bridge&#34;&gt;docker bridge&lt;/h3&gt;
 &lt;p&gt;Using the &lt;code&gt;ip route&lt;/code&gt; command above we seen:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;sudo nsenter --net&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;/run/docker/netns/11b21af68bd5 ip route show
-default via 172.21.0.1 dev eth0 
-172.21.0.0/16 dev eth0 proto kernel scope link src 172.21.0.3
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;So what is &lt;code&gt;172.21.0.1&lt;/code&gt;? That is the default gateway, the docker bridge. How can we know? Well, firstly we can list &lt;code&gt;docker&lt;/code&gt; networks with:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ docker network ls
-NETWORK ID     NAME                    DRIVER    SCOPE
-a52a287eb9f2   bridge                  bridge    local
-8f5afced6d3f   host                    host      local
-19508f629e30   none                    null      local
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And then we can &lt;code&gt;inspect&lt;/code&gt; the networks, like so:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ docker network inspect bridge
-&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;
-    &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
-        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Name&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;bridge&amp;#34;&lt;/span&gt;,
-        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Id&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;a52a287eb9f2af463e14ac4a97583b96a9dc66e28b5ac67967321386834e4e24&amp;#34;&lt;/span&gt;,
-        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Created&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;2023-01-18T20:00:03.09775174Z&amp;#34;&lt;/span&gt;,
-        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Scope&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;local&amp;#34;&lt;/span&gt;,
-        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Driver&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;bridge&amp;#34;&lt;/span&gt;,
-        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;EnableIPv6&amp;#34;&lt;/span&gt;: false,
-        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;IPAM&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
-            &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Driver&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;default&amp;#34;&lt;/span&gt;,
-            &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Options&amp;#34;&lt;/span&gt;: null,
-            &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Config&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;
-                &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
-                    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Subnet&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;172.17.0.0/16&amp;#34;&lt;/span&gt;,
-                    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Gateway&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;172.17.0.1&amp;#34;&lt;/span&gt;
-                &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
-            &lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
-        &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;,
-        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Internal&amp;#34;&lt;/span&gt;: false,
-        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Attachable&amp;#34;&lt;/span&gt;: false,
-        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Ingress&amp;#34;&lt;/span&gt;: false,
-        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;ConfigFrom&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
-            &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Network&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;
-        &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;,
-        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;ConfigOnly&amp;#34;&lt;/span&gt;: false,
-        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Containers&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;{}&lt;/span&gt;,
-        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Options&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
-            &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;com.docker.network.bridge.default_bridge&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;true&amp;#34;&lt;/span&gt;,
-            &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;com.docker.network.bridge.enable_icc&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;true&amp;#34;&lt;/span&gt;,
-            &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;com.docker.network.bridge.enable_ip_masquerade&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;true&amp;#34;&lt;/span&gt;,
-            &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;com.docker.network.bridge.host_binding_ipv4&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;0.0.0.0&amp;#34;&lt;/span&gt;,
-            &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;com.docker.network.bridge.name&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;docker0&amp;#34;&lt;/span&gt;,
-            &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;com.docker.network.driver.mtu&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;1500&amp;#34;&lt;/span&gt;
-        &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;,
-        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Labels&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;{}&lt;/span&gt;
-    &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
-&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can see the Gateway for &lt;code&gt;bridge&lt;/code&gt; is set to &lt;code&gt;172.17.0.1&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo nsenter --net&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;/run/docker/netns/11b21af68bd5 ip route show
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;default via 172.21.0.1 dev eth0 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;172.21.0.0/16 dev eth0 proto kernel scope link src 172.21.0.3
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;So what is &lt;code&gt;172.21.0.1&lt;/code&gt;? That is the default gateway, the docker bridge. How can we know? Well, firstly we can list &lt;code&gt;docker&lt;/code&gt; networks with:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ docker network ls
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;NETWORK ID     NAME                    DRIVER    SCOPE
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;a52a287eb9f2   bridge                  bridge    local
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;8f5afced6d3f   host                    host      local
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;19508f629e30   none                    null      local
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And then we can &lt;code&gt;inspect&lt;/code&gt; the networks, like so:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ docker network inspect bridge
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Name&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;bridge&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Id&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;a52a287eb9f2af463e14ac4a97583b96a9dc66e28b5ac67967321386834e4e24&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Created&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;2023-01-18T20:00:03.09775174Z&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Scope&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;local&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Driver&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;bridge&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;EnableIPv6&amp;#34;&lt;/span&gt;: false,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;IPAM&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Driver&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;default&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Options&amp;#34;&lt;/span&gt;: null,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Config&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Subnet&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;172.17.0.0/16&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Gateway&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;172.17.0.1&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Internal&amp;#34;&lt;/span&gt;: false,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Attachable&amp;#34;&lt;/span&gt;: false,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Ingress&amp;#34;&lt;/span&gt;: false,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;ConfigFrom&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Network&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;ConfigOnly&amp;#34;&lt;/span&gt;: false,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Containers&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;{}&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Options&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;com.docker.network.bridge.default_bridge&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;true&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;com.docker.network.bridge.enable_icc&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;true&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;com.docker.network.bridge.enable_ip_masquerade&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;true&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;com.docker.network.bridge.host_binding_ipv4&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;0.0.0.0&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;com.docker.network.bridge.name&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;docker0&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;com.docker.network.driver.mtu&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;1500&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Labels&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;{}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can see the Gateway for &lt;code&gt;bridge&lt;/code&gt; is set to &lt;code&gt;172.17.0.1&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;The Docker bridge default gateway is responsible for connecting containers running in separate network namespaces, using the IP addresses and MAC addresses of the containers connected to it to forward packets to the correct container. When a packet is received by the bridge, it checks the destination IP address of the packet and compares it to the IP addresses of the connected containers. If a match is found, the packet is then forwarded to the corresponding container using the container&amp;rsquo;s MAC address. Additionally, the bridge also uses network address translation (NAT) to rewrite the source IP address of the packet to that of the bridge, allowing the containers to communicate with external networks.&lt;/p&gt;
 &lt;h3 id=&#34;so--how-does-nginx_a-speak-to-nginx_b-recap&#34;&gt;so &amp;hellip; how does nginx_a speak to nginx_b? (recap)&lt;/h3&gt;
 &lt;p&gt;The request starts from &lt;code&gt;nginx_a&lt;/code&gt; with &lt;code&gt;curl nginx_a&lt;/code&gt;. &lt;code&gt;nginx_a&lt;/code&gt; is configured to resolve DNS with Dockers internal DNS, as defined in its &lt;code&gt;/etc/resolv.conf&lt;/code&gt; file. Dockers Internal DNS resolves &lt;code&gt;nginx_b&lt;/code&gt; to &lt;code&gt;172.21.0.2&lt;/code&gt; which is within the range of the default gateway in, the docker bridge, as defined in this containers route table. The Docker Bridge acts as a gateway and rewrites the source IP of the packet to the NAT to allow for return traffic using NAT, then forwards the request onto the desired destination at &lt;code&gt;172.21.0.2&lt;/code&gt;. The request then works its way back to the real source, via the default gateway once more.&lt;/p&gt;
 &lt;h3 id=&#34;network_mode&#34;&gt;network_mode&lt;/h3&gt;
 &lt;p&gt;&lt;code&gt;docker compose&lt;/code&gt; supports another interesting property that we&amp;rsquo;ll take a quick look at: &lt;code&gt;network_mode:&lt;/code&gt;. With this setting we can tell services to share the same network resources. As we&amp;rsquo;re using &lt;code&gt;nginx&lt;/code&gt; in both services currently they will both try to bind on port &lt;code&gt;80&lt;/code&gt; which will cause problems if they are sharing the same resources so for &lt;code&gt;nginx_b&lt;/code&gt; we&amp;rsquo;ll create a unique nginx config file &lt;code&gt;netsvc.conf&lt;/code&gt;:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-txt&#34; data-lang=&#34;txt&#34;&gt;server {
-    listen       9080;
-    server_name  localhost;
-    location / {
-        root   /usr/share/nginx/html;
-        index  index.html index.htm;
-    }
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This is as simple an nginx config as you can get. Notably we&amp;rsquo;re telling it to listen on &lt;code&gt;9080&lt;/code&gt; instead of the default &lt;code&gt;80&lt;/code&gt; so that they can run in the same network namespace without colliding.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-txt&#34; data-lang=&#34;txt&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;server {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    listen       9080;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    server_name  localhost;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    location / {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        root   /usr/share/nginx/html;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        index  index.html index.htm;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This is as simple an nginx config as you can get. Notably we&amp;rsquo;re telling it to listen on &lt;code&gt;9080&lt;/code&gt; instead of the default &lt;code&gt;80&lt;/code&gt; so that they can run in the same network namespace without colliding.&lt;/p&gt;
 &lt;p&gt;Now we&amp;rsquo;ll create an updated &lt;code&gt;docker-compose-netsvc.yaml&lt;/code&gt; file:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;---
-&lt;span style=&#34;color:#f92672&#34;&gt;version&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;3.1&amp;#39;&lt;/span&gt;
-&lt;span style=&#34;color:#f92672&#34;&gt;services&lt;/span&gt;:
-  &lt;span style=&#34;color:#f92672&#34;&gt;nginx_a&lt;/span&gt;:
-    &lt;span style=&#34;color:#f92672&#34;&gt;image&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;nginx:latest&amp;#39;&lt;/span&gt;
-    &lt;span style=&#34;color:#f92672&#34;&gt;ports&lt;/span&gt;:
-      - &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;8080:80&amp;#39;&lt;/span&gt;
-      - &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;9080:9080&amp;#39;&lt;/span&gt;
-  &lt;span style=&#34;color:#f92672&#34;&gt;nginx_b&lt;/span&gt;:
-    &lt;span style=&#34;color:#f92672&#34;&gt;image&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;nginx:latest&amp;#39;&lt;/span&gt;
-    &lt;span style=&#34;color:#f92672&#34;&gt;volumes&lt;/span&gt;:
-      - &lt;span style=&#34;color:#ae81ff&#34;&gt;./netsvc.conf:/etc/nginx/conf.d/default.conf:ro&lt;/span&gt;
-    &lt;span style=&#34;color:#f92672&#34;&gt;network_mode&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;service:nginx_a&amp;#34;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;See how we put our port-mapping for &lt;code&gt;nginx_b&lt;/code&gt; (to &lt;code&gt;:9080&lt;/code&gt;) in &lt;code&gt;nginx_a&lt;/code&gt;? With this file in place we&amp;rsquo;ll run our new compose:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;docker compose -f docker-compose-netsvc.yaml up -d
-&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;+&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; Running 2/2
- ⠿ Container linuxnetworks-nginx_a-1  Started  0.4s
- ⠿ Container linuxnetworks-nginx_b-1  Started  0.6s
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Running &lt;code&gt;lsns&lt;/code&gt; this time we can see that we only have one network namespace (compared to two that we seen with the original &lt;code&gt;docker-compose.yaml&lt;/code&gt; file):&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;sudo lsns -t net | grep nginx
-&lt;span style=&#34;color:#ae81ff&#34;&gt;4026533007&lt;/span&gt; net      &lt;span style=&#34;color:#ae81ff&#34;&gt;34&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;148278&lt;/span&gt; root           &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; /run/docker/netns/1e55105e0804 nginx: master process nginx -g daemon off;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We do still have two containers of course:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;docker compose ps
-NAME                      IMAGE               COMMAND                  SERVICE             CREATED             STATUS              PORTS
-linuxnetworks-nginx_a-1   nginx:latest        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/docker-entrypoint.…&amp;#34;&lt;/span&gt;   nginx_a             &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt; minutes ago       Up &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt; minutes        0.0.0.0:8080-&amp;gt;80/tcp, :::8080-&amp;gt;80/tcp, 0.0.0.0:9080-&amp;gt;9080/tcp, :::9080-&amp;gt;9080/tcp
-linuxnetworks-nginx_b-1   nginx:latest        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/docker-entrypoint.…&amp;#34;&lt;/span&gt;   nginx_b             &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt; minutes ago       Up &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt; minutes        
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can see from &lt;code&gt;docker inspect&lt;/code&gt; the &lt;code&gt;nginx_b&lt;/code&gt; container has no visible network settings:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ docker inspect &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;docker ps -f &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Name=nginx_b&amp;#39;&lt;/span&gt; -q&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt; -f &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;{{.NetworkSettings.Networks.linuxnetworks_default.IPAddress}}&amp;#39;&lt;/span&gt;
-&amp;lt;no value&amp;gt;
-
-$ docker inspect &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;docker ps -f &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Name=nginx_b&amp;#39;&lt;/span&gt; -q&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt; -f &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;{{.NetworkSettings.SandboxKey}}&amp;#39;&lt;/span&gt;
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can check the &lt;code&gt;nginx_a&lt;/code&gt; network settings and see that all looks good there:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ docker inspect &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;docker ps -f &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Name=nginx_a&amp;#39;&lt;/span&gt; -q&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt; -f &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;{{.NetworkSettings.Networks.linuxnetworks_default.IPAddress}}&amp;#39;&lt;/span&gt;
-172.22.0.2
-$ docker inspect &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;docker ps -f &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Name=nginx_a&amp;#39;&lt;/span&gt; -q&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt; -f &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;{{.NetworkSettings.SandboxKey}}&amp;#39;&lt;/span&gt;
-/var/run/docker/netns/1e55105e0804
-
-sudo nsenter --net&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;/var/run/docker/netns/1e55105e0804 ip link
-1: lo: &amp;lt;LOOPBACK,UP,LOWER_UP&amp;gt; mtu &lt;span style=&#34;color:#ae81ff&#34;&gt;65536&lt;/span&gt; qdisc noqueue state UNKNOWN mode DEFAULT group default qlen &lt;span style=&#34;color:#ae81ff&#34;&gt;1000&lt;/span&gt;
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-80: eth0@if81: &amp;lt;BROADCAST,MULTICAST,UP,LOWER_UP&amp;gt; mtu &lt;span style=&#34;color:#ae81ff&#34;&gt;1500&lt;/span&gt; qdisc noqueue state UP mode DEFAULT group default 
-    link/ether 02:42:ac:16:00:02 brd ff:ff:ff:ff:ff:ff link-netnsid &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;You can imagine, say, running a VPN as a service and then forcing all other services to use that network namespace and resources. Super cool.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;---
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;version&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;3.1&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;services&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#f92672&#34;&gt;nginx_a&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#f92672&#34;&gt;image&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;nginx:latest&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#f92672&#34;&gt;ports&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      - &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;8080:80&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      - &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;9080:9080&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#f92672&#34;&gt;nginx_b&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#f92672&#34;&gt;image&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;nginx:latest&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#f92672&#34;&gt;volumes&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      - &lt;span style=&#34;color:#ae81ff&#34;&gt;./netsvc.conf:/etc/nginx/conf.d/default.conf:ro&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#f92672&#34;&gt;network_mode&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;service:nginx_a&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;See how we put our port-mapping for &lt;code&gt;nginx_b&lt;/code&gt; (to &lt;code&gt;:9080&lt;/code&gt;) in &lt;code&gt;nginx_a&lt;/code&gt;? With this file in place we&amp;rsquo;ll run our new compose:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker compose -f docker-compose-netsvc.yaml up -d
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;+&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; Running 2/2
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; ⠿ Container linuxnetworks-nginx_a-1  Started  0.4s
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; ⠿ Container linuxnetworks-nginx_b-1  Started  0.6s
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Running &lt;code&gt;lsns&lt;/code&gt; this time we can see that we only have one network namespace (compared to two that we seen with the original &lt;code&gt;docker-compose.yaml&lt;/code&gt; file):&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo lsns -t net | grep nginx
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;4026533007&lt;/span&gt; net      &lt;span style=&#34;color:#ae81ff&#34;&gt;34&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;148278&lt;/span&gt; root           &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; /run/docker/netns/1e55105e0804 nginx: master process nginx -g daemon off;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We do still have two containers of course:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker compose ps
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;NAME                      IMAGE               COMMAND                  SERVICE             CREATED             STATUS              PORTS
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;linuxnetworks-nginx_a-1   nginx:latest        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/docker-entrypoint.…&amp;#34;&lt;/span&gt;   nginx_a             &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt; minutes ago       Up &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt; minutes        0.0.0.0:8080-&amp;gt;80/tcp, :::8080-&amp;gt;80/tcp, 0.0.0.0:9080-&amp;gt;9080/tcp, :::9080-&amp;gt;9080/tcp
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;linuxnetworks-nginx_b-1   nginx:latest        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/docker-entrypoint.…&amp;#34;&lt;/span&gt;   nginx_b             &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt; minutes ago       Up &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt; minutes        
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can see from &lt;code&gt;docker inspect&lt;/code&gt; the &lt;code&gt;nginx_b&lt;/code&gt; container has no visible network settings:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ docker inspect &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;docker ps -f &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Name=nginx_b&amp;#39;&lt;/span&gt; -q&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt; -f &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;{{.NetworkSettings.Networks.linuxnetworks_default.IPAddress}}&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;lt;no value&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ docker inspect &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;docker ps -f &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Name=nginx_b&amp;#39;&lt;/span&gt; -q&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt; -f &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;{{.NetworkSettings.SandboxKey}}&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can check the &lt;code&gt;nginx_a&lt;/code&gt; network settings and see that all looks good there:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ docker inspect &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;docker ps -f &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Name=nginx_a&amp;#39;&lt;/span&gt; -q&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt; -f &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;{{.NetworkSettings.Networks.linuxnetworks_default.IPAddress}}&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;172.22.0.2
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ docker inspect &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;docker ps -f &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Name=nginx_a&amp;#39;&lt;/span&gt; -q&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt; -f &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;{{.NetworkSettings.SandboxKey}}&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;/var/run/docker/netns/1e55105e0804
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo nsenter --net&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;/var/run/docker/netns/1e55105e0804 ip link
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;1: lo: &amp;lt;LOOPBACK,UP,LOWER_UP&amp;gt; mtu &lt;span style=&#34;color:#ae81ff&#34;&gt;65536&lt;/span&gt; qdisc noqueue state UNKNOWN mode DEFAULT group default qlen &lt;span style=&#34;color:#ae81ff&#34;&gt;1000&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;80: eth0@if81: &amp;lt;BROADCAST,MULTICAST,UP,LOWER_UP&amp;gt; mtu &lt;span style=&#34;color:#ae81ff&#34;&gt;1500&lt;/span&gt; qdisc noqueue state UP mode DEFAULT group default 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    link/ether 02:42:ac:16:00:02 brd ff:ff:ff:ff:ff:ff link-netnsid &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;You can imagine, say, running a VPN as a service and then forcing all other services to use that network namespace and resources. Super cool.&lt;/p&gt;
 &lt;p&gt;I hope this article has taught you a little about network namespaces and Dockers networking. Happy Hacking o/&lt;/p&gt;
 </content>
     </item>

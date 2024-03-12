@@ -1,7 +1,7 @@
 {
 	"version": 3,
 	"file": "style.css",
-	"sourceRoot": "/home/peter/go/src/github.com/peter-mcconnell/petermcconnell.com",
+	"sourceRoot": "/Users/petermcconnell/go/src/github.com/peter-mcconnell/petermcconnell.com",
 	"sources": [
 		"css/base.scss",
 		"themes/terminal/assets/css/variables.scss",

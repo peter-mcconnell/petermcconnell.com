@@ -5,11 +5,11 @@
     <link>https://www.petermcconnell.com/tags/</link>
     <description>Recent content in Tags on Peter McConnell :: Ponderings from a Linux Systems engineer</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
+    <language>en</language>
     <copyright>&amp;copy; Peter McConnell 2023</copyright>
     <lastBuildDate>Sun, 18 Feb 2024 11:40:02 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>ebpf</title>
+      <title>Ebpf</title>
       <link>https://www.petermcconnell.com/tags/ebpf/</link>
       <pubDate>Sun, 18 Feb 2024 11:40:02 +0000</pubDate>
       
@@ -19,7 +19,7 @@
     </item>
     
     <item>
-      <title>golang</title>
+      <title>Golang</title>
       <link>https://www.petermcconnell.com/tags/golang/</link>
       <pubDate>Sun, 18 Feb 2024 11:40:02 +0000</pubDate>
       
@@ -29,7 +29,7 @@
     </item>
     
     <item>
-      <title>libpam</title>
+      <title>Libpam</title>
       <link>https://www.petermcconnell.com/tags/libpam/</link>
       <pubDate>Sun, 18 Feb 2024 11:40:02 +0000</pubDate>
       
@@ -39,7 +39,7 @@
     </item>
     
     <item>
-      <title>linux</title>
+      <title>Linux</title>
       <link>https://www.petermcconnell.com/tags/linux/</link>
       <pubDate>Sun, 18 Feb 2024 11:40:02 +0000</pubDate>
       
@@ -49,7 +49,7 @@
     </item>
     
     <item>
-      <title>security</title>
+      <title>Security</title>
       <link>https://www.petermcconnell.com/tags/security/</link>
       <pubDate>Sun, 18 Feb 2024 11:40:02 +0000</pubDate>
       
@@ -59,7 +59,7 @@
     </item>
     
     <item>
-      <title>chaos-engineering</title>
+      <title>Chaos-Engineering</title>
       <link>https://www.petermcconnell.com/tags/chaos-engineering/</link>
       <pubDate>Wed, 17 May 2023 15:31:43 +0000</pubDate>
       
@@ -69,7 +69,7 @@
     </item>
     
     <item>
-      <title>xdp</title>
+      <title>Xdp</title>
       <link>https://www.petermcconnell.com/tags/xdp/</link>
       <pubDate>Wed, 17 May 2023 15:31:43 +0000</pubDate>
       
@@ -79,7 +79,7 @@
     </item>
     
     <item>
-      <title>docker</title>
+      <title>Docker</title>
       <link>https://www.petermcconnell.com/tags/docker/</link>
       <pubDate>Thu, 19 Jan 2023 12:05:02 +0000</pubDate>
       
@@ -89,7 +89,7 @@
     </item>
     
     <item>
-      <title>filesystems</title>
+      <title>Filesystems</title>
       <link>https://www.petermcconnell.com/tags/filesystems/</link>
       <pubDate>Thu, 19 Jan 2023 12:05:02 +0000</pubDate>
       
@@ -99,7 +99,7 @@
     </item>
     
     <item>
-      <title>overlayfs</title>
+      <title>Overlayfs</title>
       <link>https://www.petermcconnell.com/tags/overlayfs/</link>
       <pubDate>Thu, 19 Jan 2023 12:05:02 +0000</pubDate>
       
@@ -109,7 +109,7 @@
     </item>
     
     <item>
-      <title>namespaces</title>
+      <title>Namespaces</title>
       <link>https://www.petermcconnell.com/tags/namespaces/</link>
       <pubDate>Wed, 18 Jan 2023 19:48:46 +0000</pubDate>
       
@@ -119,7 +119,7 @@
     </item>
     
     <item>
-      <title>networking</title>
+      <title>Networking</title>
       <link>https://www.petermcconnell.com/tags/networking/</link>
       <pubDate>Wed, 18 Jan 2023 19:48:46 +0000</pubDate>
       
@@ -129,7 +129,7 @@
     </item>
     
     <item>
-      <title>career advice</title>
+      <title>Career Advice</title>
       <link>https://www.petermcconnell.com/tags/career-advice/</link>
       <pubDate>Tue, 10 Jan 2023 08:41:50 +0000</pubDate>
       
@@ -139,7 +139,7 @@
     </item>
     
     <item>
-      <title>mentorship</title>
+      <title>Mentorship</title>
       <link>https://www.petermcconnell.com/tags/mentorship/</link>
       <pubDate>Tue, 10 Jan 2023 08:41:50 +0000</pubDate>
       
@@ -149,7 +149,7 @@
     </item>
     
     <item>
-      <title>software engineering</title>
+      <title>Software Engineering</title>
       <link>https://www.petermcconnell.com/tags/software-engineering/</link>
       <pubDate>Tue, 10 Jan 2023 08:41:50 +0000</pubDate>
       
@@ -159,7 +159,7 @@
     </item>
     
     <item>
-      <title>debugging</title>
+      <title>Debugging</title>
       <link>https://www.petermcconnell.com/tags/debugging/</link>
       <pubDate>Thu, 05 Jan 2023 16:51:58 +0000</pubDate>
       
@@ -169,7 +169,7 @@
     </item>
     
     <item>
-      <title>ipdb</title>
+      <title>Ipdb</title>
       <link>https://www.petermcconnell.com/tags/ipdb/</link>
       <pubDate>Thu, 05 Jan 2023 16:51:58 +0000</pubDate>
       
@@ -179,7 +179,7 @@
     </item>
     
     <item>
-      <title>pdb</title>
+      <title>Pdb</title>
       <link>https://www.petermcconnell.com/tags/pdb/</link>
       <pubDate>Thu, 05 Jan 2023 16:51:58 +0000</pubDate>
       
@@ -199,7 +199,7 @@
     </item>
     
     <item>
-      <title>delve</title>
+      <title>Delve</title>
       <link>https://www.petermcconnell.com/tags/delve/</link>
       <pubDate>Tue, 03 Jan 2023 12:33:02 +0000</pubDate>
       
@@ -209,7 +209,7 @@
     </item>
     
     <item>
-      <title>devops</title>
+      <title>Devops</title>
       <link>https://www.petermcconnell.com/tags/devops/</link>
       <pubDate>Fri, 30 Dec 2022 20:34:57 +0000</pubDate>
       
@@ -219,7 +219,7 @@
     </item>
     
     <item>
-      <title>engineering</title>
+      <title>Engineering</title>
       <link>https://www.petermcconnell.com/tags/engineering/</link>
       <pubDate>Fri, 30 Dec 2022 20:34:57 +0000</pubDate>
       
@@ -229,7 +229,7 @@
     </item>
     
     <item>
-      <title>platform</title>
+      <title>Platform</title>
       <link>https://www.petermcconnell.com/tags/platform/</link>
       <pubDate>Fri, 30 Dec 2022 20:34:57 +0000</pubDate>
       
@@ -239,7 +239,7 @@
     </item>
     
     <item>
-      <title>df</title>
+      <title>Df</title>
       <link>https://www.petermcconnell.com/tags/df/</link>
       <pubDate>Fri, 30 Dec 2022 14:28:12 +0000</pubDate>
       
@@ -249,7 +249,7 @@
     </item>
     
     <item>
-      <title>iostat</title>
+      <title>Iostat</title>
       <link>https://www.petermcconnell.com/tags/iostat/</link>
       <pubDate>Fri, 30 Dec 2022 14:28:12 +0000</pubDate>
       
@@ -259,7 +259,7 @@
     </item>
     
     <item>
-      <title>lsblk</title>
+      <title>Lsblk</title>
       <link>https://www.petermcconnell.com/tags/lsblk/</link>
       <pubDate>Fri, 30 Dec 2022 14:28:12 +0000</pubDate>
       
@@ -269,7 +269,7 @@
     </item>
     
     <item>
-      <title>mpstat</title>
+      <title>Mpstat</title>
       <link>https://www.petermcconnell.com/tags/mpstat/</link>
       <pubDate>Fri, 30 Dec 2022 14:28:12 +0000</pubDate>
       
@@ -279,7 +279,7 @@
     </item>
     
     <item>
-      <title>perf</title>
+      <title>Perf</title>
       <link>https://www.petermcconnell.com/tags/perf/</link>
       <pubDate>Fri, 30 Dec 2022 14:28:12 +0000</pubDate>
       
@@ -289,7 +289,7 @@
     </item>
     
     <item>
-      <title>sar</title>
+      <title>Sar</title>
       <link>https://www.petermcconnell.com/tags/sar/</link>
       <pubDate>Fri, 30 Dec 2022 14:28:12 +0000</pubDate>
       
@@ -299,7 +299,7 @@
     </item>
     
     <item>
-      <title>top</title>
+      <title>Top</title>
       <link>https://www.petermcconnell.com/tags/top/</link>
       <pubDate>Fri, 30 Dec 2022 14:28:12 +0000</pubDate>
       
@@ -309,7 +309,7 @@
     </item>
     
     <item>
-      <title>microservice</title>
+      <title>Microservice</title>
       <link>https://www.petermcconnell.com/tags/microservice/</link>
       <pubDate>Mon, 26 Dec 2022 15:01:29 +0000</pubDate>
       
@@ -319,7 +319,7 @@
     </item>
     
     <item>
-      <title>monorepo</title>
+      <title>Monorepo</title>
       <link>https://www.petermcconnell.com/tags/monorepo/</link>
       <pubDate>Mon, 26 Dec 2022 15:01:29 +0000</pubDate>
       
@@ -329,7 +329,7 @@
     </item>
     
     <item>
-      <title>chatGPT</title>
+      <title>ChatGPT</title>
       <link>https://www.petermcconnell.com/tags/chatgpt/</link>
       <pubDate>Thu, 08 Dec 2022 11:41:50 +0000</pubDate>
       
@@ -349,7 +349,7 @@
     </item>
     
     <item>
-      <title>neovim</title>
+      <title>Neovim</title>
       <link>https://www.petermcconnell.com/tags/neovim/</link>
       <pubDate>Thu, 01 Dec 2022 11:36:49 +0000</pubDate>
       
@@ -359,7 +359,7 @@
     </item>
     
     <item>
-      <title>vim</title>
+      <title>Vim</title>
       <link>https://www.petermcconnell.com/tags/vim/</link>
       <pubDate>Thu, 01 Dec 2022 11:36:49 +0000</pubDate>
       
@@ -369,7 +369,7 @@
     </item>
     
     <item>
-      <title>amplify</title>
+      <title>Amplify</title>
       <link>https://www.petermcconnell.com/tags/amplify/</link>
       <pubDate>Tue, 29 Nov 2022 23:16:21 +0000</pubDate>
       
@@ -379,7 +379,7 @@
     </item>
     
     <item>
-      <title>aws</title>
+      <title>Aws</title>
       <link>https://www.petermcconnell.com/tags/aws/</link>
       <pubDate>Tue, 29 Nov 2022 23:16:21 +0000</pubDate>
       
@@ -389,7 +389,7 @@
     </item>
     
     <item>
-      <title>hugo</title>
+      <title>Hugo</title>
       <link>https://www.petermcconnell.com/tags/hugo/</link>
       <pubDate>Tue, 29 Nov 2022 23:16:21 +0000</pubDate>
       
@@ -399,7 +399,7 @@
     </item>
     
     <item>
-      <title>books</title>
+      <title>Books</title>
       <link>https://www.petermcconnell.com/tags/books/</link>
       <pubDate>Tue, 29 Nov 2022 20:30:52 +0000</pubDate>
       

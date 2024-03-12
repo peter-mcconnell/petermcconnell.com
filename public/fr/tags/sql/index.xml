@@ -5,7 +5,7 @@
     <link>https://www.petermcconnell.com/fr/tags/sql/</link>
     <description>Recent content in SQL on Peter McConnell :: Réflexions d&#39;un ingénieur système Linux</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
+    <language>fr</language>
     <copyright>&amp;copy; Peter McConnell 2023</copyright>
     <lastBuildDate>Thu, 08 Dec 2022 11:41:50 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/fr/tags/sql/index.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -15,7 +15,7 @@
       
       <guid>https://www.petermcconnell.com/fr/posts/ai_db_testing/</guid>
       <description>Création d&amp;rsquo;un outil de test de base de données automatisé avec ChatGPT
- Hier soir, j&amp;rsquo;ai pensé essayer de faire en sorte que ChatGPT crée une base de données automatisée outil de test et les résultats étaient assez prometteurs.
+Hier soir, j&amp;rsquo;ai pensé essayer de faire en sorte que ChatGPT crée une base de données automatisée outil de test et les résultats étaient assez prometteurs.
 En conclusion, avec des conseils, il a pu construire un projet à partir de zéro qui a exécuté un script python et une base de données postgres. Il a généré un schéma aléatoire et valeurs pour les tables générées aléatoirement.</description>
       <content>&lt;p&gt;Création d&amp;rsquo;un outil de test de base de données automatisé avec ChatGPT&lt;/p&gt;
 &lt;hr&gt;
@@ -61,21 +61,21 @@ ou moins que je ne le ferais avec des extraits de stackoverflow ou de son
 acabit. Pour le moment&lt;/p&gt;
 &lt;p&gt;Github repository: &lt;a href=&#34;https://github.com/peter-mcconnell/gpt_sql_test_generator&#34;&gt;https://github.com/peter-mcconnell/gpt_sql_test_generator&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;Screenshots:&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/2.png&#34; alt=&#34;step 2&#34; title=&#34;step 2&#34;&gt;
-&lt;img src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/3.png&#34; alt=&#34;step 3&#34; title=&#34;step 3&#34;&gt;
-&lt;img src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/4.png&#34; alt=&#34;step 4&#34; title=&#34;step 4&#34;&gt;
-&lt;img src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/5.png&#34; alt=&#34;step 5&#34; title=&#34;step 5&#34;&gt;
-&lt;img src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/6.png&#34; alt=&#34;step 6&#34; title=&#34;step 6&#34;&gt;
-&lt;img src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/7.png&#34; alt=&#34;step 7&#34; title=&#34;step 7&#34;&gt;
-&lt;img src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/8.png&#34; alt=&#34;step 8&#34; title=&#34;step 8&#34;&gt;
-&lt;img src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/9.png&#34; alt=&#34;step 9&#34; title=&#34;step 9&#34;&gt;
-&lt;img src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/10.png&#34; alt=&#34;step 10&#34; title=&#34;step 10&#34;&gt;
-&lt;img src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/11.png&#34; alt=&#34;step 11&#34; title=&#34;step 11&#34;&gt;
-&lt;img src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/12.png&#34; alt=&#34;step 12&#34; title=&#34;step 12&#34;&gt;
-&lt;img src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/13.png&#34; alt=&#34;step 13&#34; title=&#34;step 13&#34;&gt;
-&lt;img src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/14.png&#34; alt=&#34;step 14&#34; title=&#34;step 14&#34;&gt;
-&lt;img src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/15.png&#34; alt=&#34;step 15&#34; title=&#34;step 15&#34;&gt;
-&lt;img src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/16.png&#34; alt=&#34;step 16&#34; title=&#34;step 16&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;step 2&#34; src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/2.png&#34; title=&#34;step 2&#34;&gt;
+&lt;img alt=&#34;step 3&#34; src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/3.png&#34; title=&#34;step 3&#34;&gt;
+&lt;img alt=&#34;step 4&#34; src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/4.png&#34; title=&#34;step 4&#34;&gt;
+&lt;img alt=&#34;step 5&#34; src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/5.png&#34; title=&#34;step 5&#34;&gt;
+&lt;img alt=&#34;step 6&#34; src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/6.png&#34; title=&#34;step 6&#34;&gt;
+&lt;img alt=&#34;step 7&#34; src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/7.png&#34; title=&#34;step 7&#34;&gt;
+&lt;img alt=&#34;step 8&#34; src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/8.png&#34; title=&#34;step 8&#34;&gt;
+&lt;img alt=&#34;step 9&#34; src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/9.png&#34; title=&#34;step 9&#34;&gt;
+&lt;img alt=&#34;step 10&#34; src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/10.png&#34; title=&#34;step 10&#34;&gt;
+&lt;img alt=&#34;step 11&#34; src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/11.png&#34; title=&#34;step 11&#34;&gt;
+&lt;img alt=&#34;step 12&#34; src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/12.png&#34; title=&#34;step 12&#34;&gt;
+&lt;img alt=&#34;step 13&#34; src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/13.png&#34; title=&#34;step 13&#34;&gt;
+&lt;img alt=&#34;step 14&#34; src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/14.png&#34; title=&#34;step 14&#34;&gt;
+&lt;img alt=&#34;step 15&#34; src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/15.png&#34; title=&#34;step 15&#34;&gt;
+&lt;img alt=&#34;step 16&#34; src=&#34;https://raw.githubusercontent.com/peter-mcconnell/gpt_sql_test_generator/master/media/16.png&#34; title=&#34;step 16&#34;&gt;&lt;/p&gt;
 </content>
     </item>
     

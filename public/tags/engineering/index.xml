@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>engineering on Peter McConnell :: Ponderings from a Linux Systems engineer</title>
+    <title>Engineering on Peter McConnell :: Ponderings from a Linux Systems engineer</title>
     <link>https://www.petermcconnell.com/tags/engineering/</link>
-    <description>Recent content in engineering on Peter McConnell :: Ponderings from a Linux Systems engineer</description>
+    <description>Recent content in Engineering on Peter McConnell :: Ponderings from a Linux Systems engineer</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
+    <language>en</language>
     <copyright>&amp;copy; Peter McConnell 2023</copyright>
     <lastBuildDate>Fri, 30 Dec 2022 20:34:57 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/engineering/index.xml" rel="self" type="application/rss+xml" />
     <item>

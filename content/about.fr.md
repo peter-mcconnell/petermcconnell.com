@@ -21,6 +21,10 @@ Présentation de Terraform :
 
 {{< youtube FvOHfsTmBfo >}}
 
+Search 5.0 podcast (general / cultural):
+
+{{< youtube OPTsuqY7An0 >}}
+
 Ingénierie du chaos avec Prometheus :
 
 {{< youtube WUHKCkrz-NA>}}

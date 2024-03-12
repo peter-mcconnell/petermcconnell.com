@@ -251,10 +251,10 @@
 <h2 id="what-are-the-requirements">what are the requirements?<a href="#what-are-the-requirements" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>The debugger of choice (for me) is <code>dlv</code> / <code>delve</code>. The reasons for this are at the end of the article.</p>
 <p>Install <code>delve</code>: <a href="https://github.com/go-delve/delve">https://github.com/go-delve/delve</a></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">git clone https://github.com/go-delve/delve
-cd delve
-go install github.com/go-delve/delve/cmd/dlv
-</code></pre></div><p>Have the following pieces of information:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>git clone https://github.com/go-delve/delve
+</span></span><span style="display:flex;"><span>cd delve
+</span></span><span style="display:flex;"><span>go install github.com/go-delve/delve/cmd/dlv
+</span></span></code></pre></div><p>Have the following pieces of information:</p>
 <ul>
 <li>a list of 1 or more points in my code where I&rsquo;d like to set breakpoints
 <ul>
@@ -264,147 +264,147 @@ go install github.com/go-delve/delve/cmd/dlv
 </ul>
 <h2 id="example-program">example program<a href="#example-program" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>For the sake of this article we&rsquo;ll create a simple application to debug:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// main.go
-</span><span style="color:#75715e"></span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
-
-<span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;fmt&#34;</span>
-
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">doubleit</span>(<span style="color:#a6e22e">val</span> <span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">int</span> {
-        <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">val</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">3</span>  <span style="color:#75715e">// should be * 2
-</span><span style="color:#75715e"></span>}
-
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
-        <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;doubleit 2: %d\n&#34;</span>, <span style="color:#a6e22e">doubleit</span>(<span style="color:#ae81ff">2</span>))
-        <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;doubleit 4: %d\n&#34;</span>, <span style="color:#a6e22e">doubleit</span>(<span style="color:#ae81ff">4</span>))
-        <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;doubleit 8: %d\n&#34;</span>, <span style="color:#a6e22e">doubleit</span>(<span style="color:#ae81ff">8</span>))
-}
-</code></pre></div><p>When we run this with <code>go run main.go</code> we want it to double the numbers we pass but for <em>some reason</em> we&rsquo;re getting different results.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// main.go
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">doubleit</span>(<span style="color:#a6e22e">val</span> <span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">int</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">val</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">3</span>  <span style="color:#75715e">// should be * 2
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;doubleit 2: %d\n&#34;</span>, <span style="color:#a6e22e">doubleit</span>(<span style="color:#ae81ff">2</span>))
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;doubleit 4: %d\n&#34;</span>, <span style="color:#a6e22e">doubleit</span>(<span style="color:#ae81ff">4</span>))
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;doubleit 8: %d\n&#34;</span>, <span style="color:#a6e22e">doubleit</span>(<span style="color:#ae81ff">8</span>))
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>When we run this with <code>go run main.go</code> we want it to double the numbers we pass but for <em>some reason</em> we&rsquo;re getting different results.</p>
 <p>We will also need a <code>go.mod</code> for Delve to run so also perform a <code>go mod init</code> from this directory.</p>
 <h2 id="debug-it">debug it<a href="#debug-it" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>To get started from the project directory</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">dlv debug
-Type <span style="color:#e6db74">&#39;help&#39;</span> <span style="color:#66d9ef">for</span> list of commands.
-<span style="color:#f92672">(</span>dlv<span style="color:#f92672">)</span>
-</code></pre></div><p>Now set some breakpoints. For this example we&rsquo;ll say we want to debug our <code>doubleit</code> method - the first line of which is at <code>:7</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">dlv debug
-Type <span style="color:#e6db74">&#39;help&#39;</span> <span style="color:#66d9ef">for</span> list of commands.
-<span style="color:#f92672">(</span>dlv<span style="color:#f92672">)</span> b main.go:7
-Breakpoint <span style="color:#ae81ff">1</span> set at 0x49c8bb <span style="color:#66d9ef">for</span> main.doubleit<span style="color:#f92672">()</span> ./main.go:7
-</code></pre></div><p>When we&rsquo;ve added all of the breakpoints that we need we can instruct the program to run with <code>c</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">dlv debug
-Type <span style="color:#e6db74">&#39;help&#39;</span> <span style="color:#66d9ef">for</span> list of commands.
-<span style="color:#f92672">(</span>dlv<span style="color:#f92672">)</span> b main.go:7
-Breakpoint <span style="color:#ae81ff">1</span> set at 0x49c8bb <span style="color:#66d9ef">for</span> main.doubleit<span style="color:#f92672">()</span> ./main.go:7
-<span style="color:#f92672">(</span>dlv<span style="color:#f92672">)</span> c
-&gt; main.doubleit<span style="color:#f92672">()</span> ./main.go:7 <span style="color:#f92672">(</span>hits goroutine<span style="color:#f92672">(</span>1<span style="color:#f92672">)</span>:1 total:1<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>PC: 0x49c8bb<span style="color:#f92672">)</span>
-     2:	package main
-     3:
-     4:	import <span style="color:#e6db74">&#34;fmt&#34;</span>
-     5:
-     6:	func doubleit<span style="color:#f92672">(</span>val int<span style="color:#f92672">)</span> int <span style="color:#f92672">{</span>
-<span style="color:#f92672">=</span>&gt;   7:		<span style="color:#66d9ef">return</span> val * <span style="color:#ae81ff">3</span> // should be * <span style="color:#ae81ff">2</span>
-     8:	<span style="color:#f92672">}</span>
-     9:
-    10:	func main<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
-    11:		fmt.Printf<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;doubleit 2: %d\n&#34;</span>, doubleit<span style="color:#f92672">(</span>2<span style="color:#f92672">))</span>
-    12:		fmt.Printf<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;doubleit 4: %d\n&#34;</span>, doubleit<span style="color:#f92672">(</span>4<span style="color:#f92672">))</span>
-<span style="color:#f92672">(</span>dlv<span style="color:#f92672">)</span>
-</code></pre></div><p>Now we&rsquo;ve ran our program with an attached debugger and it has paused execution at the breakpoint we set. We can run <code>args</code> to see which arguments where passed to the method:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#f92672">(</span>dlv<span style="color:#f92672">)</span> c
-&gt; main.doubleit<span style="color:#f92672">()</span> ./main.go:7 <span style="color:#f92672">(</span>hits goroutine<span style="color:#f92672">(</span>1<span style="color:#f92672">)</span>:1 total:1<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>PC: 0x49c8bb<span style="color:#f92672">)</span>
-     2:	package main
-     3:
-     4:	import <span style="color:#e6db74">&#34;fmt&#34;</span>
-     5:
-     6:	func doubleit<span style="color:#f92672">(</span>val int<span style="color:#f92672">)</span> int <span style="color:#f92672">{</span>
-<span style="color:#f92672">=</span>&gt;   7:		<span style="color:#66d9ef">return</span> val * <span style="color:#ae81ff">3</span> // should be * <span style="color:#ae81ff">2</span>
-     8:	<span style="color:#f92672">}</span>
-     9:
-    10:	func main<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
-    11:		fmt.Printf<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;doubleit 2: %d\n&#34;</span>, doubleit<span style="color:#f92672">(</span>2<span style="color:#f92672">))</span>
-    12:		fmt.Printf<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;doubleit 4: %d\n&#34;</span>, doubleit<span style="color:#f92672">(</span>4<span style="color:#f92672">))</span>
-<span style="color:#f92672">(</span>dlv<span style="color:#f92672">)</span> args
-val <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>
-~r0 <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
-</code></pre></div><p>So in this point in the program we&rsquo;re in the <code>doubleit</code> method when it was invoked with a <code>val</code> value of <code>2</code>. We can print this and other variables using <code>p</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#f92672">(</span>dlv<span style="color:#f92672">)</span> p val
-<span style="color:#ae81ff">2</span>
-</code></pre></div><p>We can even call methods from this point using <code>call</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#f92672">(</span>dlv<span style="color:#f92672">)</span> call doubleit<span style="color:#f92672">(</span>6<span style="color:#f92672">)</span>
-&gt; main.doubleit<span style="color:#f92672">()</span> ./main.go:7 <span style="color:#f92672">(</span>hits goroutine<span style="color:#f92672">(</span>6<span style="color:#f92672">)</span>:1 total:2<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>PC: 0x49c8bb<span style="color:#f92672">)</span>
-     2:	package main
-     3:
-     4:	import <span style="color:#e6db74">&#34;fmt&#34;</span>
-     5:
-     6:	func doubleit<span style="color:#f92672">(</span>val int<span style="color:#f92672">)</span> int <span style="color:#f92672">{</span>
-<span style="color:#f92672">=</span>&gt;   7:		<span style="color:#66d9ef">return</span> val * <span style="color:#ae81ff">3</span> // should be * <span style="color:#ae81ff">2</span>
-     8:	<span style="color:#f92672">}</span>
-     9:
-    10:	func main<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
-    11:		fmt.Printf<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;doubleit 2: %d\n&#34;</span>, doubleit<span style="color:#f92672">(</span>2<span style="color:#f92672">))</span>
-    12:		fmt.Printf<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;doubleit 4: %d\n&#34;</span>, doubleit<span style="color:#f92672">(</span>4<span style="color:#f92672">))</span>
-<span style="color:#f92672">(</span>dlv<span style="color:#f92672">)</span> args
-val <span style="color:#f92672">=</span> <span style="color:#ae81ff">6</span>
-</code></pre></div><p>In the example above we hit our own breakpoint set earlier allowing us to print the <code>args</code> for the <code>call</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>dlv debug
+</span></span><span style="display:flex;"><span>Type <span style="color:#e6db74">&#39;help&#39;</span> <span style="color:#66d9ef">for</span> list of commands.
+</span></span><span style="display:flex;"><span><span style="color:#f92672">(</span>dlv<span style="color:#f92672">)</span>
+</span></span></code></pre></div><p>Now set some breakpoints. For this example we&rsquo;ll say we want to debug our <code>doubleit</code> method - the first line of which is at <code>:7</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>dlv debug
+</span></span><span style="display:flex;"><span>Type <span style="color:#e6db74">&#39;help&#39;</span> <span style="color:#66d9ef">for</span> list of commands.
+</span></span><span style="display:flex;"><span><span style="color:#f92672">(</span>dlv<span style="color:#f92672">)</span> b main.go:7
+</span></span><span style="display:flex;"><span>Breakpoint <span style="color:#ae81ff">1</span> set at 0x49c8bb <span style="color:#66d9ef">for</span> main.doubleit<span style="color:#f92672">()</span> ./main.go:7
+</span></span></code></pre></div><p>When we&rsquo;ve added all of the breakpoints that we need we can instruct the program to run with <code>c</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>dlv debug
+</span></span><span style="display:flex;"><span>Type <span style="color:#e6db74">&#39;help&#39;</span> <span style="color:#66d9ef">for</span> list of commands.
+</span></span><span style="display:flex;"><span><span style="color:#f92672">(</span>dlv<span style="color:#f92672">)</span> b main.go:7
+</span></span><span style="display:flex;"><span>Breakpoint <span style="color:#ae81ff">1</span> set at 0x49c8bb <span style="color:#66d9ef">for</span> main.doubleit<span style="color:#f92672">()</span> ./main.go:7
+</span></span><span style="display:flex;"><span><span style="color:#f92672">(</span>dlv<span style="color:#f92672">)</span> c
+</span></span><span style="display:flex;"><span>&gt; main.doubleit<span style="color:#f92672">()</span> ./main.go:7 <span style="color:#f92672">(</span>hits goroutine<span style="color:#f92672">(</span>1<span style="color:#f92672">)</span>:1 total:1<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>PC: 0x49c8bb<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>     2:	package main
+</span></span><span style="display:flex;"><span>     3:
+</span></span><span style="display:flex;"><span>     4:	import <span style="color:#e6db74">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>     5:
+</span></span><span style="display:flex;"><span>     6:	func doubleit<span style="color:#f92672">(</span>val int<span style="color:#f92672">)</span> int <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">=</span>&gt;   7:		<span style="color:#66d9ef">return</span> val * <span style="color:#ae81ff">3</span> // should be * <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>     8:	<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>     9:
+</span></span><span style="display:flex;"><span>    10:	func main<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    11:		fmt.Printf<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;doubleit 2: %d\n&#34;</span>, doubleit<span style="color:#f92672">(</span>2<span style="color:#f92672">))</span>
+</span></span><span style="display:flex;"><span>    12:		fmt.Printf<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;doubleit 4: %d\n&#34;</span>, doubleit<span style="color:#f92672">(</span>4<span style="color:#f92672">))</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">(</span>dlv<span style="color:#f92672">)</span>
+</span></span></code></pre></div><p>Now we&rsquo;ve ran our program with an attached debugger and it has paused execution at the breakpoint we set. We can run <code>args</code> to see which arguments where passed to the method:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#f92672">(</span>dlv<span style="color:#f92672">)</span> c
+</span></span><span style="display:flex;"><span>&gt; main.doubleit<span style="color:#f92672">()</span> ./main.go:7 <span style="color:#f92672">(</span>hits goroutine<span style="color:#f92672">(</span>1<span style="color:#f92672">)</span>:1 total:1<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>PC: 0x49c8bb<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>     2:	package main
+</span></span><span style="display:flex;"><span>     3:
+</span></span><span style="display:flex;"><span>     4:	import <span style="color:#e6db74">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>     5:
+</span></span><span style="display:flex;"><span>     6:	func doubleit<span style="color:#f92672">(</span>val int<span style="color:#f92672">)</span> int <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">=</span>&gt;   7:		<span style="color:#66d9ef">return</span> val * <span style="color:#ae81ff">3</span> // should be * <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>     8:	<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>     9:
+</span></span><span style="display:flex;"><span>    10:	func main<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    11:		fmt.Printf<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;doubleit 2: %d\n&#34;</span>, doubleit<span style="color:#f92672">(</span>2<span style="color:#f92672">))</span>
+</span></span><span style="display:flex;"><span>    12:		fmt.Printf<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;doubleit 4: %d\n&#34;</span>, doubleit<span style="color:#f92672">(</span>4<span style="color:#f92672">))</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">(</span>dlv<span style="color:#f92672">)</span> args
+</span></span><span style="display:flex;"><span>val <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>~r0 <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</span></span></code></pre></div><p>So in this point in the program we&rsquo;re in the <code>doubleit</code> method when it was invoked with a <code>val</code> value of <code>2</code>. We can print this and other variables using <code>p</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#f92672">(</span>dlv<span style="color:#f92672">)</span> p val
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">2</span>
+</span></span></code></pre></div><p>We can even call methods from this point using <code>call</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#f92672">(</span>dlv<span style="color:#f92672">)</span> call doubleit<span style="color:#f92672">(</span>6<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>&gt; main.doubleit<span style="color:#f92672">()</span> ./main.go:7 <span style="color:#f92672">(</span>hits goroutine<span style="color:#f92672">(</span>6<span style="color:#f92672">)</span>:1 total:2<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>PC: 0x49c8bb<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>     2:	package main
+</span></span><span style="display:flex;"><span>     3:
+</span></span><span style="display:flex;"><span>     4:	import <span style="color:#e6db74">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>     5:
+</span></span><span style="display:flex;"><span>     6:	func doubleit<span style="color:#f92672">(</span>val int<span style="color:#f92672">)</span> int <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">=</span>&gt;   7:		<span style="color:#66d9ef">return</span> val * <span style="color:#ae81ff">3</span> // should be * <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>     8:	<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>     9:
+</span></span><span style="display:flex;"><span>    10:	func main<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    11:		fmt.Printf<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;doubleit 2: %d\n&#34;</span>, doubleit<span style="color:#f92672">(</span>2<span style="color:#f92672">))</span>
+</span></span><span style="display:flex;"><span>    12:		fmt.Printf<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;doubleit 4: %d\n&#34;</span>, doubleit<span style="color:#f92672">(</span>4<span style="color:#f92672">))</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">(</span>dlv<span style="color:#f92672">)</span> args
+</span></span><span style="display:flex;"><span>val <span style="color:#f92672">=</span> <span style="color:#ae81ff">6</span>
+</span></span></code></pre></div><p>In the example above we hit our own breakpoint set earlier allowing us to print the <code>args</code> for the <code>call</code>.</p>
 <p>To walk over the execution we can press <code>n</code> to go to the next point of execution:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#f92672">(</span>dlv<span style="color:#f92672">)</span> n
-&gt; main.doubleit<span style="color:#f92672">()</span> ./main.go:6 <span style="color:#f92672">(</span>PC: 0x49c8a0<span style="color:#f92672">)</span>
-     1:	// main.go
-     2:	package main
-     3:
-     4:	import <span style="color:#e6db74">&#34;fmt&#34;</span>
-     5:
-<span style="color:#f92672">=</span>&gt;   6:	func doubleit<span style="color:#f92672">(</span>val int<span style="color:#f92672">)</span> int <span style="color:#f92672">{</span>
-     7:		<span style="color:#66d9ef">return</span> val * <span style="color:#ae81ff">3</span> // should be * <span style="color:#ae81ff">2</span>
-     8:	<span style="color:#f92672">}</span>
-     9:
-    10:	func main<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
-    11:		fmt.Printf<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;doubleit 2: %d\n&#34;</span>, doubleit<span style="color:#f92672">(</span>2<span style="color:#f92672">))</span>
-<span style="color:#f92672">(</span>dlv<span style="color:#f92672">)</span> n
-&gt; main.doubleit<span style="color:#f92672">()</span> ./main.go:7 <span style="color:#f92672">(</span>hits goroutine<span style="color:#f92672">(</span>6<span style="color:#f92672">)</span>:2 total:3<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>PC: 0x49c8bb<span style="color:#f92672">)</span>
-     2:	package main
-     3:
-     4:	import <span style="color:#e6db74">&#34;fmt&#34;</span>
-     5:
-     6:	func doubleit<span style="color:#f92672">(</span>val int<span style="color:#f92672">)</span> int <span style="color:#f92672">{</span>
-<span style="color:#f92672">=</span>&gt;   7:		<span style="color:#66d9ef">return</span> val * <span style="color:#ae81ff">3</span> // should be * <span style="color:#ae81ff">2</span>
-     8:	<span style="color:#f92672">}</span>
-     9:
-    10:	func main<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
-    11:		fmt.Printf<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;doubleit 2: %d\n&#34;</span>, doubleit<span style="color:#f92672">(</span>2<span style="color:#f92672">))</span>
-    12:		fmt.Printf<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;doubleit 4: %d\n&#34;</span>, doubleit<span style="color:#f92672">(</span>4<span style="color:#f92672">))</span>
-<span style="color:#f92672">(</span>dlv<span style="color:#f92672">)</span> n
-</code></pre></div><p>and view the backtrace with <code>bt</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#f92672">(</span>dlv<span style="color:#f92672">)</span> bt
-<span style="color:#ae81ff">0</span>  0x000000000049c8bb in main.doubleit
-   at ./main.go:7
-<span style="color:#ae81ff">1</span>  0x000000000046251f in debugCall256
-   at :0
-<span style="color:#ae81ff">2</span>  0x0000000000407484 in runtime.debugCallWrap2
-   at /usr/local/go/src/runtime/debugcall.go:251
-<span style="color:#ae81ff">3</span>  0x00000000004073b3 in runtime.debugCallWrap1
-   at /usr/local/go/src/runtime/debugcall.go:203
-<span style="color:#ae81ff">4</span>  0x0000000000464ca1 in runtime.goexit
-   at /usr/local/go/src/runtime/asm_amd64.s:1594
-</code></pre></div><p>To view the code around the current point of execution just press <code>l</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#f92672">(</span>dlv<span style="color:#f92672">)</span> l
-&gt; main.doubleit<span style="color:#f92672">()</span> ./main.go:7 <span style="color:#f92672">(</span>hits goroutine<span style="color:#f92672">(</span>6<span style="color:#f92672">)</span>:3 total:4<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>PC: 0x49c8bb<span style="color:#f92672">)</span>
-     2:	package main
-     3:
-     4:	import <span style="color:#e6db74">&#34;fmt&#34;</span>
-     5:
-     6:	func doubleit<span style="color:#f92672">(</span>val int<span style="color:#f92672">)</span> int <span style="color:#f92672">{</span>
-<span style="color:#f92672">=</span>&gt;   7:		<span style="color:#66d9ef">return</span> val * <span style="color:#ae81ff">3</span> // should be * <span style="color:#ae81ff">2</span>
-     8:	<span style="color:#f92672">}</span>
-     9:
-    10:	func main<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
-    11:		fmt.Printf<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;doubleit 2: %d\n&#34;</span>, doubleit<span style="color:#f92672">(</span>2<span style="color:#f92672">))</span>
-    12:		fmt.Printf<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;doubleit 4: %d\n&#34;</span>, doubleit<span style="color:#f92672">(</span>4<span style="color:#f92672">))</span>
-</code></pre></div><p>Which of course shows our very hard to find logic error, <code>* 3</code> instead of <code>* 2</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#f92672">(</span>dlv<span style="color:#f92672">)</span> n
+</span></span><span style="display:flex;"><span>&gt; main.doubleit<span style="color:#f92672">()</span> ./main.go:6 <span style="color:#f92672">(</span>PC: 0x49c8a0<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>     1:	// main.go
+</span></span><span style="display:flex;"><span>     2:	package main
+</span></span><span style="display:flex;"><span>     3:
+</span></span><span style="display:flex;"><span>     4:	import <span style="color:#e6db74">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>     5:
+</span></span><span style="display:flex;"><span><span style="color:#f92672">=</span>&gt;   6:	func doubleit<span style="color:#f92672">(</span>val int<span style="color:#f92672">)</span> int <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>     7:		<span style="color:#66d9ef">return</span> val * <span style="color:#ae81ff">3</span> // should be * <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>     8:	<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>     9:
+</span></span><span style="display:flex;"><span>    10:	func main<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    11:		fmt.Printf<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;doubleit 2: %d\n&#34;</span>, doubleit<span style="color:#f92672">(</span>2<span style="color:#f92672">))</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">(</span>dlv<span style="color:#f92672">)</span> n
+</span></span><span style="display:flex;"><span>&gt; main.doubleit<span style="color:#f92672">()</span> ./main.go:7 <span style="color:#f92672">(</span>hits goroutine<span style="color:#f92672">(</span>6<span style="color:#f92672">)</span>:2 total:3<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>PC: 0x49c8bb<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>     2:	package main
+</span></span><span style="display:flex;"><span>     3:
+</span></span><span style="display:flex;"><span>     4:	import <span style="color:#e6db74">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>     5:
+</span></span><span style="display:flex;"><span>     6:	func doubleit<span style="color:#f92672">(</span>val int<span style="color:#f92672">)</span> int <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">=</span>&gt;   7:		<span style="color:#66d9ef">return</span> val * <span style="color:#ae81ff">3</span> // should be * <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>     8:	<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>     9:
+</span></span><span style="display:flex;"><span>    10:	func main<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    11:		fmt.Printf<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;doubleit 2: %d\n&#34;</span>, doubleit<span style="color:#f92672">(</span>2<span style="color:#f92672">))</span>
+</span></span><span style="display:flex;"><span>    12:		fmt.Printf<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;doubleit 4: %d\n&#34;</span>, doubleit<span style="color:#f92672">(</span>4<span style="color:#f92672">))</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">(</span>dlv<span style="color:#f92672">)</span> n
+</span></span></code></pre></div><p>and view the backtrace with <code>bt</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#f92672">(</span>dlv<span style="color:#f92672">)</span> bt
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">0</span>  0x000000000049c8bb in main.doubleit
+</span></span><span style="display:flex;"><span>   at ./main.go:7
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">1</span>  0x000000000046251f in debugCall256
+</span></span><span style="display:flex;"><span>   at :0
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">2</span>  0x0000000000407484 in runtime.debugCallWrap2
+</span></span><span style="display:flex;"><span>   at /usr/local/go/src/runtime/debugcall.go:251
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">3</span>  0x00000000004073b3 in runtime.debugCallWrap1
+</span></span><span style="display:flex;"><span>   at /usr/local/go/src/runtime/debugcall.go:203
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">4</span>  0x0000000000464ca1 in runtime.goexit
+</span></span><span style="display:flex;"><span>   at /usr/local/go/src/runtime/asm_amd64.s:1594
+</span></span></code></pre></div><p>To view the code around the current point of execution just press <code>l</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#f92672">(</span>dlv<span style="color:#f92672">)</span> l
+</span></span><span style="display:flex;"><span>&gt; main.doubleit<span style="color:#f92672">()</span> ./main.go:7 <span style="color:#f92672">(</span>hits goroutine<span style="color:#f92672">(</span>6<span style="color:#f92672">)</span>:3 total:4<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>PC: 0x49c8bb<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>     2:	package main
+</span></span><span style="display:flex;"><span>     3:
+</span></span><span style="display:flex;"><span>     4:	import <span style="color:#e6db74">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>     5:
+</span></span><span style="display:flex;"><span>     6:	func doubleit<span style="color:#f92672">(</span>val int<span style="color:#f92672">)</span> int <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">=</span>&gt;   7:		<span style="color:#66d9ef">return</span> val * <span style="color:#ae81ff">3</span> // should be * <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>     8:	<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>     9:
+</span></span><span style="display:flex;"><span>    10:	func main<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    11:		fmt.Printf<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;doubleit 2: %d\n&#34;</span>, doubleit<span style="color:#f92672">(</span>2<span style="color:#f92672">))</span>
+</span></span><span style="display:flex;"><span>    12:		fmt.Printf<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;doubleit 4: %d\n&#34;</span>, doubleit<span style="color:#f92672">(</span>4<span style="color:#f92672">))</span>
+</span></span></code></pre></div><p>Which of course shows our very hard to find logic error, <code>* 3</code> instead of <code>* 2</code>.</p>
 <p>Note: you can also set breakpoints in the stdlib functions (paths will vary depending on your setup):</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#f92672">(</span>dlv<span style="color:#f92672">)</span> b src/net/http/request.go:899
-Breakpoint <span style="color:#ae81ff">1</span> set at 0x794599 <span style="color:#66d9ef">for</span> net/http.NewRequestWithContext<span style="color:#f92672">()</span> /usr/local/go./net/http/request.go:899
-</code></pre></div><h2 id="summary">summary<a href="#summary" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#f92672">(</span>dlv<span style="color:#f92672">)</span> b src/net/http/request.go:899
+</span></span><span style="display:flex;"><span>Breakpoint <span style="color:#ae81ff">1</span> set at 0x794599 <span style="color:#66d9ef">for</span> net/http.NewRequestWithContext<span style="color:#f92672">()</span> /usr/local/go./net/http/request.go:899
+</span></span></code></pre></div><h2 id="summary">summary<a href="#summary" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>The example above is extremely trivial - where <code>dlv</code> and it&rsquo;s ilk shine are on complex usecases where you may not even know what methods are between the input and output, such as debugging the stdlib. Just this week I used <code>dlv</code> to identify why a <code>POST</code> wasn&rsquo;t honouring a <code>307</code> temporary redirect - on inspection, using <code>dlv</code>, I learned that the <code>body</code> is disregarded if it is an unrecognised <code>type</code> <a href="https://github.com/golang/go/blob/master/src/net/http/request.go#L899">https://github.com/golang/go/blob/master/src/net/http/request.go#L899</a>. Having to do this without a debugger would have taken quite a bit of code hopping - the debugger took care of that for me and allowed me to validate argument values as I did it.</p>
 <h2 id="why-not-gdb">why not gdb?<a href="#why-not-gdb" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>I know some folk feel strongly that <code>gdb</code> is the tool to use for debugging go code, but given the Golang docs itself encourage you to use Delve over GDB I personally stay away from it:</p>

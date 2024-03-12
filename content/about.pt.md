@@ -21,6 +21,10 @@ Introdução ao Terraform:
 
 {{< youtube FvOHfsTmBfo >}}
 
+Search 5.0 podcast (general / cultural):
+
+{{< youtube OPTsuqY7An0 >}}
+
 Engenharia de caos com Prometheus:
 
 {{< youtube WUHKCkrz-NA >}}
