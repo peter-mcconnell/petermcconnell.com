@@ -2442,12 +2442,13 @@ delivered much that I&amp;rsquo;m proud of. The following lists a few key highli
       <guid>https://www.petermcconnell.com/about/</guid>
       <description>$SKILLS https://www.petermcconnell.com/skills/
 $VIDEOS A talk on Automation tooling, with Rundeck (around the 5:15:00 mark):
+A talk on security and eBPF
 Search 5.0 podcast (general / cultural):
 Terraform introduction:
 Chaos engineering with Prometheus:
 $ACHIEVEMENTS My two kids are of course what I&amp;rsquo;m proudest of. I have done some things in tech that I&amp;rsquo;m proud of also:
 https://www.petermcconnell.com/showcase/
-$PATH When I was around 9 through some miracle mum brought home a Commodore Amiga. My family never had much growing up but somehow we still got a computer.</description>
+$PATH When I was around 9 through some miracle mum brought home a Commodore Amiga.</description>
       <content>&lt;h2 id=&#34;skills&#34;&gt;$SKILLS&lt;/h2&gt;
 &lt;p&gt;&lt;a href=&#34;https://www.petermcconnell.com/skills/&#34;&gt;https://www.petermcconnell.com/skills/&lt;/a&gt;&lt;/p&gt;
 &lt;h2 id=&#34;videos&#34;&gt;$VIDEOS&lt;/h2&gt;
@@ -2455,6 +2456,12 @@ $PATH When I was around 9 through some miracle mum brought home a Commodore Amig
 
 &lt;div style=&#34;position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;&#34;&gt;
   &lt;iframe src=&#34;https://www.youtube.com/embed/hvtZnbDXpzM&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;&#34; allowfullscreen title=&#34;YouTube Video&#34;&gt;&lt;/iframe&gt;
+&lt;/div&gt;
+
+&lt;p&gt;A talk on security and eBPF&lt;/p&gt;
+
+&lt;div style=&#34;position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;&#34;&gt;
+  &lt;iframe src=&#34;https://player.vimeo.com/video/934961504&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;&#34; title=&#34;vimeo video&#34; webkitallowfullscreen mozallowfullscreen allowfullscreen&gt;&lt;/iframe&gt;
 &lt;/div&gt;
 
 &lt;p&gt;Search 5.0 podcast (general / cultural):&lt;/p&gt;

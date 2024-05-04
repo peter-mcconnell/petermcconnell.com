@@ -17,6 +17,10 @@ Uma palestra sobre ferramentas de automação, com Rundeck (por volta das 5:15:0
 
 {{< youtube hvtZnbDXpzM >}}
 
+A talk on security and eBPF
+
+{{< vimeo 934961504 >}}
+
 Introdução ao Terraform:
 
 {{< youtube FvOHfsTmBfo >}}

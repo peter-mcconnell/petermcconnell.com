@@ -320,6 +320,7 @@ listado. Imagínate lo larga que debe ser la lista de &amp;ldquo;cosas malas&amp
       <guid>https://www.petermcconnell.com/es/about/</guid>
       <description>$HABILIDADES https://www.petermcconnell.com/skills/
 $VÍDEOS Una charla sobre herramientas de automatización, con Rundeck (alrededor de las 5:15:00):
+A talk on security and eBPF
 Introducción a la terraformación:
 Search 5.0 podcast (general / cultural):
 Ingeniería del caos con Prometheus:
@@ -333,6 +334,12 @@ $PATH Cuando tenía alrededor de 9 años, gracias a un milagro, mamá trajo a ca
 
 &lt;div style=&#34;position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;&#34;&gt;
   &lt;iframe src=&#34;https://www.youtube.com/embed/hvtZnbDXpzM&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;&#34; allowfullscreen title=&#34;YouTube Video&#34;&gt;&lt;/iframe&gt;
+&lt;/div&gt;
+
+&lt;p&gt;A talk on security and eBPF&lt;/p&gt;
+
+&lt;div style=&#34;position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;&#34;&gt;
+  &lt;iframe src=&#34;https://player.vimeo.com/video/934961504&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;&#34; title=&#34;vimeo video&#34; webkitallowfullscreen mozallowfullscreen allowfullscreen&gt;&lt;/iframe&gt;
 &lt;/div&gt;
 
 &lt;p&gt;Introducción a la terraformación:&lt;/p&gt;

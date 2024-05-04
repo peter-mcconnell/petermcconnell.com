@@ -319,6 +319,7 @@ listagem. Imagine quanto tempo a lista de &amp;ldquo;coisas ruins&amp;rdquo; dev
       <guid>https://www.petermcconnell.com/pt/about/</guid>
       <description>$ HABILIDADES https://www.petermcconnell.com/skills/
 $VIDEOS Uma palestra sobre ferramentas de automação, com Rundeck (por volta das 5:15:00):
+A talk on security and eBPF
 Introdução ao Terraform:
 Search 5.0 podcast (general / cultural):
 Engenharia de caos com Prometheus:
@@ -332,6 +333,12 @@ $PATH Quando eu tinha cerca de 9 anos, por algum milagre, minha mãe trouxe para
 
 &lt;div style=&#34;position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;&#34;&gt;
   &lt;iframe src=&#34;https://www.youtube.com/embed/hvtZnbDXpzM&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;&#34; allowfullscreen title=&#34;YouTube Video&#34;&gt;&lt;/iframe&gt;
+&lt;/div&gt;
+
+&lt;p&gt;A talk on security and eBPF&lt;/p&gt;
+
+&lt;div style=&#34;position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;&#34;&gt;
+  &lt;iframe src=&#34;https://player.vimeo.com/video/934961504&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;&#34; title=&#34;vimeo video&#34; webkitallowfullscreen mozallowfullscreen allowfullscreen&gt;&lt;/iframe&gt;
 &lt;/div&gt;
 
 &lt;p&gt;Introdução ao Terraform:&lt;/p&gt;

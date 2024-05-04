@@ -329,6 +329,7 @@ référencement. Imaginez combien de temps la liste des &amp;ldquo;mauvaises cho
       <guid>https://www.petermcconnell.com/fr/about/</guid>
       <description>$COMPÉTENCES https://www.petermcconnell.com/skills/
 $VIDÉOS Une conférence sur les outils d&amp;rsquo;automatisation, avec Rundeck (vers 5:15:00):
+A talk on security and eBPF
 Présentation de Terraform :
 Search 5.0 podcast (general / cultural):
 Ingénierie du chaos avec Prometheus :
@@ -342,6 +343,12 @@ $PATH Quand j&amp;rsquo;avais environ 9 ans, par miracle, ma mère a ramené à 
 
 &lt;div style=&#34;position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;&#34;&gt;
   &lt;iframe src=&#34;https://www.youtube.com/embed/hvtZnbDXpzM&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;&#34; allowfullscreen title=&#34;YouTube Video&#34;&gt;&lt;/iframe&gt;
+&lt;/div&gt;
+
+&lt;p&gt;A talk on security and eBPF&lt;/p&gt;
+
+&lt;div style=&#34;position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;&#34;&gt;
+  &lt;iframe src=&#34;https://player.vimeo.com/video/934961504&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;&#34; title=&#34;vimeo video&#34; webkitallowfullscreen mozallowfullscreen allowfullscreen&gt;&lt;/iframe&gt;
 &lt;/div&gt;
 
 &lt;p&gt;Présentation de Terraform :&lt;/p&gt;

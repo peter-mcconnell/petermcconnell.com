@@ -17,6 +17,11 @@ Una charla sobre herramientas de automatización, con Rundeck (alrededor de las 
 
 {{< youtube hvtZnbDXpzM >}}
 
+A talk on security and eBPF
+
+{{< vimeo 934961504 >}}
+
+
 Introducción a la terraformación:
 
 {{< youtube FvOHfsTmBfo >}}
