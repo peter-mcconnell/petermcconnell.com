@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Ipdb on Peter McConnell :: Ponderings from a Linux Systems engineer</title>
-    <link>https://www.petermcconnell.com/tags/ipdb/</link>
+    <link>http://localhost:1313/tags/ipdb/</link>
     <description>Recent content in Ipdb on Peter McConnell :: Ponderings from a Linux Systems engineer</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>&amp;copy; Peter McConnell 2023</copyright>
-    <lastBuildDate>Thu, 05 Jan 2023 16:51:58 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/ipdb/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 05 Jan 2023 16:51:58 +0000</lastBuildDate><atom:link href="http://localhost:1313/tags/ipdb/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Python debugging</title>
-      <link>https://www.petermcconnell.com/posts/python_debugging/</link>
+      <link>http://localhost:1313/posts/python_debugging/</link>
       <pubDate>Thu, 05 Jan 2023 16:51:58 +0000</pubDate>
       
-      <guid>https://www.petermcconnell.com/posts/python_debugging/</guid>
+      <guid>http://localhost:1313/posts/python_debugging/</guid>
       <description>the &amp;lsquo;code&amp;rsquo; for this article can be found here: https://github.com/peter-mcconnell/petermcconnell.com/blob/main/assets/dummy/pydebug/main.py
 debugging Python - the context This is the flow I take when faced with a new Python codebase. I often find myself having to debug codebases I&amp;rsquo;ve never seen before which has forced me to become very comfortable being lost in code and to develop some patterns that help me find my way. This is what I&amp;rsquo;m sharing with you today.</description>
       <content>&lt;p&gt;&lt;em&gt;the &amp;lsquo;code&amp;rsquo; for this article can be found here: &lt;a href=&#34;https://github.com/peter-mcconnell/petermcconnell.com/blob/main/assets/dummy/pydebug/main.py&#34;&gt;https://github.com/peter-mcconnell/petermcconnell.com/blob/main/assets/dummy/pydebug/main.py&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;

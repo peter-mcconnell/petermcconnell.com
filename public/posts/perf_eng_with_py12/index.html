@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
   
     <title>Perf engineering with Python 3.12</title>
   
@@ -10,7 +10,7 @@
 <meta name="keywords" content="python, linux, cpython, perf, performance, flamegraph" />
 
 
-<link rel="canonical" href="https://www.petermcconnell.com/posts/perf_eng_with_py12/" />
+<link rel="canonical" href="http://localhost:1313/posts/perf_eng_with_py12/" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-QJWXPMPB8F"></script>
@@ -38,8 +38,8 @@
 
 
 
-  <link rel="shortcut icon" href="https://www.petermcconnell.com/img/theme-colors/pink.png">
-  <link rel="apple-touch-icon" href="https://www.petermcconnell.com/img/theme-colors/pink.png">
+  <link rel="shortcut icon" href="http://localhost:1313/img/theme-colors/pink.png">
+  <link rel="apple-touch-icon" href="http://localhost:1313/img/theme-colors/pink.png">
 
 
 
@@ -58,7 +58,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:title" content="Perf engineering with Python 3.12">
 <meta property="og:description" content="Since Python 3.12, the interpreter can run in a special mode that allows Python functions to appear in the output of the perf profiler. When this mode is enabled, the interpreter will interpose a small piece of code compiled on the fly before the execution of every Python function and it will teach perf the relationship between this piece of code and the associated Python function using perf map files. We&#39;ll create a dummy application and use the new tools to solve a perf issue." />
-<meta property="og:url" content="https://www.petermcconnell.com/posts/perf_eng_with_py12/" />
+<meta property="og:url" content="http://localhost:1313/posts/perf_eng_with_py12/" />
 <meta property="og:site_name" content="Peter McConnell :: Ponderings from a Linux Systems engineer" />
 
   
@@ -120,19 +120,19 @@
         <hr />
         
           <li>
-            <a href="https://www.petermcconnell.com/">English</a>
+            <a href="http://localhost:1313/">English</a>
           </li>
         
           <li>
-            <a href="https://www.petermcconnell.com/pt/">Português</a>
+            <a href="http://localhost:1313/pt/">Português</a>
           </li>
         
           <li>
-            <a href="https://www.petermcconnell.com/es/">Española</a>
+            <a href="http://localhost:1313/es/">Española</a>
           </li>
         
           <li>
-            <a href="https://www.petermcconnell.com/fr/">Français</a>
+            <a href="http://localhost:1313/fr/">Français</a>
           </li>
         
       
@@ -147,13 +147,13 @@
   <li>
     <ul class="menu__dropdown">
       
-        <li><a href="https://www.petermcconnell.com/">English</a></li>
+        <li><a href="http://localhost:1313/">English</a></li>
       
-        <li><a href="https://www.petermcconnell.com/pt/">Português</a></li>
+        <li><a href="http://localhost:1313/pt/">Português</a></li>
       
-        <li><a href="https://www.petermcconnell.com/es/">Española</a></li>
+        <li><a href="http://localhost:1313/es/">Española</a></li>
       
-        <li><a href="https://www.petermcconnell.com/fr/">Français</a></li>
+        <li><a href="http://localhost:1313/fr/">Français</a></li>
       
     </ul>
   </li>
@@ -191,7 +191,7 @@
     
 <article class="post">
   <h1 class="post-title">
-    <a href="https://www.petermcconnell.com/posts/perf_eng_with_py12/">Perf engineering with Python 3.12</a>
+    <a href="http://localhost:1313/posts/perf_eng_with_py12/">Perf engineering with Python 3.12</a>
   </h1>
   <div class="post-meta">
     
@@ -211,11 +211,11 @@
   
     <span class="post-tags">
       
-      #<a href="https://www.petermcconnell.com/tags/python/">python</a>&nbsp;
+      #<a href="http://localhost:1313/tags/python/">python</a>&nbsp;
       
-      #<a href="https://www.petermcconnell.com/tags/linux/">linux</a>&nbsp;
+      #<a href="http://localhost:1313/tags/linux/">linux</a>&nbsp;
       
-      #<a href="https://www.petermcconnell.com/tags/perf/">perf</a>&nbsp;
+      #<a href="http://localhost:1313/tags/perf/">perf</a>&nbsp;
       
     </span>
   
@@ -427,7 +427,7 @@ here: <a href="https://github.com/peter-mcconnell/petermcconnell.com/tree/main/a
     <div class="pagination__buttons">
         
         <span class="button previous">
-            <a href="https://www.petermcconnell.com/posts/linuxtools/">
+            <a href="http://localhost:1313/posts/linuxtools/">
                 <span class="button__icon">←</span>
                 <span class="button__text">A quick introduction to basic debugging tools for linux systems</span>
             </a>
@@ -435,7 +435,7 @@ here: <a href="https://github.com/peter-mcconnell/petermcconnell.com/tree/main/a
         
         
         <span class="button next">
-            <a href="https://www.petermcconnell.com/posts/monolith_vs_microservice_repos/">
+            <a href="http://localhost:1313/posts/monolith_vs_microservice_repos/">
                 <span class="button__text">Monolith vs Microservice repositories - some pros and cons</span>
                 <span class="button__icon">→</span>
             </a>

@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>SQL on Peter McConnell :: Réflexions d&#39;un ingénieur système Linux</title>
-    <link>https://www.petermcconnell.com/fr/tags/sql/</link>
+    <link>http://localhost:1313/fr/tags/sql/</link>
     <description>Recent content in SQL on Peter McConnell :: Réflexions d&#39;un ingénieur système Linux</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>fr</language>
     <copyright>&amp;copy; Peter McConnell 2023</copyright>
-    <lastBuildDate>Thu, 08 Dec 2022 11:41:50 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/fr/tags/sql/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 08 Dec 2022 11:41:50 +0000</lastBuildDate><atom:link href="http://localhost:1313/fr/tags/sql/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>chatGPT - création d&#39;un outil de test de base de données automatisé</title>
-      <link>https://www.petermcconnell.com/fr/posts/ai_db_testing/</link>
+      <link>http://localhost:1313/fr/posts/ai_db_testing/</link>
       <pubDate>Thu, 08 Dec 2022 11:41:50 +0000</pubDate>
       
-      <guid>https://www.petermcconnell.com/fr/posts/ai_db_testing/</guid>
+      <guid>http://localhost:1313/fr/posts/ai_db_testing/</guid>
       <description>Création d&amp;rsquo;un outil de test de base de données automatisé avec ChatGPT
 Hier soir, j&amp;rsquo;ai pensé essayer de faire en sorte que ChatGPT crée une base de données automatisée outil de test et les résultats étaient assez prometteurs.
 En conclusion, avec des conseils, il a pu construire un projet à partir de zéro qui a exécuté un script python et une base de données postgres. Il a généré un schéma aléatoire et valeurs pour les tables générées aléatoirement.</description>

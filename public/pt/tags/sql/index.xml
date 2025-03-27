@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>SQL on Peter McConnell :: Ponderações de um engenheiro de sistemas Linux</title>
-    <link>https://www.petermcconnell.com/pt/tags/sql/</link>
+    <link>http://localhost:1313/pt/tags/sql/</link>
     <description>Recent content in SQL on Peter McConnell :: Ponderações de um engenheiro de sistemas Linux</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>pt</language>
     <copyright>&amp;copy; Peter McConnell 2023</copyright>
-    <lastBuildDate>Thu, 08 Dec 2022 11:41:50 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/pt/tags/sql/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 08 Dec 2022 11:41:50 +0000</lastBuildDate><atom:link href="http://localhost:1313/pt/tags/sql/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>chatGPT - construindo uma ferramenta automatizada de teste de banco de dados</title>
-      <link>https://www.petermcconnell.com/pt/posts/ai_db_testing/</link>
+      <link>http://localhost:1313/pt/posts/ai_db_testing/</link>
       <pubDate>Thu, 08 Dec 2022 11:41:50 +0000</pubDate>
       
-      <guid>https://www.petermcconnell.com/pt/posts/ai_db_testing/</guid>
+      <guid>http://localhost:1313/pt/posts/ai_db_testing/</guid>
       <description>Criando uma ferramenta automatizada de teste de banco de dados com ChatGPT Ontem à noite pensei em tentar fazer com que o ChatGPT criasse um banco de dados automatizado ferramenta de teste e os resultados foram bastante promissores.
 Em conclusão, com orientação, foi capaz de construir um projeto de raiz que executou um script python e um banco de dados postgres. Ele gerou algum esquema aleatório e valores para as tabelas geradas aleatoriamente.</description>
       <content>&lt;h2 id=&#34;criando-uma-ferramenta-automatizada-de-teste-de-banco-de-dados-com-chatgpt&#34;&gt;Criando uma ferramenta automatizada de teste de banco de dados com ChatGPT&lt;/h2&gt;

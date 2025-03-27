@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Libpam on Peter McConnell :: Ponderings from a Linux Systems engineer</title>
-    <link>https://www.petermcconnell.com/tags/libpam/</link>
+    <link>http://localhost:1313/tags/libpam/</link>
     <description>Recent content in Libpam on Peter McConnell :: Ponderings from a Linux Systems engineer</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>&amp;copy; Peter McConnell 2023</copyright>
-    <lastBuildDate>Sun, 18 Feb 2024 11:40:02 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/libpam/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 18 Feb 2024 11:40:02 +0000</lastBuildDate><atom:link href="http://localhost:1313/tags/libpam/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Snooping on libpam (openssh auth, passwd) with Golang and eBPF</title>
-      <link>https://www.petermcconnell.com/posts/whispers/</link>
+      <link>http://localhost:1313/posts/whispers/</link>
       <pubDate>Sun, 18 Feb 2024 11:40:02 +0000</pubDate>
       
-      <guid>https://www.petermcconnell.com/posts/whispers/</guid>
+      <guid>http://localhost:1313/posts/whispers/</guid>
       <description>In the vast and complex landscape of software security, safeguarding sensitive information remains a paramount concern for developers and security professionals alike. Among the myriad of challenges, securely managing and protecting credentials during authentication processes stands out as a critical vulnerability point. Traditional security measures often fall short in providing real-time insights into how credentials are handled and potentially exposed within applications, especially those relying on widely used authentication frameworks like PAM (Pluggable Authentication Modules).</description>
       <content>&lt;p&gt;In the vast and complex landscape of software security, safeguarding sensitive information remains a paramount concern for developers and security professionals alike. Among the myriad of challenges, securely managing and protecting credentials during authentication processes stands out as a critical vulnerability point. Traditional security measures often fall short in providing real-time insights into how credentials are handled and potentially exposed within applications, especially those relying on widely used authentication frameworks like PAM (Pluggable Authentication Modules).&lt;/p&gt;
 &lt;p&gt;I work for a runtime security platform so this topic, BPF, Golang and Linux are some that I find the most interesting. Tangentally I was asked to give a talk at a Golang meetup, so figured I&amp;rsquo;d create a mini project to showcase some of this tech may be a good way to get others excited about these topics. Hence this repo and article.&lt;/p&gt;

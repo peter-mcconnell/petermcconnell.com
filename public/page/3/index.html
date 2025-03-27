@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta name="generator" content="Hugo 0.123.8">
+	<meta name="generator" content="Hugo 0.123.8"><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
   
     <title>Peter McConnell :: Ponderings from a Linux Systems engineer</title>
   
@@ -9,10 +9,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="A software focused blog for those interested in linux systems and performance" />
 <meta name="keywords" content="software,engineering,linux,python,sre,peter,mcconnell,pemcconnell" />
-<link rel="alternate" type="application/rss+xml" href="https://www.petermcconnell.com/index.xml" title="Peter McConnell :: Ponderings from a Linux Systems engineer" />
+<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/index.xml" title="Peter McConnell :: Ponderings from a Linux Systems engineer" />
 
 
-<link rel="canonical" href="https://www.petermcconnell.com/" />
+<link rel="canonical" href="http://localhost:1313/" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-QJWXPMPB8F"></script>
@@ -40,8 +40,8 @@
 
 
 
-  <link rel="shortcut icon" href="https://www.petermcconnell.com/img/theme-colors/pink.png">
-  <link rel="apple-touch-icon" href="https://www.petermcconnell.com/img/theme-colors/pink.png">
+  <link rel="shortcut icon" href="http://localhost:1313/img/theme-colors/pink.png">
+  <link rel="apple-touch-icon" href="http://localhost:1313/img/theme-colors/pink.png">
 
 
 
@@ -60,11 +60,11 @@
 <meta property="og:type" content="website" />
 <meta property="og:title" content="Peter McConnell :: Ponderings from a Linux Systems engineer">
 <meta property="og:description" content="A software focused blog for those interested in linux systems and performance" />
-<meta property="og:url" content="https://www.petermcconnell.com/" />
+<meta property="og:url" content="http://localhost:1313/" />
 <meta property="og:site_name" content="Peter McConnell :: Ponderings from a Linux Systems engineer" />
 
   
-    <meta property="og:image" content="https://www.petermcconnell.com/img/favicon/pink.png">
+    <meta property="og:image" content="http://localhost:1313/img/favicon/pink.png">
   
 
 <meta property="og:image:width" content="1200">
@@ -122,19 +122,19 @@
         <hr />
         
           <li>
-            <a href="https://www.petermcconnell.com/">English</a>
+            <a href="http://localhost:1313/">English</a>
           </li>
         
           <li>
-            <a href="https://www.petermcconnell.com/pt/">Português</a>
+            <a href="http://localhost:1313/pt/">Português</a>
           </li>
         
           <li>
-            <a href="https://www.petermcconnell.com/es/">Española</a>
+            <a href="http://localhost:1313/es/">Española</a>
           </li>
         
           <li>
-            <a href="https://www.petermcconnell.com/fr/">Français</a>
+            <a href="http://localhost:1313/fr/">Français</a>
           </li>
         
       
@@ -149,13 +149,13 @@
   <li>
     <ul class="menu__dropdown">
       
-        <li><a href="https://www.petermcconnell.com/">English</a></li>
+        <li><a href="http://localhost:1313/">English</a></li>
       
-        <li><a href="https://www.petermcconnell.com/pt/">Português</a></li>
+        <li><a href="http://localhost:1313/pt/">Português</a></li>
       
-        <li><a href="https://www.petermcconnell.com/es/">Española</a></li>
+        <li><a href="http://localhost:1313/es/">Española</a></li>
       
-        <li><a href="https://www.petermcconnell.com/fr/">Français</a></li>
+        <li><a href="http://localhost:1313/fr/">Français</a></li>
       
     </ul>
   </li>
@@ -205,7 +205,7 @@
     
       <article class="post on-list">
         <h1 class="post-title">
-          <a href="https://www.petermcconnell.com/posts/monolith_vs_microservice_repos/">Monolith vs Microservice repositories - some pros and cons</a>
+          <a href="http://localhost:1313/posts/perf_eng_with_py12/">Perf engineering with Python 3.12</a>
         </h1>
 
         <div class="post-meta">
@@ -222,9 +222,57 @@
         
           <span class="post-tags">
             
-            #<a href="https://www.petermcconnell.com/tags/monorepo/">monorepo</a>&nbsp;
+            #<a href="http://localhost:1313/tags/python/">python</a>&nbsp;
             
-            #<a href="https://www.petermcconnell.com/tags/microservice/">microservice</a>&nbsp;
+            #<a href="http://localhost:1313/tags/linux/">linux</a>&nbsp;
+            
+            #<a href="http://localhost:1313/tags/perf/">perf</a>&nbsp;
+            
+          </span>
+        
+
+        
+  <img src="https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/perf_example_python3.12.after.svg"
+    class="post-cover"
+    alt="Perf engineering with Python 3.12"
+    title="Cover Image" />
+
+
+        <div class="post-content">
+          
+            Since Python 3.12, the interpreter can run in a special mode that allows Python functions to appear in the output of the perf profiler. When this mode is enabled, the interpreter will interpose a small piece of code compiled on the fly before the execution of every Python function and it will teach perf the relationship between this piece of code and the associated Python function using perf map files. We&rsquo;ll create a dummy application and use the new tools to solve a perf issue.
+          
+        </div>
+
+        
+          <div>
+            <a class="read-more button" href="/posts/perf_eng_with_py12/">Read more →</a>
+          </div>
+        
+      </article>
+    
+      <article class="post on-list">
+        <h1 class="post-title">
+          <a href="http://localhost:1313/posts/monolith_vs_microservice_repos/">Monolith vs Microservice repositories - some pros and cons</a>
+        </h1>
+
+        <div class="post-meta">
+          
+            <time class="post-date">
+              2022-12-26 ::
+            </time>
+          
+          
+            <span class="post-author">Peter McConnell</span>
+          
+        </div>
+
+        
+          <span class="post-tags">
+            
+            #<a href="http://localhost:1313/tags/monorepo/">monorepo</a>&nbsp;
+            
+            #<a href="http://localhost:1313/tags/microservice/">microservice</a>&nbsp;
             
           </span>
         
@@ -248,7 +296,7 @@ A monolithic repository is a version control system that stores all of the code 
     
       <article class="post on-list">
         <h1 class="post-title">
-          <a href="https://www.petermcconnell.com/posts/ai_db_testing/">chatGPT - building an automated database testing tool</a>
+          <a href="http://localhost:1313/posts/ai_db_testing/">chatGPT - building an automated database testing tool</a>
         </h1>
 
         <div class="post-meta">
@@ -263,11 +311,11 @@ A monolithic repository is a version control system that stores all of the code 
         
           <span class="post-tags">
             
-            #<a href="https://www.petermcconnell.com/tags/chatgpt/">chatGPT</a>&nbsp;
+            #<a href="http://localhost:1313/tags/chatgpt/">chatGPT</a>&nbsp;
             
-            #<a href="https://www.petermcconnell.com/tags/sql/">SQL</a>&nbsp;
+            #<a href="http://localhost:1313/tags/sql/">SQL</a>&nbsp;
             
-            #<a href="https://www.petermcconnell.com/tags/python/">Python</a>&nbsp;
+            #<a href="http://localhost:1313/tags/python/">Python</a>&nbsp;
             
           </span>
         
@@ -295,7 +343,7 @@ In conclusion, with guidance, it was able to build a project from scratch that r
     
       <article class="post on-list">
         <h1 class="post-title">
-          <a href="https://www.petermcconnell.com/posts/chatgpt/">chatGPT - building a virtual machine</a>
+          <a href="http://localhost:1313/posts/chatgpt/">chatGPT - building a virtual machine</a>
         </h1>
 
         <div class="post-meta">
@@ -310,7 +358,7 @@ In conclusion, with guidance, it was able to build a project from scratch that r
         
           <span class="post-tags">
             
-            #<a href="https://www.petermcconnell.com/tags/chatgpt/">chatGPT</a>&nbsp;
+            #<a href="http://localhost:1313/tags/chatgpt/">chatGPT</a>&nbsp;
             
           </span>
         
@@ -334,7 +382,7 @@ In conclusion, with guidance, it was able to build a project from scratch that r
     
       <article class="post on-list">
         <h1 class="post-title">
-          <a href="https://www.petermcconnell.com/posts/vimtips/">Vimtips</a>
+          <a href="http://localhost:1313/posts/vimtips/">Vimtips</a>
         </h1>
 
         <div class="post-meta">
@@ -351,9 +399,9 @@ In conclusion, with guidance, it was able to build a project from scratch that r
         
           <span class="post-tags">
             
-            #<a href="https://www.petermcconnell.com/tags/vim/">vim</a>&nbsp;
+            #<a href="http://localhost:1313/tags/vim/">vim</a>&nbsp;
             
-            #<a href="https://www.petermcconnell.com/tags/neovim/">neovim</a>&nbsp;
+            #<a href="http://localhost:1313/tags/neovim/">neovim</a>&nbsp;
             
           </span>
         
@@ -370,48 +418,6 @@ In conclusion, with guidance, it was able to build a project from scratch that r
         
           <div>
             <a class="read-more button" href="/posts/vimtips/">Read more →</a>
-          </div>
-        
-      </article>
-    
-      <article class="post on-list">
-        <h1 class="post-title">
-          <a href="https://www.petermcconnell.com/posts/hugo/">Hugo</a>
-        </h1>
-
-        <div class="post-meta">
-          
-            <time class="post-date">
-              2022-11-29 ::
-            </time>
-          
-          
-        </div>
-
-        
-          <span class="post-tags">
-            
-            #<a href="https://www.petermcconnell.com/tags/hugo/">hugo</a>&nbsp;
-            
-            #<a href="https://www.petermcconnell.com/tags/aws/">aws</a>&nbsp;
-            
-            #<a href="https://www.petermcconnell.com/tags/amplify/">amplify</a>&nbsp;
-            
-          </span>
-        
-
-        
-
-
-        <div class="post-content">
-          
-            How I set the initial version of this website up; for free
-          
-        </div>
-
-        
-          <div>
-            <a class="read-more button" href="/posts/hugo/">Read more →</a>
           </div>
         
       </article>
@@ -442,7 +448,7 @@ In conclusion, with guidance, it was able to build a project from scratch that r
     <footer class="footer">
   <div class="footer__inner">
     <div class="links">
-      <a href="https://www.petermcconnell.com/index.xml" title="rss feed">rss</a> | 
+      <a href="http://localhost:1313/index.xml" title="rss feed">rss</a> | 
       <a target="_blank" href="https://github.com/peter-mcconnell/">github</a> |
       <a target="_blank" href="https://www.linkedin.com/in/pemcconnell/">linkedin</a>
       

@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Lsblk on Peter McConnell :: Ponderings from a Linux Systems engineer</title>
-    <link>https://www.petermcconnell.com/tags/lsblk/</link>
+    <link>http://localhost:1313/tags/lsblk/</link>
     <description>Recent content in Lsblk on Peter McConnell :: Ponderings from a Linux Systems engineer</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>&amp;copy; Peter McConnell 2023</copyright>
-    <lastBuildDate>Fri, 30 Dec 2022 14:28:12 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/lsblk/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 30 Dec 2022 14:28:12 +0000</lastBuildDate><atom:link href="http://localhost:1313/tags/lsblk/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>A quick introduction to basic debugging tools for linux systems</title>
-      <link>https://www.petermcconnell.com/posts/linuxtools/</link>
+      <link>http://localhost:1313/posts/linuxtools/</link>
       <pubDate>Fri, 30 Dec 2022 14:28:12 +0000</pubDate>
       
-      <guid>https://www.petermcconnell.com/posts/linuxtools/</guid>
+      <guid>http://localhost:1313/posts/linuxtools/</guid>
       <description>The scope of this article is to cover the best common-use debugging tools available on Linux systems.
 Firstly: let me qualify &amp;ldquo;basic&amp;rdquo;. I&amp;rsquo;m using this term because the breadth of debugging tools on Linux is so large. &amp;ldquo;basic&amp;rdquo; does not mean that these tools are super simple to understand deeply or if you aren&amp;rsquo;t already an expert in them that you are somehow &amp;ldquo;noob&amp;rdquo;; that&amp;rsquo;s not the case at all.</description>
       <content>&lt;p&gt;The scope of this article is to cover the best common-use debugging tools available on Linux systems.&lt;/p&gt;

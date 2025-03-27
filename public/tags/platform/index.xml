@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Platform on Peter McConnell :: Ponderings from a Linux Systems engineer</title>
-    <link>https://www.petermcconnell.com/tags/platform/</link>
+    <link>http://localhost:1313/tags/platform/</link>
     <description>Recent content in Platform on Peter McConnell :: Ponderings from a Linux Systems engineer</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>&amp;copy; Peter McConnell 2023</copyright>
-    <lastBuildDate>Fri, 30 Dec 2022 20:34:57 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/platform/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 30 Dec 2022 20:34:57 +0000</lastBuildDate><atom:link href="http://localhost:1313/tags/platform/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>What is DevOps?</title>
-      <link>https://www.petermcconnell.com/posts/whatisdevops/</link>
+      <link>http://localhost:1313/posts/whatisdevops/</link>
       <pubDate>Fri, 30 Dec 2022 20:34:57 +0000</pubDate>
       
-      <guid>https://www.petermcconnell.com/posts/whatisdevops/</guid>
+      <guid>http://localhost:1313/posts/whatisdevops/</guid>
       <description>The term &amp;ldquo;devops&amp;rdquo; has been floating around since the late 2000s and frankly has always annoyed me. Not that I think the intent was bad but rather the adoption was so varied and confusing that simply saying the word out loud seemed to make things worse and lead to fear and confusion. I&amp;rsquo;d like to make &amp;ldquo;DevOps&amp;rdquo; the &amp;ldquo;Voldermort&amp;rdquo; of tech buzzwords - &amp;ldquo;He-Who-Must-Not-Be-Named&amp;rdquo;. This happened with Agile also which is even more confusing given it has a &amp;ldquo;manifesto&amp;rdquo; that&amp;rsquo;s all but a single paragraph, but I&amp;rsquo;ll leave that for another day.</description>
       <content>&lt;p&gt;The term &amp;ldquo;devops&amp;rdquo; has been floating around since the late  2000s and frankly has
 always annoyed me. Not that I think the intent was bad but rather the adoption

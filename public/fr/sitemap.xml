@@ -2,325 +2,325 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://www.petermcconnell.com/fr/posts/perf_eng_with_py12/</loc>
+    <loc>http://localhost:1313/fr/posts/perf_eng_with_py12/</loc>
     <lastmod>2022-12-26T22:54:29+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="pt"
-                href="https://www.petermcconnell.com/pt/posts/perf_eng_with_py12/"
+                href="http://localhost:1313/pt/posts/perf_eng_with_py12/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="es"
-                href="https://www.petermcconnell.com/es/posts/perf_eng_with_py12/"
+                href="http://localhost:1313/es/posts/perf_eng_with_py12/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://www.petermcconnell.com/posts/perf_eng_with_py12/"
+                href="http://localhost:1313/posts/perf_eng_with_py12/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="fr"
-                href="https://www.petermcconnell.com/fr/posts/perf_eng_with_py12/"
+                href="http://localhost:1313/fr/posts/perf_eng_with_py12/"
                 />
   </url><url>
-    <loc>https://www.petermcconnell.com/fr/tags/linux/</loc>
+    <loc>http://localhost:1313/fr/tags/linux/</loc>
     <lastmod>2022-12-26T22:54:29+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://www.petermcconnell.com/tags/linux/"
+                href="http://localhost:1313/tags/linux/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="es"
-                href="https://www.petermcconnell.com/es/tags/linux/"
+                href="http://localhost:1313/es/tags/linux/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="pt"
-                href="https://www.petermcconnell.com/pt/tags/linux/"
+                href="http://localhost:1313/pt/tags/linux/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="fr"
-                href="https://www.petermcconnell.com/fr/tags/linux/"
+                href="http://localhost:1313/fr/tags/linux/"
                 />
   </url><url>
-    <loc>https://www.petermcconnell.com/fr/tags/perf/</loc>
+    <loc>http://localhost:1313/fr/tags/perf/</loc>
     <lastmod>2022-12-26T22:54:29+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://www.petermcconnell.com/tags/perf/"
+                href="http://localhost:1313/tags/perf/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="es"
-                href="https://www.petermcconnell.com/es/tags/perf/"
+                href="http://localhost:1313/es/tags/perf/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="pt"
-                href="https://www.petermcconnell.com/pt/tags/perf/"
+                href="http://localhost:1313/pt/tags/perf/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="fr"
-                href="https://www.petermcconnell.com/fr/tags/perf/"
+                href="http://localhost:1313/fr/tags/perf/"
                 />
   </url><url>
-    <loc>https://www.petermcconnell.com/fr/</loc>
+    <loc>http://localhost:1313/fr/</loc>
     <lastmod>2022-12-26T22:54:29+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://www.petermcconnell.com/"
+                href="http://localhost:1313/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="pt"
-                href="https://www.petermcconnell.com/pt/"
+                href="http://localhost:1313/pt/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="es"
-                href="https://www.petermcconnell.com/es/"
+                href="http://localhost:1313/es/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="fr"
-                href="https://www.petermcconnell.com/fr/"
+                href="http://localhost:1313/fr/"
                 />
   </url><url>
-    <loc>https://www.petermcconnell.com/fr/posts/</loc>
+    <loc>http://localhost:1313/fr/posts/</loc>
     <lastmod>2022-12-26T22:54:29+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://www.petermcconnell.com/posts/"
+                href="http://localhost:1313/posts/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="es"
-                href="https://www.petermcconnell.com/es/posts/"
+                href="http://localhost:1313/es/posts/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="pt"
-                href="https://www.petermcconnell.com/pt/posts/"
+                href="http://localhost:1313/pt/posts/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="fr"
-                href="https://www.petermcconnell.com/fr/posts/"
+                href="http://localhost:1313/fr/posts/"
                 />
   </url><url>
-    <loc>https://www.petermcconnell.com/fr/tags/python/</loc>
+    <loc>http://localhost:1313/fr/tags/python/</loc>
     <lastmod>2022-12-26T22:54:29+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://www.petermcconnell.com/tags/python/"
+                href="http://localhost:1313/tags/python/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="es"
-                href="https://www.petermcconnell.com/es/tags/python/"
+                href="http://localhost:1313/es/tags/python/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="pt"
-                href="https://www.petermcconnell.com/pt/tags/python/"
+                href="http://localhost:1313/pt/tags/python/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="fr"
-                href="https://www.petermcconnell.com/fr/tags/python/"
+                href="http://localhost:1313/fr/tags/python/"
                 />
   </url><url>
-    <loc>https://www.petermcconnell.com/fr/tags/</loc>
+    <loc>http://localhost:1313/fr/tags/</loc>
     <lastmod>2022-12-26T22:54:29+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://www.petermcconnell.com/tags/"
+                href="http://localhost:1313/tags/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="es"
-                href="https://www.petermcconnell.com/es/tags/"
+                href="http://localhost:1313/es/tags/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="pt"
-                href="https://www.petermcconnell.com/pt/tags/"
+                href="http://localhost:1313/pt/tags/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="fr"
-                href="https://www.petermcconnell.com/fr/tags/"
+                href="http://localhost:1313/fr/tags/"
                 />
   </url><url>
-    <loc>https://www.petermcconnell.com/fr/tags/chatgpt/</loc>
+    <loc>http://localhost:1313/fr/tags/chatgpt/</loc>
     <lastmod>2022-12-08T11:41:50+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://www.petermcconnell.com/tags/chatgpt/"
+                href="http://localhost:1313/tags/chatgpt/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="es"
-                href="https://www.petermcconnell.com/es/tags/chatgpt/"
+                href="http://localhost:1313/es/tags/chatgpt/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="pt"
-                href="https://www.petermcconnell.com/pt/tags/chatgpt/"
+                href="http://localhost:1313/pt/tags/chatgpt/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="fr"
-                href="https://www.petermcconnell.com/fr/tags/chatgpt/"
+                href="http://localhost:1313/fr/tags/chatgpt/"
                 />
   </url><url>
-    <loc>https://www.petermcconnell.com/fr/posts/ai_db_testing/</loc>
+    <loc>http://localhost:1313/fr/posts/ai_db_testing/</loc>
     <lastmod>2022-12-08T11:41:50+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://www.petermcconnell.com/posts/ai_db_testing/"
+                href="http://localhost:1313/posts/ai_db_testing/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="pt"
-                href="https://www.petermcconnell.com/pt/posts/ai_db_testing/"
+                href="http://localhost:1313/pt/posts/ai_db_testing/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="es"
-                href="https://www.petermcconnell.com/es/posts/ai_db_testing/"
+                href="http://localhost:1313/es/posts/ai_db_testing/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="fr"
-                href="https://www.petermcconnell.com/fr/posts/ai_db_testing/"
+                href="http://localhost:1313/fr/posts/ai_db_testing/"
                 />
   </url><url>
-    <loc>https://www.petermcconnell.com/fr/tags/sql/</loc>
+    <loc>http://localhost:1313/fr/tags/sql/</loc>
     <lastmod>2022-12-08T11:41:50+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://www.petermcconnell.com/tags/sql/"
+                href="http://localhost:1313/tags/sql/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="es"
-                href="https://www.petermcconnell.com/es/tags/sql/"
+                href="http://localhost:1313/es/tags/sql/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="pt"
-                href="https://www.petermcconnell.com/pt/tags/sql/"
+                href="http://localhost:1313/pt/tags/sql/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="fr"
-                href="https://www.petermcconnell.com/fr/tags/sql/"
+                href="http://localhost:1313/fr/tags/sql/"
                 />
   </url><url>
-    <loc>https://www.petermcconnell.com/fr/skills/</loc>
+    <loc>http://localhost:1313/fr/skills/</loc>
     <lastmod>2022-11-29T20:54:22+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="es"
-                href="https://www.petermcconnell.com/es/skills/"
+                href="http://localhost:1313/es/skills/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="pt"
-                href="https://www.petermcconnell.com/pt/skills/"
+                href="http://localhost:1313/pt/skills/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://www.petermcconnell.com/skills/"
+                href="http://localhost:1313/skills/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="fr"
-                href="https://www.petermcconnell.com/fr/skills/"
+                href="http://localhost:1313/fr/skills/"
                 />
   </url><url>
-    <loc>https://www.petermcconnell.com/fr/showcase/</loc>
+    <loc>http://localhost:1313/fr/showcase/</loc>
     <lastmod>2022-11-29T20:51:24+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="es"
-                href="https://www.petermcconnell.com/es/showcase/"
+                href="http://localhost:1313/es/showcase/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://www.petermcconnell.com/showcase/"
+                href="http://localhost:1313/showcase/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="pt"
-                href="https://www.petermcconnell.com/pt/showcase/"
+                href="http://localhost:1313/pt/showcase/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="fr"
-                href="https://www.petermcconnell.com/fr/showcase/"
+                href="http://localhost:1313/fr/showcase/"
                 />
   </url><url>
-    <loc>https://www.petermcconnell.com/fr/about/</loc>
+    <loc>http://localhost:1313/fr/about/</loc>
     <lastmod>2022-11-29T20:36:26+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://www.petermcconnell.com/about/"
+                href="http://localhost:1313/about/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="pt"
-                href="https://www.petermcconnell.com/pt/about/"
+                href="http://localhost:1313/pt/about/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="es"
-                href="https://www.petermcconnell.com/es/about/"
+                href="http://localhost:1313/es/about/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="fr"
-                href="https://www.petermcconnell.com/fr/about/"
+                href="http://localhost:1313/fr/about/"
                 />
   </url><url>
-    <loc>https://www.petermcconnell.com/fr/categories/</loc>
+    <loc>http://localhost:1313/fr/categories/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://www.petermcconnell.com/categories/"
+                href="http://localhost:1313/categories/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="es"
-                href="https://www.petermcconnell.com/es/categories/"
+                href="http://localhost:1313/es/categories/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="pt"
-                href="https://www.petermcconnell.com/pt/categories/"
+                href="http://localhost:1313/pt/categories/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="fr"
-                href="https://www.petermcconnell.com/fr/categories/"
+                href="http://localhost:1313/fr/categories/"
                 />
   </url>
 </urlset>
