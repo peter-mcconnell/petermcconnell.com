@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Microservice on Peter McConnell :: Ponderings from a Linux Systems engineer</title>
-    <link>https://www.petermcconnell.com/tags/microservice/</link>
+    <link>http://localhost:1313/tags/microservice/</link>
     <description>Recent content in Microservice on Peter McConnell :: Ponderings from a Linux Systems engineer</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>&amp;copy; Peter McConnell 2023</copyright>
-    <lastBuildDate>Mon, 26 Dec 2022 15:01:29 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/microservice/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 26 Dec 2022 15:01:29 +0000</lastBuildDate><atom:link href="http://localhost:1313/tags/microservice/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Monolith vs Microservice repositories - some pros and cons</title>
-      <link>https://www.petermcconnell.com/posts/monolith_vs_microservice_repos/</link>
+      <link>http://localhost:1313/posts/monolith_vs_microservice_repos/</link>
       <pubDate>Mon, 26 Dec 2022 15:01:29 +0000</pubDate>
       
-      <guid>https://www.petermcconnell.com/posts/monolith_vs_microservice_repos/</guid>
+      <guid>http://localhost:1313/posts/monolith_vs_microservice_repos/</guid>
       <description>Monolithic vs Microservice repository management Here we&amp;rsquo;ll take a quick look at monolithic vs microservice repository architecture for managing codebases.
 A monolithic repository is a version control system that stores all of the code for a software application in a single, centralized repository. This means that all of the code for an application, including the front-end, back-end, and any additional components, is stored in a single location and managed as a cohesive unit.</description>
       <content>&lt;h1 id=&#34;monolithic-vs-microservice-repository-management&#34;&gt;Monolithic vs Microservice repository management&lt;/h1&gt;

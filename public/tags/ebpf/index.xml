@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Ebpf on Peter McConnell :: Ponderings from a Linux Systems engineer</title>
-    <link>https://www.petermcconnell.com/tags/ebpf/</link>
+    <link>http://localhost:1313/tags/ebpf/</link>
     <description>Recent content in Ebpf on Peter McConnell :: Ponderings from a Linux Systems engineer</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>&amp;copy; Peter McConnell 2023</copyright>
-    <lastBuildDate>Sun, 18 Feb 2024 11:40:02 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/ebpf/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 18 Feb 2024 11:40:02 +0000</lastBuildDate><atom:link href="http://localhost:1313/tags/ebpf/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Snooping on libpam (openssh auth, passwd) with Golang and eBPF</title>
-      <link>https://www.petermcconnell.com/posts/whispers/</link>
+      <link>http://localhost:1313/posts/whispers/</link>
       <pubDate>Sun, 18 Feb 2024 11:40:02 +0000</pubDate>
       
-      <guid>https://www.petermcconnell.com/posts/whispers/</guid>
+      <guid>http://localhost:1313/posts/whispers/</guid>
       <description>In the vast and complex landscape of software security, safeguarding sensitive information remains a paramount concern for developers and security professionals alike. Among the myriad of challenges, securely managing and protecting credentials during authentication processes stands out as a critical vulnerability point. Traditional security measures often fall short in providing real-time insights into how credentials are handled and potentially exposed within applications, especially those relying on widely used authentication frameworks like PAM (Pluggable Authentication Modules).</description>
       <content>&lt;p&gt;In the vast and complex landscape of software security, safeguarding sensitive information remains a paramount concern for developers and security professionals alike. Among the myriad of challenges, securely managing and protecting credentials during authentication processes stands out as a critical vulnerability point. Traditional security measures often fall short in providing real-time insights into how credentials are handled and potentially exposed within applications, especially those relying on widely used authentication frameworks like PAM (Pluggable Authentication Modules).&lt;/p&gt;
 &lt;p&gt;I work for a runtime security platform so this topic, BPF, Golang and Linux are some that I find the most interesting. Tangentally I was asked to give a talk at a Golang meetup, so figured I&amp;rsquo;d create a mini project to showcase some of this tech may be a good way to get others excited about these topics. Hence this repo and article.&lt;/p&gt;
@@ -314,10 +314,10 @@ pkg/whispers: Implements the core functionality for loading and interacting with
     
     <item>
       <title>Building an XDP eBPF Program with C and Golang: A Step-by-Step Guide</title>
-      <link>https://www.petermcconnell.com/posts/writing-an-xdp-ebpf-program/</link>
+      <link>http://localhost:1313/posts/writing-an-xdp-ebpf-program/</link>
       <pubDate>Wed, 17 May 2023 15:31:43 +0000</pubDate>
       
-      <guid>https://www.petermcconnell.com/posts/writing-an-xdp-ebpf-program/</guid>
+      <guid>http://localhost:1313/posts/writing-an-xdp-ebpf-program/</guid>
       <description>Introduction In today&amp;rsquo;s highly connected and data-driven world, network performance is crucial for ensuring efficient communication and optimal user experience. XDP (eXpress Data Path) and eBPF (extended Berkeley Packet Filter) have emerged as powerful technologies that enable high-performance packet processing and network optimization. In this step-by-step guide, we will explore the process of building an XDP eBPF program using C and Golang. XDP allows for early packet interception at the network interface driver level, while eBPF provides a flexible and efficient execution environment for custom packet processing logic.</description>
       <content>&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
 &lt;p&gt;In today&amp;rsquo;s highly connected and data-driven world, network performance is crucial for ensuring efficient communication and optimal user experience. XDP (eXpress Data Path) and eBPF (extended Berkeley Packet Filter) have emerged as powerful technologies that enable high-performance packet processing and network optimization. In this step-by-step guide, we will explore the process of building an XDP eBPF program using C and Golang. XDP allows for early packet interception at the network interface driver level, while eBPF provides a flexible and efficient execution environment for custom packet processing logic. Together, they offer an unprecedented level of control and performance in networking applications. Our project, named &amp;ldquo;dilih&amp;rdquo; (drop it like it&amp;rsquo;s hot), demonstrates how to build a simple chaos engineering tool that arbitrarily drops packets on a given network interface, which can be a useful tool to allow application developers to understand how their products behave when the network isn&amp;rsquo;t. Through this guide, you will gain a basic understanding of XDP, eBPF, and their practical applications in network manipulation.&lt;/p&gt;

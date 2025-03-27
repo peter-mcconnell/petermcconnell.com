@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Hugo on Peter McConnell :: Ponderings from a Linux Systems engineer</title>
-    <link>https://www.petermcconnell.com/tags/hugo/</link>
+    <link>http://localhost:1313/tags/hugo/</link>
     <description>Recent content in Hugo on Peter McConnell :: Ponderings from a Linux Systems engineer</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>&amp;copy; Peter McConnell 2023</copyright>
-    <lastBuildDate>Tue, 29 Nov 2022 23:16:21 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/hugo/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 29 Nov 2022 23:16:21 +0000</lastBuildDate><atom:link href="http://localhost:1313/tags/hugo/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Hugo</title>
-      <link>https://www.petermcconnell.com/posts/hugo/</link>
+      <link>http://localhost:1313/posts/hugo/</link>
       <pubDate>Tue, 29 Nov 2022 23:16:21 +0000</pubDate>
       
-      <guid>https://www.petermcconnell.com/posts/hugo/</guid>
+      <guid>http://localhost:1313/posts/hugo/</guid>
       <description>How I set this website up, for free tldr; Hugo + Github + AWS Amplify. Easy peasy. total time: 1 hour (mostly spent writing content)
 Some parameters:
 free templates. I&amp;rsquo;m no designer static web asset output is fine. I&amp;rsquo;m not building a backend (yet) but having the option to do so is a bonus this project should be as low effort as possible so; no html / css / js where possible also; automated deploys on push to $branch ideally I don&amp;rsquo;t need to maintain ci to do this.</description>

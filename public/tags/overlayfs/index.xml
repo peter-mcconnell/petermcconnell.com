@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Overlayfs on Peter McConnell :: Ponderings from a Linux Systems engineer</title>
-    <link>https://www.petermcconnell.com/tags/overlayfs/</link>
+    <link>http://localhost:1313/tags/overlayfs/</link>
     <description>Recent content in Overlayfs on Peter McConnell :: Ponderings from a Linux Systems engineer</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>&amp;copy; Peter McConnell 2023</copyright>
-    <lastBuildDate>Thu, 19 Jan 2023 12:05:02 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/overlayfs/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 19 Jan 2023 12:05:02 +0000</lastBuildDate><atom:link href="http://localhost:1313/tags/overlayfs/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Docker Overlayfs: How filesystems work in Docker</title>
-      <link>https://www.petermcconnell.com/posts/docker-overlayfs/</link>
+      <link>http://localhost:1313/posts/docker-overlayfs/</link>
       <pubDate>Thu, 19 Jan 2023 12:05:02 +0000</pubDate>
       
-      <guid>https://www.petermcconnell.com/posts/docker-overlayfs/</guid>
+      <guid>http://localhost:1313/posts/docker-overlayfs/</guid>
       <description>This is a brief follow up to my article on Docker networking: Network Namespaces, Docker Bridge and DNS
 Docker uses OverlayFS to manage the file system of its containers. When a container is run, Docker creates a new layer for the container&amp;rsquo;s file system on top of the base image. This allows the container to have its own file system that is isolated from the host system and other containers.</description>
       <content>&lt;p&gt;This is a brief follow up to my article on &lt;a href=&#34;https://www.petermcconnell.com/posts/linux_networking/&#34;&gt;Docker networking: Network Namespaces, Docker Bridge and DNS&lt;/a&gt;&lt;/p&gt;

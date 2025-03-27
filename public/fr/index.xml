@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Peter McConnell :: Réflexions d&#39;un ingénieur système Linux</title>
-    <link>https://www.petermcconnell.com/fr/</link>
+    <link>http://localhost:1313/fr/</link>
     <description>Recent content on Peter McConnell :: Réflexions d&#39;un ingénieur système Linux</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>fr</language>
     <copyright>&amp;copy; Peter McConnell 2023</copyright>
-    <lastBuildDate>Mon, 26 Dec 2022 22:54:29 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/fr/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 26 Dec 2022 22:54:29 +0000</lastBuildDate><atom:link href="http://localhost:1313/fr/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Ingénierie des performances avec Python 3.12</title>
-      <link>https://www.petermcconnell.com/fr/posts/perf_eng_with_py12/</link>
+      <link>http://localhost:1313/fr/posts/perf_eng_with_py12/</link>
       <pubDate>Mon, 26 Dec 2022 22:54:29 +0000</pubDate>
       
-      <guid>https://www.petermcconnell.com/fr/posts/perf_eng_with_py12/</guid>
+      <guid>http://localhost:1313/fr/posts/perf_eng_with_py12/</guid>
       <description>3.12 apporte le profilage des performances ! Prenez une seconde pour aller consulter https://docs.python.org/3.12/howto/perf_profiling.html et en effet le changelog à https://www.python.org/downloads/release/python-3120a3/
 La partie importante (pour ce post) des liens ci-dessus est :
 &amp;quot;&amp;quot;&amp;quot; Le profileur de performances Linux est un outil très puissant qui vous permet de profiler et d&amp;rsquo;obtenir des informations sur les performances de votre application. perf dispose également d&amp;rsquo;un écosystème d&amp;rsquo;outils très dynamique qui facilite l&amp;rsquo;analyse des données qu&amp;rsquo;il produit.</description>
@@ -179,10 +179,10 @@ Le profileur de performances Linux est un outil très puissant qui vous permet d
     
     <item>
       <title>chatGPT - création d&#39;un outil de test de base de données automatisé</title>
-      <link>https://www.petermcconnell.com/fr/posts/ai_db_testing/</link>
+      <link>http://localhost:1313/fr/posts/ai_db_testing/</link>
       <pubDate>Thu, 08 Dec 2022 11:41:50 +0000</pubDate>
       
-      <guid>https://www.petermcconnell.com/fr/posts/ai_db_testing/</guid>
+      <guid>http://localhost:1313/fr/posts/ai_db_testing/</guid>
       <description>Création d&amp;rsquo;un outil de test de base de données automatisé avec ChatGPT
 Hier soir, j&amp;rsquo;ai pensé essayer de faire en sorte que ChatGPT crée une base de données automatisée outil de test et les résultats étaient assez prometteurs.
 En conclusion, avec des conseils, il a pu construire un projet à partir de zéro qui a exécuté un script python et une base de données postgres. Il a généré un schéma aléatoire et valeurs pour les tables générées aléatoirement.</description>
@@ -250,10 +250,10 @@ acabit. Pour le moment&lt;/p&gt;
     
     <item>
       <title></title>
-      <link>https://www.petermcconnell.com/fr/skills/</link>
+      <link>http://localhost:1313/fr/skills/</link>
       <pubDate>Tue, 29 Nov 2022 20:54:22 +0000</pubDate>
       
-      <guid>https://www.petermcconnell.com/fr/skills/</guid>
+      <guid>http://localhost:1313/fr/skills/</guid>
       <description>https://www.youtube.com/watch?v=dL6kQ0v1PQ8
 Je suis un débogueur solide, un concepteur de systèmes raisonnable, un codeur correct et un leader naturel qui s&amp;rsquo;appuie fortement sur l&amp;rsquo;automatisation / donne aux gens le pouvoir de faire leur travail. J&amp;rsquo;ai travaillé avec assez de talent pour savoir que je n&amp;rsquo;ai rien de spécial ; mais j&amp;rsquo;ai un super expérience professionnelle pour être facile à travailler et faire de la merde, que ce soit en tant qu&amp;rsquo;IC, un gestionnaire ou un chef de groupe.</description>
       <content>&lt;p&gt;&lt;a href=&#34;https://www.youtube.com/watch?v=dL6kQ0v1PQ8&#34;&gt;https://www.youtube.com/watch?v=dL6kQ0v1PQ8&lt;/a&gt;&lt;/p&gt;
@@ -279,10 +279,10 @@ secouez la rouille ou apprenez quelque chose de nouveau en une semaine ou deux.&
     
     <item>
       <title></title>
-      <link>https://www.petermcconnell.com/fr/showcase/</link>
+      <link>http://localhost:1313/fr/showcase/</link>
       <pubDate>Tue, 29 Nov 2022 20:51:24 +0000</pubDate>
       
-      <guid>https://www.petermcconnell.com/fr/showcase/</guid>
+      <guid>http://localhost:1313/fr/showcase/</guid>
       <description>Je suis là depuis un moment et j&amp;rsquo;ai fait certaines choses. Même quelques bonnes choses.
 aidé à mener deux sociétés à l&amp;rsquo;acquisition développé un langage de requête personnalisé (TQL - une variante opencypher) qui est allé sur le marché [ Java. Golang. ANTLR ] ajout de la prise en charge dans le fournisseur Terraform AWS pour l&amp;rsquo;envoi de vos propres clés à ACM [ Golang ] développé un cadre d&amp;rsquo;orchestration pour les chercheurs en IA afin de planifier les charges de travail [ Python.</description>
       <content>&lt;p&gt;Je suis là depuis un moment et j&amp;rsquo;ai fait certaines choses. Même quelques bonnes choses.&lt;/p&gt;
@@ -323,10 +323,10 @@ référencement. Imaginez combien de temps la liste des &amp;ldquo;mauvaises cho
     
     <item>
       <title>À propos</title>
-      <link>https://www.petermcconnell.com/fr/about/</link>
+      <link>http://localhost:1313/fr/about/</link>
       <pubDate>Tue, 29 Nov 2022 20:36:26 +0000</pubDate>
       
-      <guid>https://www.petermcconnell.com/fr/about/</guid>
+      <guid>http://localhost:1313/fr/about/</guid>
       <description>$COMPÉTENCES https://www.petermcconnell.com/skills/
 $VIDÉOS Une conférence sur les outils d&amp;rsquo;automatisation, avec Rundeck (vers 5:15:00):
 A talk on security and eBPF

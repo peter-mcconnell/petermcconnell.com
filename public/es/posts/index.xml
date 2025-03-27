@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on Peter McConnell :: Reflexiones de un ingeniero de sistemas Linux</title>
-    <link>https://www.petermcconnell.com/es/posts/</link>
+    <link>http://localhost:1313/es/posts/</link>
     <description>Recent content in Posts on Peter McConnell :: Reflexiones de un ingeniero de sistemas Linux</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>es</language>
     <copyright>&amp;copy; Peter McConnell 2023</copyright>
-    <lastBuildDate>Mon, 26 Dec 2022 22:54:29 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/es/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 26 Dec 2022 22:54:29 +0000</lastBuildDate><atom:link href="http://localhost:1313/es/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Ingeniería de rendimiento con Python 3.12</title>
-      <link>https://www.petermcconnell.com/es/posts/perf_eng_with_py12/</link>
+      <link>http://localhost:1313/es/posts/perf_eng_with_py12/</link>
       <pubDate>Mon, 26 Dec 2022 22:54:29 +0000</pubDate>
       
-      <guid>https://www.petermcconnell.com/es/posts/perf_eng_with_py12/</guid>
+      <guid>http://localhost:1313/es/posts/perf_eng_with_py12/</guid>
       <description>¡La versión 3.12 trae perfiles de rendimiento! Tómese un segundo para consultar https://docs.python.org/3.12/howto/perf_profiling.html y, de hecho, el registro de cambios en https://www.python.org/downloads/release/python-3120a3/
 La parte importante (para esta publicación) de los enlaces anteriores es:
 &amp;quot;&amp;quot;&amp;quot; El perfilador de rendimiento de Linux es una herramienta muy poderosa que le permite perfilar y obtener información sobre el rendimiento de su aplicación. perf también tiene un ecosistema muy vibrante de herramientas que ayudan con el análisis de los datos que produce.</description>
@@ -178,10 +178,10 @@ El perfilador de rendimiento de Linux es una herramienta muy poderosa que le per
     
     <item>
       <title>chatGPT: creación de una herramienta de prueba de base de datos automatizada</title>
-      <link>https://www.petermcconnell.com/es/posts/ai_db_testing/</link>
+      <link>http://localhost:1313/es/posts/ai_db_testing/</link>
       <pubDate>Thu, 08 Dec 2022 11:41:50 +0000</pubDate>
       
-      <guid>https://www.petermcconnell.com/es/posts/ai_db_testing/</guid>
+      <guid>http://localhost:1313/es/posts/ai_db_testing/</guid>
       <description>Creación de una herramienta de prueba de base de datos automatizada con ChatGPT Anoche pensé en intentar que ChatGPT creara una base de datos automatizada herramienta de prueba y los resultados fueron bastante prometedores.
 En conclusión, con orientación, fue capaz de construir un proyecto desde cero que ejecutó un script de python y una base de datos de postgres. Generó un esquema aleatorio y valores para las tablas generadas aleatoriamente. Proporcionó un script de Python que introspeccionaría la base de datos y ejecutaría consultas contra ella.</description>
       <content>&lt;h2 id=&#34;creación-de-una-herramienta-de-prueba-de-base-de-datos-automatizada-con-chatgpt&#34;&gt;Creación de una herramienta de prueba de base de datos automatizada con ChatGPT&lt;/h2&gt;

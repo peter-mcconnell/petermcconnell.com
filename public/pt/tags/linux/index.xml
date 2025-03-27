@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Linux on Peter McConnell :: Ponderações de um engenheiro de sistemas Linux</title>
-    <link>https://www.petermcconnell.com/pt/tags/linux/</link>
+    <link>http://localhost:1313/pt/tags/linux/</link>
     <description>Recent content in Linux on Peter McConnell :: Ponderações de um engenheiro de sistemas Linux</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>pt</language>
     <copyright>&amp;copy; Peter McConnell 2023</copyright>
-    <lastBuildDate>Mon, 26 Dec 2022 22:54:29 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/pt/tags/linux/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 26 Dec 2022 22:54:29 +0000</lastBuildDate><atom:link href="http://localhost:1313/pt/tags/linux/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Engenharia de desempenho com Python 3.12</title>
-      <link>https://www.petermcconnell.com/pt/posts/perf_eng_with_py12/</link>
+      <link>http://localhost:1313/pt/posts/perf_eng_with_py12/</link>
       <pubDate>Mon, 26 Dec 2022 22:54:29 +0000</pubDate>
       
-      <guid>https://www.petermcconnell.com/pt/posts/perf_eng_with_py12/</guid>
+      <guid>http://localhost:1313/pt/posts/perf_eng_with_py12/</guid>
       <description>3.12 traz perfis de desempenho! Reserve um segundo para conferir https://docs.python.org/3.12/howto/perf_profiling.html e, de fato, o changelog em https://www.python.org/downloads/release/python-3120a3/
 A parte importante (para este post) dos links acima é:
 &amp;quot;&amp;quot;&amp;quot; O Linux perf profiler é uma ferramenta muito poderosa que permite criar perfis e obter informações sobre o desempenho de seu aplicativo. O perf também possui um ecossistema muito vibrante de ferramentas que auxiliam na análise dos dados que ele produz.</description>

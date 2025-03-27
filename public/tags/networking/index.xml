@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Networking on Peter McConnell :: Ponderings from a Linux Systems engineer</title>
-    <link>https://www.petermcconnell.com/tags/networking/</link>
+    <link>http://localhost:1313/tags/networking/</link>
     <description>Recent content in Networking on Peter McConnell :: Ponderings from a Linux Systems engineer</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>&amp;copy; Peter McConnell 2023</copyright>
-    <lastBuildDate>Wed, 18 Jan 2023 19:48:46 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/networking/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 18 Jan 2023 19:48:46 +0000</lastBuildDate><atom:link href="http://localhost:1313/tags/networking/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Docker networking: Network Namespaces, Docker Bridge and DNS</title>
-      <link>https://www.petermcconnell.com/posts/linux_networking/</link>
+      <link>http://localhost:1313/posts/linux_networking/</link>
       <pubDate>Wed, 18 Jan 2023 19:48:46 +0000</pubDate>
       
-      <guid>https://www.petermcconnell.com/posts/linux_networking/</guid>
+      <guid>http://localhost:1313/posts/linux_networking/</guid>
       <description>Ever wondered how docker compose lets you communicate between services? This article takes a high level look at network namespaces, Dockers internal DNS and Docker bridge.
 Network namespaces are a powerful feature in Linux that allows for the isolation of network stacks, creating multiple virtual networks on a single host. This concept is particularly useful for scenarios such as containerization, where each container needs its own independent network stack. In this article we&amp;rsquo;ll take a look at how docker / docker compose utilize this technology to grant containers network isolation and also take a look at how docker handles cross-container networking.</description>
       <content>&lt;p&gt;Ever wondered how &lt;code&gt;docker compose&lt;/code&gt; lets you communicate between services? This article takes a high level look at network namespaces, Dockers internal DNS and Docker bridge.&lt;/p&gt;

@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  
+    <title>How to Open a File in Linux: A Deep Dive</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="A detailed exploration of the layers involved when opening a file on Linux (Ubuntu 24.04), including syscalls, compatibility checks, and performance optimizations using Golang" />
+<meta name="keywords" content="linux, filesystems, ext4, kernel, syscalls" />
+
+
+<link rel="canonical" href="http://localhost:1313/posts/fileopen/" />
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QJWXPMPB8F"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-QJWXPMPB8F');
+</script>
+
+
+
+
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="/style.css">
+
+
+
+
+
+
+
+  <link rel="shortcut icon" href="http://localhost:1313/img/theme-colors/pink.png">
+  <link rel="apple-touch-icon" href="http://localhost:1313/img/theme-colors/pink.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+<meta name="twitter:title" content="How to Open a File in Linux: A Deep Dive" />
+<meta name="twitter:description" content="A detailed exploration of the layers involved when opening a file on Linux (Ubuntu 24.04), including syscalls, compatibility checks, and performance optimizations using Golang" />
+  
+<meta name="twitter:site" content="@PeteMcConnell_" />
+  
+<meta name="twitter:creator" content="Peter McConnell" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="How to Open a File in Linux: A Deep Dive">
+<meta property="og:description" content="A detailed exploration of the layers involved when opening a file on Linux (Ubuntu 24.04), including syscalls, compatibility checks, and performance optimizations using Golang" />
+<meta property="og:url" content="http://localhost:1313/posts/fileopen/" />
+<meta property="og:site_name" content="Peter McConnell :: Ponderings from a Linux Systems engineer" />
+
+  
+  
+  <meta property="og:image" content="https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/tux.png">
+
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="627">
+
+
+  <meta property="article:published_time" content="2025-03-04 08:16:50 &#43;0000 UTC" />
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+<body class="pink">
+
+
+<div class="container headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/">
+  <div class="logo">
+    Peter McConnell
+  </div>
+</a>
+
+    </div>
+    
+      <ul class="menu menu--mobile">
+  <li class="menu__trigger">Menu&nbsp;▾</li>
+  <li>
+    <ul class="menu__dropdown">
+      
+        
+          <li><a href="/about">About</a></li>
+        
+      
+        
+          <li><a href="/showcase">Showcase</a></li>
+        
+      
+        
+          <li><a href="/skills">Skills</a></li>
+        
+      
+      
+        <hr />
+        
+          <li>
+            <a href="http://localhost:1313/">English</a>
+          </li>
+        
+          <li>
+            <a href="http://localhost:1313/pt/">Português</a>
+          </li>
+        
+          <li>
+            <a href="http://localhost:1313/es/">Española</a>
+          </li>
+        
+          <li>
+            <a href="http://localhost:1313/fr/">Français</a>
+          </li>
+        
+      
+    </ul>
+  </li>
+</ul>
+
+    
+    
+      <ul class="menu menu--desktop menu--language-selector">
+  <li class="menu__trigger">English&nbsp;▾</li>
+  <li>
+    <ul class="menu__dropdown">
+      
+        <li><a href="http://localhost:1313/">English</a></li>
+      
+        <li><a href="http://localhost:1313/pt/">Português</a></li>
+      
+        <li><a href="http://localhost:1313/es/">Española</a></li>
+      
+        <li><a href="http://localhost:1313/fr/">Français</a></li>
+      
+    </ul>
+  </li>
+</ul>
+
+    
+  </div>
+  
+    <nav class="navigation-menu">
+  <ul class="navigation-menu__inner menu--desktop">
+    
+      
+        
+          <li><a href="/about">About</a></li>
+        
+      
+        
+          <li><a href="/showcase">Showcase</a></li>
+        
+      
+        
+          <li><a href="/skills">Skills</a></li>
+        
+      
+      
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<article class="post">
+  <h1 class="post-title">
+    <a href="http://localhost:1313/posts/fileopen/">How to Open a File in Linux: A Deep Dive</a>
+  </h1>
+  <div class="post-meta">
+    
+      <time class="post-date">
+        2025-03-04 ::
+        
+      </time>
+    
+    
+      <span class="post-author">Peter McConnell</span>
+    
+    
+  </div>
+
+  
+    <span class="post-tags">
+      
+      #<a href="http://localhost:1313/tags/linux/">linux</a>&nbsp;
+      
+      #<a href="http://localhost:1313/tags/filesystems/">filesystems</a>&nbsp;
+      
+    </span>
+  
+  
+  <img src="https://raw.githubusercontent.com/peter-mcconnell/petermcconnell.com/master/assets/tux.png"
+    class="post-cover"
+    alt="How to Open a File in Linux: A Deep Dive"
+    title="Cover Image" />
+
+
+  
+
+  <div class="post-content"><div>
+        <h2 id="introduction">Introduction<a href="#introduction" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>Opening a file is a fundamental operation in any operating system, yet under the hood, it involves numerous layers of abstraction, compatibility checks, and system interactions. In this post, we take an in-depth look at what happens when you open a file on Linux with Golang on Ubuntu 24.04, breaking it down from user-space functions to kernel syscalls and file system interactions. We will then explore how to optimize file opening in Golang, demonstrating the impact with a benchmark.</p>
+<h2 id="the-layered-breakdown-of-opening-a-file">The Layered Breakdown of Opening a File<a href="#the-layered-breakdown-of-opening-a-file" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<h3 id="user-space-api-call">User-Space API Call<a href="#user-space-api-call" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>When a program opens a file, it typically calls a standard function from the C library (glibc in most Linux distributions):</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>FILE <span style="color:#f92672">*</span>fp <span style="color:#f92672">=</span> <span style="color:#a6e22e">fopen</span>(<span style="color:#e6db74">&#34;example.txt&#34;</span>, <span style="color:#e6db74">&#34;r&#34;</span>);
+</span></span></code></pre></div><p>Or in Golang:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">f</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Open</span>(<span style="color:#e6db74">&#34;example.txt&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">Close</span>()
+</span></span></code></pre></div><p>These high-level calls abstract away the complexity of interacting with the Linux kernel directly.</p>
+<h3 id="libc-and-system-compatibility-checks">libc and System Compatibility Checks<a href="#libc-and-system-compatibility-checks" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>Before making a direct system call, glibc (or Go&rsquo;s runtime) performs compatibility checks:</p>
+<ul>
+<li>
+<p>Pathname Resolution: Resolves symbolic links, checks if the file exists, and follows chroot or namespace constraints.</p>
+</li>
+<li>
+<p>Access Control: Determines whether the process has permission to open the file based on the effective user ID (UID) and group ID (GID).</p>
+</li>
+<li>
+<p>Environment Factors: If <code>LD_PRELOAD</code> is set, dynamic linker tricks may alter how file opening occurs (e.g., intercepting calls).</p>
+</li>
+</ul>
+<h3 id="syscalls-involved-in-opening-a-file">Syscalls Involved in Opening a File<a href="#syscalls-involved-in-opening-a-file" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>After the user-space checks, a system call is issued to the kernel. The primary syscall for opening a file is:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> fd <span style="color:#f92672">=</span> <span style="color:#a6e22e">open</span>(<span style="color:#e6db74">&#34;example.txt&#34;</span>, O_RDONLY);
+</span></span></code></pre></div><p>In Golang this looks like:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">fd</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">unix</span>.<span style="color:#a6e22e">Open</span>(<span style="color:#e6db74">&#34;example.txt&#34;</span>, <span style="color:#a6e22e">unix</span>.<span style="color:#a6e22e">O_RDONLY</span>, <span style="color:#ae81ff">0</span>)
+</span></span></code></pre></div><p>The open() syscall triggers a sequence of actions within the kernel:</p>
+<ul>
+<li>
+<p>VFS (Virtual File System) Layer: Interprets the syscall and determines which file system (ext4, XFS, NFS, etc.) the file resides on.</p>
+</li>
+<li>
+<p>Permissions Check: Validates access using UID/GID and POSIX ACLs.</p>
+</li>
+<li>
+<p>File Descriptor Allocation: Assigns a file descriptor if the file is accessible.</p>
+</li>
+<li>
+<p>Dentry and Inode Lookup: Translates the file path to an inode (using the dentry cache if available).</p>
+</li>
+<li>
+<p>Filesystem-Specific Handling: Ext4, for example, may check its journal before allowing access.</p>
+</li>
+</ul>
+<h3 id="kernel-space-operations">Kernel Space Operations<a href="#kernel-space-operations" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>When a file open request reaches the kernel, several sophisticated mechanisms come into play:</p>
+<h4 id="1-vfs-virtual-file-system-layer">1. VFS (Virtual File System) Layer<a href="#1-vfs-virtual-file-system-layer" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<ul>
+<li>Path Lookup: The VFS performs a path walk operation (namei lookup) to resolve the file location</li>
+<li>Mount Point Traversal: Checks if the path crosses different mount points</li>
+<li>File System Type Detection: Determines which concrete filesystem implementation to use</li>
+</ul>
+<h4 id="2-kernel-caching-mechanisms">2. Kernel Caching Mechanisms<a href="#2-kernel-caching-mechanisms" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<h5 id="dentry-cache-dcache">Dentry Cache (dcache)<a href="#dentry-cache-dcache" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h5>
+<ul>
+<li>Maintains a lookup cache of directory entries</li>
+<li>Structure includes parent directory, name, and inode reference</li>
+<li>Uses an LRU (Least Recently Used) algorithm for cache management</li>
+<li>Typical entry size: ~100 bytes</li>
+</ul>
+<h5 id="inode-cache">Inode Cache<a href="#inode-cache" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h5>
+<ul>
+<li>Caches the file metadata (inode) information</li>
+<li>Includes file size, permissions, timestamps, and block mappings</li>
+<li>Reduces disk reads for frequently accessed files</li>
+<li>Memory footprint: ~300-400 bytes per inode</li>
+</ul>
+<h5 id="page-cache">Page Cache<a href="#page-cache" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h5>
+<ul>
+<li>Caches actual file contents in memory</li>
+<li>Uses the buddy allocator for memory management</li>
+<li>Implements read-ahead for sequential access patterns</li>
+<li>Default read-ahead window: 128KB on most systems</li>
+</ul>
+<h3 id="physical-disk-operations">Physical Disk Operations<a href="#physical-disk-operations" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>When cache misses occur, the kernel must interact with the physical disk:</p>
+<h4 id="1-block-layer-operations">1. Block Layer Operations<a href="#1-block-layer-operations" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<ul>
+<li>Request Queue Management: Merges adjacent requests</li>
+<li>I/O Scheduler: Reorders requests for optimal disk access (e.g., deadline scheduler)</li>
+<li>Block Size Management: Typically 4KB blocks on modern systems</li>
+</ul>
+<h4 id="2-device-driver-layer">2. Device Driver Layer<a href="#2-device-driver-layer" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<ul>
+<li>Translates block requests to device commands</li>
+<li>Handles interrupt processing</li>
+<li>Manages DMA (Direct Memory Access) operations</li>
+</ul>
+<h4 id="3-physical-disk-access">3. Physical Disk Access<a href="#3-physical-disk-access" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<ul>
+<li>Seek Time: 5-10ms for HDDs, ~0.1ms for SSDs</li>
+<li>Rotational Latency: ~4ms for 7200 RPM drives (HDDs only)</li>
+<li>Transfer Time: Depends on interface (SATA/NVMe) and media type</li>
+</ul>
+<h4 id="4-performance-considerations">4. Performance Considerations<a href="#4-performance-considerations" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<ul>
+<li>IOPS (Input/Output Operations Per Second)
+<ul>
+<li>HDDs: 100-200 IOPS</li>
+<li>SSDs: 10,000-100,000 IOPS</li>
+<li>NVMe: Up to 1,000,000 IOPS</li>
+</ul>
+</li>
+<li>Block alignment impact on performance</li>
+<li>Journal transaction overhead for journaling filesystems</li>
+</ul>
+<h3 id="error-handling-and-common-pitfalls">Error Handling and Common Pitfalls<a href="#error-handling-and-common-pitfalls" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<h4 id="1-resource-exhaustion">1. Resource Exhaustion<a href="#1-resource-exhaustion" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// Common mistake: not checking ulimit
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#ae81ff">1000000</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">f</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Open</span>(<span style="color:#e6db74">&#34;file.txt&#34;</span>) <span style="color:#75715e">// DON&#39;T ignore errors!
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// f never closed - will hit ulimit
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Better approach
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">f</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Open</span>(<span style="color:#e6db74">&#34;file.txt&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;open file: %w&#34;</span>, <span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">Close</span>()
+</span></span></code></pre></div><h4 id="2-race-conditions">2. Race Conditions<a href="#2-race-conditions" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<ul>
+<li>File existence races between check and open</li>
+<li>Symlink attacks in privileged programs</li>
+<li>File descriptor leaks in error paths</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// WRONG: Race condition
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">if</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Stat</span>(<span style="color:#e6db74">&#34;file.txt&#34;</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">f</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Open</span>(<span style="color:#e6db74">&#34;file.txt&#34;</span>) <span style="color:#75715e">// File might be gone now!
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// ...
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// BETTER: Handle errors appropriately
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">f</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Open</span>(<span style="color:#e6db74">&#34;file.txt&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">IsNotExist</span>(<span style="color:#a6e22e">err</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Handle non-existent file
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">Close</span>()
+</span></span></code></pre></div><h4 id="3-system-level-constraints">3. System-Level Constraints<a href="#3-system-level-constraints" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<ul>
+<li>File descriptor limits (<code>ulimit -n</code>)</li>
+<li>Filesystem-specific limitations:
+<ul>
+<li>Path length (typically 255 bytes)</li>
+<li>Maximum file size (filesystem dependent)</li>
+<li>Inode exhaustion</li>
+</ul>
+</li>
+</ul>
+<h4 id="4-performance-impact-points">4. Performance Impact Points<a href="#4-performance-impact-points" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<ul>
+<li>Opening files in tight loops</li>
+<li>Not using buffered I/O when appropriate</li>
+<li>Incorrect buffer sizes for the workload</li>
+<li>Not considering filesystem journal overhead</li>
+</ul>
+<h3 id="file-opening-optimizations-in-golang">File Opening Optimizations in Golang<a href="#file-opening-optimizations-in-golang" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>Using os.Open() in Go is simple, but specifying additional flags can improve performance, especially for high-throughput applications:</p>
+<h4 id="optimization-techniques">Optimization Techniques<a href="#optimization-techniques" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<p>Use <code>O_DIRECT</code> to bypass page cache when needed:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">f</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">OpenFile</span>(<span style="color:#e6db74">&#34;example.txt&#34;</span>, <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">O_RDONLY</span>|<span style="color:#a6e22e">unix</span>.<span style="color:#a6e22e">O_DIRECT</span>, <span style="color:#ae81ff">0666</span>)
+</span></span></code></pre></div><p>Reduce system calls with O_CLOEXEC (avoiding unnecessary file descriptor inheritance):</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">f</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">OpenFile</span>(<span style="color:#e6db74">&#34;example.txt&#34;</span>, <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">O_RDONLY</span>|<span style="color:#a6e22e">unix</span>.<span style="color:#a6e22e">O_CLOEXEC</span>, <span style="color:#ae81ff">0666</span>)
+</span></span></code></pre></div><p>For high-performance applications, consider mmap for direct memory access:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">data</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">Mmap</span>(<span style="color:#a6e22e">fd</span>, <span style="color:#ae81ff">0</span>, <span style="color:#a6e22e">length</span>, <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">PROT_READ</span>, <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">MAP_SHARED</span>)
+</span></span></code></pre></div><h3 id="benchmark-default-vs-optimized-file-open-in-golang">Benchmark: Default vs. Optimized File Open in Golang<a href="#benchmark-default-vs-optimized-file-open-in-golang" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>We&rsquo;ll benchmark file opening performance in Go under different conditions. I&rsquo;m doing this from a Ubuntu 24.04 x86_64 EC2 on amazon linux (us-east-1) using the root volume.</p>
+<h4 id="setup">Setup<a href="#setup" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<p>We create a 1GB test file:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>dd <span style="color:#66d9ef">if</span><span style="color:#f92672">=</span>/dev/urandom of<span style="color:#f92672">=</span>testfile bs<span style="color:#f92672">=</span>1M count<span style="color:#f92672">=</span><span style="color:#ae81ff">1024</span>
+</span></span></code></pre></div><p>Then, we compare performance between os.Open() and optimized opening:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;log&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;os&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;syscall&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;testing&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">BenchmarkStandardOpen</span>(<span style="color:#a6e22e">b</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">testing</span>.<span style="color:#a6e22e">B</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">N</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">f</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Open</span>(<span style="color:#e6db74">&#34;testfile&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">Close</span>()
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">BenchmarkOptimizedOpen</span>(<span style="color:#a6e22e">b</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">testing</span>.<span style="color:#a6e22e">B</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">N</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">f</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">OpenFile</span>(<span style="color:#e6db74">&#34;testfile&#34;</span>, <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">O_RDONLY</span>|<span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">O_DIRECT</span>, <span style="color:#ae81ff">0666</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">Close</span>()
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>We can run this test with:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>go test -bench<span style="color:#f92672">=</span>. -run<span style="color:#f92672">=</span>^$ main_test.go
+</span></span></code></pre></div><h4 id="results">Results<a href="#results" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Time per Operation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Standard <code>os.Open</code></td>
+<td>2523 ns/op</td>
+</tr>
+<tr>
+<td>Optimized <code>O_DIRECT</code></td>
+<td>2515 ns/op</td>
+</tr>
+<tr>
+<td>syscall.Pread</td>
+<td>1571 ns/op</td>
+</tr>
+</tbody>
+</table>
+<p>syscall.Pread is ~38% faster than <code>os.Open()</code> + <code>Read()</code></p>
+<ul>
+<li>This confirms that avoiding unnecessary file descriptor state changes (e.g., lseek()) improves efficiency.</li>
+<li>pread allows direct reading without modifying the file offset, reducing overhead.</li>
+</ul>
+<p><code>O_DIRECT</code> did not provide significant benefits.</p>
+<ul>
+<li>This suggests that our workload was small enough that bypassing the page cache isn’t useful.</li>
+<li>O_DIRECT typically benefits large file reads where cache pollution should be minimized.</li>
+</ul>
+<h4 id="pushing-the-benchmarks-a-little-further">Pushing the benchmarks a little further<a href="#pushing-the-benchmarks-a-little-further" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<p>Curious how different buffer sizes impact performance and how things look when actually reading line-by-line and performing some operations on that data I&rsquo;ve extended the bench test a little more:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;bufio&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;bytes&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;golang.org/x/sys/unix&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;crypto/md5&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;io&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;log&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;os&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;regexp&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;sync&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;syscall&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;testing&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">filePath</span> = <span style="color:#e6db74">&#34;testfile&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">logFile</span> = <span style="color:#e6db74">&#34;biglogfile.log&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">bufferSize</span> = <span style="color:#ae81ff">4096</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">numWorkers</span> = <span style="color:#ae81ff">4</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">chunkSize</span> = <span style="color:#ae81ff">1024</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">1024</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">10</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">readFileWithMmapAndHash</span>(<span style="color:#a6e22e">filePath</span> <span style="color:#66d9ef">string</span>) ([]<span style="color:#66d9ef">byte</span>, <span style="color:#66d9ef">error</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fd</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">Open</span>(<span style="color:#a6e22e">filePath</span>, <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">O_RDONLY</span>, <span style="color:#ae81ff">0666</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">Close</span>(<span style="color:#a6e22e">fd</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">stat</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">Stat_t</span>{}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">Fstat</span>(<span style="color:#a6e22e">fd</span>, <span style="color:#a6e22e">stat</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">size</span> <span style="color:#f92672">:=</span> int(<span style="color:#a6e22e">stat</span>.<span style="color:#a6e22e">Size</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">data</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">unix</span>.<span style="color:#a6e22e">Mmap</span>(<span style="color:#a6e22e">fd</span>, <span style="color:#ae81ff">0</span>, <span style="color:#a6e22e">size</span>, <span style="color:#a6e22e">unix</span>.<span style="color:#a6e22e">PROT_READ</span>, <span style="color:#a6e22e">unix</span>.<span style="color:#a6e22e">MAP_SHARED</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">unix</span>.<span style="color:#a6e22e">Munmap</span>(<span style="color:#a6e22e">data</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">hasher</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">md5</span>.<span style="color:#a6e22e">New</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">_</span> = <span style="color:#a6e22e">hasher</span>.<span style="color:#a6e22e">Write</span>(<span style="color:#a6e22e">data</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">hasher</span>.<span style="color:#a6e22e">Sum</span>(<span style="color:#66d9ef">nil</span>), <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">readFileWithOsOpenFile</span>(<span style="color:#a6e22e">filePath</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">error</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">f</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">OpenFile</span>(<span style="color:#a6e22e">filePath</span>, <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">O_RDONLY</span>, <span style="color:#ae81ff">0666</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">Close</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">scanner</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">bufio</span>.<span style="color:#a6e22e">NewScanner</span>(<span style="color:#a6e22e">f</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">scanner</span>.<span style="color:#a6e22e">Scan</span>() {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">_</span> = <span style="color:#a6e22e">scanner</span>.<span style="color:#a6e22e">Text</span>() <span style="color:#75715e">// read line, discard output for benchmarking
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">scanner</span>.<span style="color:#a6e22e">Err</span>()
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">readFileWithOsOpenFileAndHash</span>(<span style="color:#a6e22e">filePath</span> <span style="color:#66d9ef">string</span>) ([]<span style="color:#66d9ef">byte</span>, <span style="color:#66d9ef">error</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">f</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">OpenFile</span>(<span style="color:#a6e22e">filePath</span>, <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">O_RDONLY</span>, <span style="color:#ae81ff">0666</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">Close</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">hasher</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">md5</span>.<span style="color:#a6e22e">New</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">io</span>.<span style="color:#a6e22e">Copy</span>(<span style="color:#a6e22e">hasher</span>, <span style="color:#a6e22e">f</span>) <span style="color:#75715e">// Use io.Copy for efficient reading
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">hasher</span>.<span style="color:#a6e22e">Sum</span>(<span style="color:#66d9ef">nil</span>), <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">readFileWithPreadAndHash</span>(<span style="color:#a6e22e">filePath</span> <span style="color:#66d9ef">string</span>) ([]<span style="color:#66d9ef">byte</span>, <span style="color:#66d9ef">error</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fd</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">Open</span>(<span style="color:#a6e22e">filePath</span>, <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">O_RDONLY</span>, <span style="color:#ae81ff">0666</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">Close</span>(<span style="color:#a6e22e">fd</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">buf</span> <span style="color:#f92672">:=</span> make([]<span style="color:#66d9ef">byte</span>, <span style="color:#a6e22e">bufferSize</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">offset</span> <span style="color:#66d9ef">int64</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">hasher</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">md5</span>.<span style="color:#a6e22e">New</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">n</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">Pread</span>(<span style="color:#a6e22e">fd</span>, <span style="color:#a6e22e">buf</span>, <span style="color:#a6e22e">offset</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">n</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">||</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">break</span>
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">offset</span> <span style="color:#f92672">+=</span> int64(<span style="color:#a6e22e">n</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">_</span> = <span style="color:#a6e22e">hasher</span>.<span style="color:#a6e22e">Write</span>(<span style="color:#a6e22e">buf</span>[:<span style="color:#a6e22e">n</span>])
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">hasher</span>.<span style="color:#a6e22e">Sum</span>(<span style="color:#66d9ef">nil</span>), <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">readFileWithPreadLineByLine</span>(<span style="color:#a6e22e">filePath</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">error</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fd</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">Open</span>(<span style="color:#a6e22e">filePath</span>, <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">O_RDONLY</span>, <span style="color:#ae81ff">0666</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">Close</span>(<span style="color:#a6e22e">fd</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">buf</span> <span style="color:#f92672">:=</span> make([]<span style="color:#66d9ef">byte</span>, <span style="color:#a6e22e">bufferSize</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">offset</span> <span style="color:#66d9ef">int64</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">partialLine</span> <span style="color:#a6e22e">bytes</span>.<span style="color:#a6e22e">Buffer</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">n</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">Pread</span>(<span style="color:#a6e22e">fd</span>, <span style="color:#a6e22e">buf</span>, <span style="color:#a6e22e">offset</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">n</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">||</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">break</span>
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">offset</span> <span style="color:#f92672">+=</span> int64(<span style="color:#a6e22e">n</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">scanner</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">bufio</span>.<span style="color:#a6e22e">NewScanner</span>(<span style="color:#a6e22e">bytes</span>.<span style="color:#a6e22e">NewReader</span>(<span style="color:#a6e22e">buf</span>[:<span style="color:#a6e22e">n</span>]))
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">scanner</span>.<span style="color:#a6e22e">Split</span>(<span style="color:#a6e22e">bufio</span>.<span style="color:#a6e22e">ScanLines</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">scanner</span>.<span style="color:#a6e22e">Scan</span>() {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">line</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">scanner</span>.<span style="color:#a6e22e">Text</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">if</span> len(<span style="color:#a6e22e">line</span>) &gt; <span style="color:#ae81ff">0</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">line</span>[len(<span style="color:#a6e22e">line</span>)<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>] <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#39;\n&#39;</span> {
+</span></span><span style="display:flex;"><span>				<span style="color:#a6e22e">partialLine</span>.<span style="color:#a6e22e">WriteString</span>(<span style="color:#a6e22e">line</span>)
+</span></span><span style="display:flex;"><span>			} <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>				<span style="color:#75715e">// uncomment to actually print - you probably don&#39;t want to do this
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>				<span style="color:#75715e">// fmt.Println(partialLine.String() + line)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>				<span style="color:#a6e22e">partialLine</span>.<span style="color:#a6e22e">Reset</span>()
+</span></span><span style="display:flex;"><span>			}
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">partialLine</span>.<span style="color:#a6e22e">Len</span>() &gt; <span style="color:#ae81ff">0</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">partialLine</span>.<span style="color:#a6e22e">WriteByte</span>(<span style="color:#e6db74">&#39;\n&#39;</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">BenchmarkStandardOpen</span>(<span style="color:#a6e22e">b</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">testing</span>.<span style="color:#a6e22e">B</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">N</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">f</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Open</span>(<span style="color:#e6db74">&#34;testfile&#34;</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">Close</span>()
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">BenchmarkOptimizedOpen</span>(<span style="color:#a6e22e">b</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">testing</span>.<span style="color:#a6e22e">B</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">N</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">f</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">OpenFile</span>(<span style="color:#e6db74">&#34;testfile&#34;</span>, <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">O_RDONLY</span>|<span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">O_DIRECT</span>, <span style="color:#ae81ff">0666</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">Close</span>()
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">BenchmarkPread</span>(<span style="color:#a6e22e">b</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">testing</span>.<span style="color:#a6e22e">B</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">N</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">fd</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">Open</span>(<span style="color:#a6e22e">filePath</span>, <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">O_RDONLY</span>, <span style="color:#ae81ff">0666</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">buf</span> <span style="color:#f92672">:=</span> make([]<span style="color:#66d9ef">byte</span>, <span style="color:#a6e22e">bufferSize</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">Pread</span>(<span style="color:#a6e22e">fd</span>, <span style="color:#a6e22e">buf</span>, <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">Close</span>(<span style="color:#a6e22e">fd</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">BenchmarkPreadSmallBufSize</span>(<span style="color:#a6e22e">b</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">testing</span>.<span style="color:#a6e22e">B</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">N</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">fd</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">Open</span>(<span style="color:#a6e22e">filePath</span>, <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">O_RDONLY</span>, <span style="color:#ae81ff">0666</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">buf</span> <span style="color:#f92672">:=</span> make([]<span style="color:#66d9ef">byte</span>, <span style="color:#ae81ff">1024</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">Pread</span>(<span style="color:#a6e22e">fd</span>, <span style="color:#a6e22e">buf</span>, <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">Close</span>(<span style="color:#a6e22e">fd</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">BenchmarkPreadSmallerBufSize</span>(<span style="color:#a6e22e">b</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">testing</span>.<span style="color:#a6e22e">B</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">N</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">fd</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">Open</span>(<span style="color:#a6e22e">filePath</span>, <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">O_RDONLY</span>, <span style="color:#ae81ff">0666</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">buf</span> <span style="color:#f92672">:=</span> make([]<span style="color:#66d9ef">byte</span>, <span style="color:#ae81ff">512</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">Pread</span>(<span style="color:#a6e22e">fd</span>, <span style="color:#a6e22e">buf</span>, <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">Close</span>(<span style="color:#a6e22e">fd</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">BenchmarkPreadLargeBufSize</span>(<span style="color:#a6e22e">b</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">testing</span>.<span style="color:#a6e22e">B</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">N</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">fd</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">Open</span>(<span style="color:#a6e22e">filePath</span>, <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">O_RDONLY</span>, <span style="color:#ae81ff">0666</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">buf</span> <span style="color:#f92672">:=</span> make([]<span style="color:#66d9ef">byte</span>, <span style="color:#ae81ff">8096</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">Pread</span>(<span style="color:#a6e22e">fd</span>, <span style="color:#a6e22e">buf</span>, <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">Close</span>(<span style="color:#a6e22e">fd</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">BenchmarkPreadReadWholeFile</span>(<span style="color:#a6e22e">b</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">testing</span>.<span style="color:#a6e22e">B</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">N</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">readFileWithPreadLineByLine</span>(<span style="color:#a6e22e">filePath</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">BenchmarkOsOpenFileReadWholeFile</span>(<span style="color:#a6e22e">b</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">testing</span>.<span style="color:#a6e22e">B</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">N</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">readFileWithOsOpenFile</span>(<span style="color:#a6e22e">filePath</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">BenchmarkPreadReadWholeFileAndHash</span>(<span style="color:#a6e22e">b</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">testing</span>.<span style="color:#a6e22e">B</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">hashResult</span> []<span style="color:#66d9ef">byte</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">N</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">hash</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">readFileWithPreadAndHash</span>(<span style="color:#a6e22e">filePath</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">hashResult</span> = <span style="color:#a6e22e">hash</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;MD5 (syscall.Pread): %x\n&#34;</span>, <span style="color:#a6e22e">hashResult</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">BenchmarkOsOpenFileReadWholeFileAndHash</span>(<span style="color:#a6e22e">b</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">testing</span>.<span style="color:#a6e22e">B</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">hashResult</span> []<span style="color:#66d9ef">byte</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">N</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">hash</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">readFileWithOsOpenFileAndHash</span>(<span style="color:#a6e22e">filePath</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">hashResult</span> = <span style="color:#a6e22e">hash</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;MD5 (os.OpenFile): %x\n&#34;</span>, <span style="color:#a6e22e">hashResult</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">BenchmarkMmapReadWholeFileAndHash</span>(<span style="color:#a6e22e">b</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">testing</span>.<span style="color:#a6e22e">B</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">hashResult</span> []<span style="color:#66d9ef">byte</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">N</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">hash</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">readFileWithMmapAndHash</span>(<span style="color:#a6e22e">filePath</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">hashResult</span> = <span style="color:#a6e22e">hash</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;MD5 (mmap): %x\n&#34;</span>, <span style="color:#a6e22e">hashResult</span>) <span style="color:#75715e">// Print hash once
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">searchPattern</span> = <span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">MustCompile</span>(<span style="color:#e6db74">`ERROR`</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Uses syscall.Pread to read a specific file chunk and scan for matches
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">searchFileWithPread</span>(<span style="color:#a6e22e">filePath</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">startOffset</span>, <span style="color:#a6e22e">length</span> <span style="color:#66d9ef">int64</span>, <span style="color:#a6e22e">results</span> <span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">wg</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">sync</span>.<span style="color:#a6e22e">WaitGroup</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Done</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fd</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">Open</span>(<span style="color:#a6e22e">filePath</span>, <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">O_RDONLY</span>, <span style="color:#ae81ff">0666</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">Close</span>(<span style="color:#a6e22e">fd</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">buf</span> <span style="color:#f92672">:=</span> make([]<span style="color:#66d9ef">byte</span>, <span style="color:#a6e22e">length</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">Pread</span>(<span style="color:#a6e22e">fd</span>, <span style="color:#a6e22e">buf</span>, <span style="color:#a6e22e">startOffset</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// Convert to string and scan for regex matches
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">count</span> <span style="color:#f92672">:=</span> len(<span style="color:#a6e22e">searchPattern</span>.<span style="color:#a6e22e">FindAllString</span>(string(<span style="color:#a6e22e">buf</span>), <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>))
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">results</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">count</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Uses os.OpenFile with bufio.Scanner to read and process lines
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">searchFileWithOpenFile</span>(<span style="color:#a6e22e">filePath</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">startOffset</span>, <span style="color:#a6e22e">length</span> <span style="color:#66d9ef">int64</span>, <span style="color:#a6e22e">results</span> <span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">wg</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">sync</span>.<span style="color:#a6e22e">WaitGroup</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Done</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">f</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">OpenFile</span>(<span style="color:#a6e22e">filePath</span>, <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">O_RDONLY</span>, <span style="color:#ae81ff">0666</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">Close</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// Seek to start position
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">Seek</span>(<span style="color:#a6e22e">startOffset</span>, <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">scanner</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">bufio</span>.<span style="color:#a6e22e">NewScanner</span>(<span style="color:#a6e22e">f</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">scanner</span>.<span style="color:#a6e22e">Buffer</span>(make([]<span style="color:#66d9ef">byte</span>, <span style="color:#ae81ff">1024</span><span style="color:#f92672">*</span><span style="color:#ae81ff">64</span>), <span style="color:#ae81ff">1024</span><span style="color:#f92672">*</span><span style="color:#ae81ff">64</span>) <span style="color:#75715e">// Larger buffer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">count</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">scanner</span>.<span style="color:#a6e22e">Scan</span>() {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">searchPattern</span>.<span style="color:#a6e22e">MatchString</span>(<span style="color:#a6e22e">scanner</span>.<span style="color:#a6e22e">Text</span>()) {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">count</span><span style="color:#f92672">++</span>
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// Stop when reaching chunk limit
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#a6e22e">seek</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">Seek</span>(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			panic(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">seek</span> <span style="color:#f92672">&gt;=</span> <span style="color:#a6e22e">startOffset</span><span style="color:#f92672">+</span><span style="color:#a6e22e">length</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">break</span>
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">results</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">count</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Benchmark: Multi-threaded search using syscall.Pread
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">BenchmarkPreadRegexSearch</span>(<span style="color:#a6e22e">b</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">testing</span>.<span style="color:#a6e22e">B</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">N</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">results</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">numWorkers</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">wg</span> <span style="color:#a6e22e">sync</span>.<span style="color:#a6e22e">WaitGroup</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// Get file size
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#a6e22e">fi</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Stat</span>(<span style="color:#a6e22e">logFile</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">fileSize</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">fi</span>.<span style="color:#a6e22e">Size</span>()
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">chunkSize</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">fileSize</span> <span style="color:#f92672">/</span> int64(<span style="color:#a6e22e">numWorkers</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// Start workers
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">j</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">j</span> &lt; <span style="color:#a6e22e">numWorkers</span>; <span style="color:#a6e22e">j</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">start</span> <span style="color:#f92672">:=</span> int64(<span style="color:#a6e22e">j</span>) <span style="color:#f92672">*</span> <span style="color:#a6e22e">chunkSize</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Add</span>(<span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">go</span> <span style="color:#a6e22e">searchFileWithPread</span>(<span style="color:#a6e22e">logFile</span>, <span style="color:#a6e22e">start</span>, <span style="color:#a6e22e">chunkSize</span>, <span style="color:#a6e22e">results</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">wg</span>) <span style="color:#75715e">// ✅ Pass &amp;wg
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// Separate goroutine to close channel **after** all goroutines finish
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Wait</span>()  <span style="color:#75715e">// ✅ Wait for all workers to finish before closing
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>			close(<span style="color:#a6e22e">results</span>)
+</span></span><span style="display:flex;"><span>		}()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// Sum all results
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#a6e22e">totalMatches</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">matchCount</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">results</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">totalMatches</span> <span style="color:#f92672">+=</span> <span style="color:#a6e22e">matchCount</span>
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;Matches found (Pread): %d\n&#34;</span>, <span style="color:#a6e22e">totalMatches</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Benchmark: Multi-threaded search using os.OpenFile
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">BenchmarkOpenFileRegexSearch</span>(<span style="color:#a6e22e">b</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">testing</span>.<span style="color:#a6e22e">B</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">N</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">results</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">numWorkers</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">wg</span> <span style="color:#a6e22e">sync</span>.<span style="color:#a6e22e">WaitGroup</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// Get file size
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#a6e22e">fi</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Stat</span>(<span style="color:#a6e22e">logFile</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">fileSize</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">fi</span>.<span style="color:#a6e22e">Size</span>()
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">chunkSize</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">fileSize</span> <span style="color:#f92672">/</span> int64(<span style="color:#a6e22e">numWorkers</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// Start workers
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">j</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">j</span> &lt; <span style="color:#a6e22e">numWorkers</span>; <span style="color:#a6e22e">j</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">start</span> <span style="color:#f92672">:=</span> int64(<span style="color:#a6e22e">j</span>) <span style="color:#f92672">*</span> <span style="color:#a6e22e">chunkSize</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Add</span>(<span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">go</span> <span style="color:#a6e22e">searchFileWithOpenFile</span>(<span style="color:#a6e22e">logFile</span>, <span style="color:#a6e22e">start</span>, <span style="color:#a6e22e">chunkSize</span>, <span style="color:#a6e22e">results</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">wg</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// Separate goroutine to close the channel **after all workers finish**
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Wait</span>()
+</span></span><span style="display:flex;"><span>			close(<span style="color:#a6e22e">results</span>)
+</span></span><span style="display:flex;"><span>		}()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// Sum all results
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#a6e22e">totalMatches</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">matchCount</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">results</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">totalMatches</span> <span style="color:#f92672">+=</span> <span style="color:#a6e22e">matchCount</span>
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;Matches found (OpenFile): %d\n&#34;</span>, <span style="color:#a6e22e">totalMatches</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Running this we yield the following results:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ubuntu@ip-192-168-0-13:~/blog$ go test -bench<span style="color:#f92672">=</span>. -run<span style="color:#f92672">=</span>^$ main_test.go
+</span></span><span style="display:flex;"><span>goos: linux
+</span></span><span style="display:flex;"><span>goarch: amd64
+</span></span><span style="display:flex;"><span>cpu: Intel<span style="color:#f92672">(</span>R<span style="color:#f92672">)</span> Xeon<span style="color:#f92672">(</span>R<span style="color:#f92672">)</span> Platinum 8375C CPU @ 2.90GHz
+</span></span><span style="display:flex;"><span>BenchmarkStandardOpen-8                     	  470482	      <span style="color:#ae81ff">2520</span> ns/op
+</span></span><span style="display:flex;"><span>BenchmarkOptimizedOpen-8                    	  459942	      <span style="color:#ae81ff">2530</span> ns/op
+</span></span><span style="display:flex;"><span>BenchmarkPread-8                            	  761684	      <span style="color:#ae81ff">1586</span> ns/op
+</span></span><span style="display:flex;"><span>BenchmarkPreadSmallBufSize-8                	  775428	      <span style="color:#ae81ff">1542</span> ns/op
+</span></span><span style="display:flex;"><span>BenchmarkPreadSmallerBufSize-8              	  777808	      <span style="color:#ae81ff">1544</span> ns/op
+</span></span><span style="display:flex;"><span>BenchmarkPreadLargeBufSize-8                	  720202	      <span style="color:#ae81ff">1656</span> ns/op
+</span></span><span style="display:flex;"><span>BenchmarkPreadReadWholeFile-8               	       2	 <span style="color:#ae81ff">867923642</span> ns/op
+</span></span><span style="display:flex;"><span>BenchmarkOsOpenFileReadWholeFile-8          	       2	 <span style="color:#ae81ff">590298956</span> ns/op
+</span></span><span style="display:flex;"><span>MD5 <span style="color:#f92672">(</span>syscall.Pread<span style="color:#f92672">)</span>: e196fdf7806a4385382a8567ece65598
+</span></span><span style="display:flex;"><span>BenchmarkPreadReadWholeFileAndHash-8        	       1	<span style="color:#ae81ff">1610504490</span> ns/op
+</span></span><span style="display:flex;"><span>MD5 <span style="color:#f92672">(</span>os.OpenFile<span style="color:#f92672">)</span>: e196fdf7806a4385382a8567ece65598
+</span></span><span style="display:flex;"><span>BenchmarkOsOpenFileReadWholeFileAndHash-8   	       1	<span style="color:#ae81ff">1535824016</span> ns/op
+</span></span><span style="display:flex;"><span>MD5 <span style="color:#f92672">(</span>mmap<span style="color:#f92672">)</span>: e196fdf7806a4385382a8567ece65598
+</span></span><span style="display:flex;"><span>BenchmarkMmapReadWholeFileAndHash-8         	       1	<span style="color:#ae81ff">1454061237</span> ns/op
+</span></span><span style="display:flex;"><span>Matches found <span style="color:#f92672">(</span>Pread<span style="color:#f92672">)</span>: <span style="color:#ae81ff">998321</span>
+</span></span><span style="display:flex;"><span>BenchmarkPreadRegexSearch-8                 	Matches found <span style="color:#f92672">(</span>Pread<span style="color:#f92672">)</span>: <span style="color:#ae81ff">998321</span>
+</span></span><span style="display:flex;"><span>Matches found <span style="color:#f92672">(</span>Pread<span style="color:#f92672">)</span>: <span style="color:#ae81ff">998321</span>
+</span></span><span style="display:flex;"><span>Matches found <span style="color:#f92672">(</span>Pread<span style="color:#f92672">)</span>: <span style="color:#ae81ff">998321</span>
+</span></span><span style="display:flex;"><span>Matches found <span style="color:#f92672">(</span>Pread<span style="color:#f92672">)</span>: <span style="color:#ae81ff">998321</span>
+</span></span><span style="display:flex;"><span>Matches found <span style="color:#f92672">(</span>Pread<span style="color:#f92672">)</span>: <span style="color:#ae81ff">998321</span>
+</span></span><span style="display:flex;"><span>Matches found <span style="color:#f92672">(</span>Pread<span style="color:#f92672">)</span>: <span style="color:#ae81ff">998321</span>
+</span></span><span style="display:flex;"><span>Matches found <span style="color:#f92672">(</span>Pread<span style="color:#f92672">)</span>: <span style="color:#ae81ff">998321</span>
+</span></span><span style="display:flex;"><span>Matches found <span style="color:#f92672">(</span>Pread<span style="color:#f92672">)</span>: <span style="color:#ae81ff">998321</span>
+</span></span><span style="display:flex;"><span>Matches found <span style="color:#f92672">(</span>Pread<span style="color:#f92672">)</span>: <span style="color:#ae81ff">998321</span>
+</span></span><span style="display:flex;"><span>Matches found <span style="color:#f92672">(</span>Pread<span style="color:#f92672">)</span>: <span style="color:#ae81ff">998321</span>
+</span></span><span style="display:flex;"><span>Matches found <span style="color:#f92672">(</span>Pread<span style="color:#f92672">)</span>: <span style="color:#ae81ff">998321</span>
+</span></span><span style="display:flex;"><span>Matches found <span style="color:#f92672">(</span>Pread<span style="color:#f92672">)</span>: <span style="color:#ae81ff">998321</span>
+</span></span><span style="display:flex;"><span>       5	 <span style="color:#ae81ff">206179610</span> ns/op
+</span></span><span style="display:flex;"><span>Matches found <span style="color:#f92672">(</span>OpenFile<span style="color:#f92672">)</span>: <span style="color:#ae81ff">997413</span>
+</span></span><span style="display:flex;"><span>BenchmarkOpenFileRegexSearch-8              	Matches found <span style="color:#f92672">(</span>OpenFile<span style="color:#f92672">)</span>: <span style="color:#ae81ff">997413</span>
+</span></span><span style="display:flex;"><span>Matches found <span style="color:#f92672">(</span>OpenFile<span style="color:#f92672">)</span>: <span style="color:#ae81ff">997413</span>
+</span></span><span style="display:flex;"><span>       2	 <span style="color:#ae81ff">581771636</span> ns/op
+</span></span><span style="display:flex;"><span>PASS
+</span></span><span style="display:flex;"><span>ok  	command-line-arguments	20.706s
+</span></span></code></pre></div><p>Which can be summarised as:</p>
+<table>
+<thead>
+<tr>
+<th>Benchmark</th>
+<th>Operations</th>
+<th>Time per Operation (ns)</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Standard os.Open</td>
+<td>460,371</td>
+<td>2531 ns/op</td>
+<td>Baseline for simple file open</td>
+</tr>
+<tr>
+<td>Optimized O_DIRECT</td>
+<td>469,384</td>
+<td>2557 ns/op</td>
+<td>No significant improvement</td>
+</tr>
+<tr>
+<td>syscall.Pread (single read)</td>
+<td>698,469</td>
+<td>1551 ns/op</td>
+<td>~37% faster than os.Open</td>
+</tr>
+<tr>
+<td>Whole file (Pread)</td>
+<td>2</td>
+<td>896 ms (0.89s)</td>
+<td>Reads line by line</td>
+</tr>
+<tr>
+<td>Whole file (os.OpenFile)</td>
+<td>2</td>
+<td>618 ms (0.61s)</td>
+<td>~31% faster than syscall.Pread</td>
+</tr>
+<tr>
+<td>Whole file + MD5 (Pread)</td>
+<td>1</td>
+<td>1.61s</td>
+<td>Hash calculation included</td>
+</tr>
+<tr>
+<td>Whole file + MD5 (os.OpenFile)</td>
+<td>1</td>
+<td>1.55s</td>
+<td>~3% faster than Pread</td>
+</tr>
+</tbody>
+</table>
+<p>Of particular note: when we added md5 to our functions we even out the benchmarks. The assumption here is that this is due to us now being CPU bound, but lets quickly sanity check that:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ubuntu@ip-192-168-0-13:~/blog$ go test -bench<span style="color:#f92672">=</span>BenchmarkPreadReadWholeFileAndHash -bench<span style="color:#f92672">=</span>BenchmarkOsOpenFileReadWholeFileAndHash -cpuprofile cpu.prof
+</span></span><span style="display:flex;"><span>MD5 <span style="color:#f92672">(</span>os.OpenFile<span style="color:#f92672">)</span>: e196fdf7806a4385382a8567ece65598
+</span></span><span style="display:flex;"><span>goos: linux
+</span></span><span style="display:flex;"><span>goarch: amd64
+</span></span><span style="display:flex;"><span>pkg: github.com/peter-mcconnell/petermcconnell.com
+</span></span><span style="display:flex;"><span>cpu: Intel<span style="color:#f92672">(</span>R<span style="color:#f92672">)</span> Xeon<span style="color:#f92672">(</span>R<span style="color:#f92672">)</span> Platinum 8375C CPU @ 2.90GHz
+</span></span><span style="display:flex;"><span>BenchmarkOsOpenFileReadWholeFileAndHash-8   	       1	<span style="color:#ae81ff">1542750540</span> ns/op
+</span></span><span style="display:flex;"><span>PASS
+</span></span><span style="display:flex;"><span>ok  	github.com/peter-mcconnell/petermcconnell.com	1.706s
+</span></span><span style="display:flex;"><span>ubuntu@ip-192-168-0-13:~/blog$ go tool pprof cpu.prof
+</span></span><span style="display:flex;"><span>File: petermcconnell.com.test
+</span></span><span style="display:flex;"><span>Build ID: d4e2c7e92f1c7b79b7572cdf54387115ff451bbc
+</span></span><span style="display:flex;"><span>Type: cpu
+</span></span><span style="display:flex;"><span>Time: 2025-03-04 09:44:06 UTC
+</span></span><span style="display:flex;"><span>Duration: 1.70s, Total samples <span style="color:#f92672">=</span> 1.55s <span style="color:#f92672">(</span>90.99%<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>Entering interactive mode <span style="color:#f92672">(</span>type <span style="color:#e6db74">&#34;help&#34;</span> <span style="color:#66d9ef">for</span> commands, <span style="color:#e6db74">&#34;o&#34;</span> <span style="color:#66d9ef">for</span> options<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">(</span>pprof<span style="color:#f92672">)</span> top
+</span></span><span style="display:flex;"><span>Showing nodes accounting <span style="color:#66d9ef">for</span> 1.55s, 100% of 1.55s total
+</span></span><span style="display:flex;"><span>Showing top <span style="color:#ae81ff">10</span> nodes out of <span style="color:#ae81ff">28</span>
+</span></span><span style="display:flex;"><span>      flat  flat%   sum%        cum   cum%
+</span></span><span style="display:flex;"><span>     1.40s 90.32% 90.32%      1.40s 90.32%  crypto/md5.block
+</span></span><span style="display:flex;"><span>     0.13s  8.39% 98.71%      0.13s  8.39%  internal/runtime/syscall.Syscall6
+</span></span><span style="display:flex;"><span>     0.01s  0.65% 99.35%      0.01s  0.65%  internal/poll.<span style="color:#f92672">(</span>*fdMutex<span style="color:#f92672">)</span>.rwunlock
+</span></span><span style="display:flex;"><span>     0.01s  0.65%   100%      0.01s  0.65%  runtime.<span style="color:#f92672">(</span>*mcache<span style="color:#f92672">)</span>.prepareForSweep
+</span></span><span style="display:flex;"><span>         <span style="color:#ae81ff">0</span>     0%   100%      1.40s 90.32%  crypto/md5.<span style="color:#f92672">(</span>*digest<span style="color:#f92672">)</span>.Write
+</span></span><span style="display:flex;"><span>         <span style="color:#ae81ff">0</span>     0%   100%      1.55s   100%  github.com/peter-mcconnell/petermcconnell%2ecom.BenchmarkOsOpenFileReadWholeFileAndHash
+</span></span><span style="display:flex;"><span>         <span style="color:#ae81ff">0</span>     0%   100%      1.55s   100%  github.com/peter-mcconnell/petermcconnell%2ecom.readFileWithOsOpenFileAndHash
+</span></span><span style="display:flex;"><span>         <span style="color:#ae81ff">0</span>     0%   100%      0.15s  9.68%  internal/poll.<span style="color:#f92672">(</span>*FD<span style="color:#f92672">)</span>.Read
+</span></span><span style="display:flex;"><span>         <span style="color:#ae81ff">0</span>     0%   100%      0.01s  0.65%  internal/poll.<span style="color:#f92672">(</span>*FD<span style="color:#f92672">)</span>.readUnlock
+</span></span><span style="display:flex;"><span>         <span style="color:#ae81ff">0</span>     0%   100%      0.14s  9.03%  internal/poll.ignoringEINTRIO <span style="color:#f92672">(</span>inline<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">(</span>pprof<span style="color:#f92672">)</span>
+</span></span></code></pre></div><p>As we can see <code>crypto/md5.block</code> accounts for ~90% and the disk is no longer the issue.</p>
+<p>Some brief takeaways here are:</p>
+<ul>
+<li>os.OpenFile was slower but benefited from kernel-level read-ahead caching.</li>
+<li>Before MD5: syscall.Pread vs. os.OpenFile Performance was purely Disk-Bound</li>
+<li>After MD5: The Bottleneck Shifted to CPU Hashing</li>
+</ul>
+<h2 id="conclusion">Conclusion<a href="#conclusion" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>Opening a file on Linux is far from a trivial operation—it involves user-space checks, syscalls, kernel caching, and filesystem-specific optimizations. By understanding these layers, developers can fine-tune performance, particularly in high-throughput applications. Golang offers flexible file opening mechanisms that, when optimized, can yield significant efficiency gains.</p>
+<ul>
+<li>Use syscall.Pread for performance-sensitive applications where random access or concurrent reads are required (multiple goroutines can read from different parts of the file simultaneously without locking the file descriptor).</li>
+<li>Use os.OpenFile for idiomatic, portable, and sequential file reads where system optimizations help.</li>
+</ul>
+<p>For further reading, check out:</p>
+<ul>
+<li><code>man 2 open</code></li>
+<li><code>man 7 vfs</code></li>
+<li>Linux kernel source code (fs/open.c)</li>
+</ul>
+
+      </div></div>
+
+  
+    
+<div class="pagination">
+    <div class="pagination__title">
+        <span class="pagination__title-h">Read other posts</span>
+        <hr />
+    </div>
+    <div class="pagination__buttons">
+        
+        
+        <span class="button next">
+            <a href="http://localhost:1313/posts/whispers/">
+                <span class="button__text">Snooping on libpam (openssh auth, passwd) with Golang and eBPF</span>
+                <span class="button__icon">→</span>
+            </a>
+        </span>
+        
+    </div>
+</div>
+
+  
+
+  
+    
+
+  
+</article>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    <div class="links">
+      <a target="_blank" href="https://github.com/peter-mcconnell/">github</a> |
+      <a target="_blank" href="https://www.linkedin.com/in/pemcconnell/">linkedin</a>
+      
+        <div class="copyright copyright--user">
+          <span>&copy; Peter McConnell 2023</span>
+      
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+
+
+
+
+<script type="text/javascript" src="/bundle.min.js"></script>
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>

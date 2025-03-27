@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>ChatGPT on Peter McConnell :: Ponderings from a Linux Systems engineer</title>
-    <link>https://www.petermcconnell.com/tags/chatgpt/</link>
+    <link>http://localhost:1313/tags/chatgpt/</link>
     <description>Recent content in ChatGPT on Peter McConnell :: Ponderings from a Linux Systems engineer</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>&amp;copy; Peter McConnell 2023</copyright>
-    <lastBuildDate>Thu, 08 Dec 2022 11:41:50 +0000</lastBuildDate><atom:link href="https://www.petermcconnell.com/tags/chatgpt/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 08 Dec 2022 11:41:50 +0000</lastBuildDate><atom:link href="http://localhost:1313/tags/chatgpt/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>chatGPT - building an automated database testing tool</title>
-      <link>https://www.petermcconnell.com/posts/ai_db_testing/</link>
+      <link>http://localhost:1313/posts/ai_db_testing/</link>
       <pubDate>Thu, 08 Dec 2022 11:41:50 +0000</pubDate>
       
-      <guid>https://www.petermcconnell.com/posts/ai_db_testing/</guid>
+      <guid>http://localhost:1313/posts/ai_db_testing/</guid>
       <description>Creating an automated database testing tool with ChatGPT Last night I thought I&amp;rsquo;d try to get ChatGPT to make an automated database testing tool and the results were quite promising.
 In conclusion, with guidance, it was able to build a project from scratch that ran a python script and postgres database. It generated some random schema and values for the randomly generated tables. It provided a Python script which would introspect the database and execute queries against it.</description>
       <content>&lt;h2 id=&#34;creating-an-automated-database-testing-tool-with-chatgpt&#34;&gt;Creating an automated database testing tool with ChatGPT&lt;/h2&gt;
@@ -73,10 +73,10 @@ more or less than I would snippets from stackoverflow or it&amp;rsquo;s ilk. For
     
     <item>
       <title>chatGPT - building a virtual machine</title>
-      <link>https://www.petermcconnell.com/posts/chatgpt/</link>
+      <link>http://localhost:1313/posts/chatgpt/</link>
       <pubDate>Mon, 05 Dec 2022 14:16:04 +0000</pubDate>
       
-      <guid>https://www.petermcconnell.com/posts/chatgpt/</guid>
+      <guid>http://localhost:1313/posts/chatgpt/</guid>
       <description>:mind-blown:
 https://www.engraved.blog/building-a-virtual-machine-inside/</description>
       <content>&lt;p&gt;:mind-blown:&lt;/p&gt;
